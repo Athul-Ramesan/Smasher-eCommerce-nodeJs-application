@@ -42,18 +42,29 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="brand-list">
-                            <h2>Categories</h2>
-                            <ul>
-                                <ul>
-                                    <% categories.forEach((category)=>{ %>
-                                        <li>
-                                            <%= category.name %>
-                                        </li>
-                                        <% }) %>
-                                            <!-- Add more categories here -->
-                                </ul>
-                                <!-- Add more brands here -->
-                            </ul>
+                            <h4 class="text-success ps-2" >CATEGORIES</h4>
+                            <% if(categories){%>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Category</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% categories.forEach((category)=>{ %>
+                                        <tr>
+                                            <td><%= category.name %></td>
+                                            <td>
+                                                <a class="btn btn-dark" href="/admin/editCategory/<%=category._id%>" > Edit</a></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <% }) %>
+                                </table>
+                            </div>
+                            <% } %>
                         </div>
                         <div class="category-form">
                             <h2>Add Category</h2>
@@ -75,18 +86,29 @@
                     </div>
                     <div class="col-md-6">
                         <div class="brand-list">
-                            <h2>Brands</h2>
-                            <ul>
-                                <ul>
-                                    <% brands.forEach((brand)=>{ %>
-                                        <li>
-                                            <%= brand.name %>
-                                        </li>
-                                        <% }) %>
-                                            <!-- Add more categories here -->
-                                </ul>
-                                <!-- Add more brands here -->
-                            </ul>
+                            <h4 class="text-success ps-2" >BRANDS</h4>
+                            <% if(brands){%>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">BRANDS</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% brands.forEach((brand)=>{ %>
+                                        <tr>
+                                            <td><%= brand.name %></td>
+                                            <td>
+                                                <a class="btn btn-dark" href="/admin//editBrand/<%=brand._id%>" > Edit</a></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <% }) %>
+                                </table>
+                            </div>
+                            <% } %>
                         </div>
 
 

@@ -13,8 +13,8 @@ module.exports = {
             transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
-                    user: 'dev.athulrameshan@gmail.com',
-                    pass: 'ywhl okqn coww shmy',
+                    user: process.env.AUTH_MAIL,
+                    pass: process.env.AUTH_PASSWORD,
                 }
             });
             //mail options
@@ -23,7 +23,7 @@ module.exports = {
                 from: process.env.AUTH_EMAIL,
                 to: email,
                 subject: "Verify Your Email",
-                html: `<p> Enter <b> ${otp} <b> in the app to verify your email address and complete the signup.<p> <b>This code <b> expires in 1 hour <b> <p>`
+                html: `<p> Enter <b> ${otp} <b> in the app`
             };
 
 
@@ -49,8 +49,6 @@ module.exports = {
                 } else {
                     console.log('Email sent: ' + info.response);
                 }
-            }).then(() => {
-                console.log('mailed');
             })
         } catch (error) {
             if (error) {

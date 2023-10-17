@@ -10,6 +10,14 @@
                         <div class="card-header bg-dark">
                             <h3 class="text-center text-white">OTP Verification</h3>
                         </div>
+                        <%if(message){%>
+
+                            <div>
+                                <span class="text-danger">
+                                    <%=message.otpError %>
+                                </span>
+                            </div>
+                            <%}%>
                         <div class="card-body">
                             <form action="/otpverification" method="post">
                                 <div class="form-group text-center">

@@ -18,13 +18,13 @@
 
 
     <section>
-        <div class="container-fluid mt-5">
-            <div class="icon text-center">
+        <div class="card shadow mt-5">
+            <div class=" text-center  mt-5 me-5 mb-5">
                 <h1>Log In</h1>
             </div>
             <div class="row justify-content-center align-items-center ">
                 <div class="col-md-3 loginBorder position-relative  pe-3">
-                    <div class="orText d-none d-md-block">or</div>
+                    <div class="orText d-none d-md-block"></div>
                     <form id="loginForm" action="/login" method="post">
 
                         <% if (message) { %>
@@ -54,19 +54,18 @@
                     </form>
                 </div>
 
-                <!-- Right Div: Continue with Google -->
+                <!-- Right Div: image-->
                 <div class="col-md-3   ps-5 position-relative">
                     <div class="d-flex align-items-center justify-content-start">
-                        <img src="/images/google@2x.png" alt="" class="ms-2 position-absolute" style="height: 70%;" />
-                        <button type="button" class="btn btn-white ml-3 text-center border"
-                            style="width: -webkit-fill-available;">
-                            Sign in using Google
-                        </button>
+                        <img src="/images/logo.png" alt="" class="ms-2 position-absolute"  />
+                        
+                            
+                       
                     </div>
                 </div>
 
             </div>
-            <div class="text-center mt-3">
+            <div class="text-center m-3">
                 <a href="/signup" class="text-decoration-none text-dark">Create Account</a>
             </div>
 

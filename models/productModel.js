@@ -88,8 +88,8 @@ const procuctSchema = new mongoose.Schema({
     default: true
   },
   createdAt: {
-    type: Date,
-    default: Date.now
+    type: String,
+    
   }
 })
 

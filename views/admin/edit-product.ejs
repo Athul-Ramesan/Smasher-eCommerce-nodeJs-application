@@ -3,7 +3,7 @@
 
         <div class="container-fluid">
             <h1 class="mt-5">Edit Product</h1>
-            <form action="/admin/addproduct" method="post" enctype="multipart/form-data" class="bg-white">
+            <form action="/admin/editProduct/<%=product._id%>" method="post" enctype="multipart/form-data" class="bg-white">
                 <div class="row" style="background: linear-gradient(to top, rgb(231, 210, 210),white);">
 
                     <div class="col-md-6">
@@ -35,7 +35,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="uploaded-image">
-                                        <img src="" alt="Uploaded Image 1" id="previewImage1" class="img-fluid"
+                                        <img src="/uploads/<%= product.productImage1%>" alt="Uploaded Image 1" id="previewImage1" class="img-fluid"
                                             data-index="1">
                                         <button class="btn btn-danger btn-sm delete-image" id="delete-image1"
                                             style="display: none;" data-index="1"
@@ -44,7 +44,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="uploaded-image">
-                                        <img src="" alt="Uploaded Image 2" id="previewImage2" class="img-fluid"
+                                        <img src="/uploads/<%= product.productImage2%>" alt="Uploaded Image 2" id="previewImage2" class="img-fluid"
                                             data-index="2">
                                         <button class="btn btn-danger btn-sm delete-image ms-2" id="delete-image2"
                                             style="display: none; padding-left: 10px;" data-index="2"
@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="uploaded-image">
-                                        <img src="" alt="Uploaded Image 3" id="previewImage3" class="img-fluid"
+                                        <img src="/uploads/<%= product.productImage3%>" alt="Uploaded Image 3" id="previewImage3" class="img-fluid"
                                             data-index="3">
                                         <button class="btn btn-danger btn-sm delete-image" id="delete-image3"
                                             style="display: none;" data-index="3"
@@ -160,7 +160,7 @@
                                     <br>
                                     <label for="category">Category:</label>
                                     <select class="form-select bg-light" id="category" name="category" required>
-                                        <option value="<%=product.category._id %>" selected disabled>
+                                        <option value="<%=product.category._id %>" >
                                             <%=product.category.name %>
                                         </option>
                                         <% categories.forEach((category)=>{ %>
@@ -174,7 +174,7 @@
                                     <br>
                                     <label for="subcategory">Subcategory:</label>
                                     <select class="form-select bg-light" id="category" name="subcategory" required>
-                                        <option value="subcategory" selected disabled>
+                                        <option value="<%=product.subcategory %>" >
                                             <%=product.subcategory %>
                                         </option>
 
@@ -190,7 +190,7 @@
                                     <br>
                                     <label for="brandName">Brand Name:</label>
                                     <select name="brand" class="form-select bg-light" id="brand" required>
-                                        <option value="" selected disabled>
+                                        <option value="<%=product.brand._id %>">
                                             <%= product.brand.name %>
                                         </option>
                                         <% brands.forEach((brand)=>{ %>
@@ -206,7 +206,7 @@
                                         placeholder="Enter tags" value="<%=product.tags %>" required />
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary ms-3">Add Product</button>
+                            <button type="submit" class="btn btn-dark  " style="margin-left: 30%; margin-top: 10%; width: 40%;">Save changes</button>
                         </div>
                     </div>
                 </div>

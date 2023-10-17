@@ -1,10 +1,12 @@
 const bcrypt = require("bcrypt");
 
 const userModel = require('../models/userModel');
+const productModel = require('../models/productModel')
 const otpModel = require('../models/otpModel')
 const sendMail = require('../validators/nodeMailer')
 const generateOtp = require('../validators/generateOtp');
 const session = require("express-session");
+
 const hash = (password) => {
     try {
         return bcrypt.hash(password, 10);
@@ -19,13 +21,18 @@ module.exports = {
         res.redirect('/home')
     },
     home: async (req, res) => {
+        const products = productModel.find({})
+        if (req.session && req.session.user) {
+            res.render('user/home', { user: req.session.user, products })
+        } else {
+            res.render('user/home', { user: false })
+        }
 
-        res.render('user/home', { user: req.session.user })
 
     },
     postSignup: async (req, res) => {
         try {
-            let { name, email, password } = req.body;
+            let { name, email, password, confirmPassword } = req.body;
             name = name.trim()
             email = email.trim()
             password = password.trim()
@@ -50,11 +57,16 @@ module.exports = {
                     req.flash('userSignupError', 'user already exists')
                     res.redirect('/signup')
                 } else {
+                    if (password !== confirmPassword) {
+                        req.flash('userSignupError', 'Password do not match')
+                        res.redirect('/signup')
+                    } else {
 
-                    console.log('isnide postlogin');
-                    req.session.user = req.body
-                    console.log(req.session);
-                    res.redirect('/otpverification')
+                        req.session.user = req.body
+                        console.log(req.session);
+                        res.redirect('/otpverification')
+                    }
+
                 }
             }
 
@@ -65,11 +77,32 @@ module.exports = {
         }
     },
     getSignup: (req, res) => {
-        res.render('user/signup', { message: req.flash() })
+        try {
+            if (req.session.user) {
+                res.redirect('/home')
+            } else {
+                res.render('user/signup', { message: req.flash() })
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+
     },
 
     getLogin: async (req, res) => {
-        res.render('user/login', { message: req.flash() })
+        try {
+            if (req.session.user) {
+                res.redirect('/home')
+            } else {
+                res.render('user/login', { message: req.flash() })
+            }
+
+        } catch (error) {
+            console.log(error);
+            res.render('user/404')
+        }
+
     },
     postLogin: async (req, res) => {
         try {
@@ -93,10 +126,15 @@ module.exports = {
                         if (err) {
                             console.log(err);
                         } else if (result) {
-                            req.session.user = user;
-                            console.log(req.session.user);
+                            if (user.status === 'Active') {
+                                req.session.user = user;
 
-                            res.redirect('/home')
+                                console.log(user);
+                                res.redirect('/home')
+                            } else {
+                                req.flash('userLoginError', 'You have been blocked')
+                                res.redirect('/login')
+                            }
                         } else {
                             req.flash('userLoginError', 'Email or Password is invalid')
                             res.redirect('/login')
@@ -113,7 +151,7 @@ module.exports = {
         }
     },
     getForgotPassword: async (req, res) => {
-        res.render('user/forgot-password', { message: req.flash })
+        res.render('user/forgot-password', { message: req.flash() })
     },
     postForgotPassword: async (req, res) => {
 
@@ -123,8 +161,14 @@ module.exports = {
         if (!findUser) {
             req.flash('verifyEmailError', 'please enter a valid email')
             res.redirect('/forgotPassword')
-        } else {
+        } else if(findUser.status==='Blocked'){
+            console.log(findUser);
+            req.flash('verifyEmailError', 'Your account has been blocked !')
+            res.redirect('/forgotPassword')
+        } else{
+            
             req.session.userEmail = email
+            console.log(req.session);
             res.redirect('/otpVerificationPassword')
         }
     },
@@ -135,21 +179,86 @@ module.exports = {
         console.log(email);
         console.log("otp :", generatedOtp);
 
-        res.render('user/otp-verification-password')
+        res.render('user/otp-verification-password',{message:req.flash()})
     },
     postOtpVerificationPassword: async (req, res) => {
-        console.log('postotp');
-        console.log(req.session.userEmail);
-        const generatedOtp = await otpModel.findOne({ userEmail: req.session.userEmail })
-        const enteredOtp = req.body.otp;
-        console.log(enteredOtp, generatedOtp.otp);
+        try {
+            console.log('postotp');
+            console.log(req.session.userEmail);
+            const generatedOtp = await otpModel.findOne({ userEmail: req.session.userEmail })
+            const enteredOtp = req.body.otp;
 
-        if (generatedOtp.otp === enteredOtp) {
-            res.redirect('/home')
+            console.log(enteredOtp, generatedOtp.otp);
+
+            if (generatedOtp.otp === enteredOtp) {
+
+                res.redirect('/setNewPassword')
+            }else if(generatedOtp.otp !== enteredOtp){
+
+                req.flash('otpError','Failed to match otp')
+                res.redirect('/otpVerificationPassword')
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    getSetNewPassword: (req, res) => {
+        try {
+            res.render('user/new-password', { message: req.flash() })
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    postSetNewPassword: async (req, res) => {
+
+        try {
+            const { oldPassword, newPassword, confirmPassword } = req.body
+            const email = req.session.userEmail
+            const user = await userModel.findOne({ email: email })
+
+            console.log(user);
+
+            await bcrypt.compare(oldPassword, user.password, async (error, result) => {
+                if (error) {
+
+                    console.log(error);
+
+                } else if (result) {
+                    if (newPassword === confirmPassword) {
+                        const hashedNewPassword = await bcrypt.hash(newPassword, 10)
+                        await userModel.findOneAndUpdate({ email: email }, { password: hashedNewPassword })
+
+
+
+                        req.session.user = user
+                        console.log(req.session);
+                        res.redirect('/home')
+                    } else {
+                        req.flash("newPasswordError", "Password matching failed")
+                        res.redirect('/setNewPassword')
+                    }
+
+                } else {
+                    req.flash("newPasswordError", "incorrect old password")
+                    res.redirect('/setNewPassword')
+                }
+            })
+
+        } catch (error) {
+            console.log(error);
         }
     },
 
+    getResendOtpPassword: async (req, res) => {
+        const generatedOtp = await generateOtp();
+        console.log(req.session);
+        const email = req.session.userEmail
+        sendMail.sendOtpVerificationEmail(generatedOtp, email);
+        console.log(email);
+        console.log("otp :", generatedOtp);
 
+        res.render('user/otp-verification-password')
+    },
     getSendOtp: async (req, res) => {
 
         const generatedOtp = await generateOtp();
@@ -158,29 +267,40 @@ module.exports = {
         console.log(email);
         console.log("otp :", generatedOtp);
 
-        res.render('otp-verification')
+        res.render('otp-verification',{message:req.flash()})
 
     },
     postSendOtp: async (req, res) => {
-        console.log('postLogin');
-        console.log(req.session.user);
-        const generatedOtp = await otpModel.findOne({ userEmail: req.session.user.email })
-        const enteredOtp = req.body.otp;
-        console.log(enteredOtp, generatedOtp);
+        try {
+            const generatedOtp = await otpModel.findOne({ userEmail: req.session.user.email })
+            const enteredOtp = req.body.otp;
+            console.log(enteredOtp, generatedOtp);
 
-        if (generatedOtp.otp === enteredOtp) {
-            const user = req.session.user
+            if (generatedOtp.otp === enteredOtp) {
+                const user = req.session.user
+                console.log('req.session before signup ', req.session);
+                const hashedPassword = await hash(user.password);
 
-            const hashedPassword = await hash(user.password);
+                await userModel.create({ name: user.name, email: user.email, password: hashedPassword })
 
-            await userModel.create({ name: user.name, email: user.email, password: hashedPassword })
-            req.session.authUser = true
-            res.redirect('/home')
+                const newUser = await userModel.findOne({ email: user.email })
+                req.session.user = newUser
+
+                res.redirect('/home')
+            }else if(generatedOtp.otp !== enteredOtp){
+                req.flash('otpError','Failed to match otp')
+                res.redirect('/otpverification')
+            }
+        } catch (error) {
+            console.log(error);
         }
+
+
     },
 
     getLogout: (req, res) => {
-        req.session.destroy();
+        req.session.user = null;
+        req.session.userId = null;
         res.redirect('/home')
     }
 }

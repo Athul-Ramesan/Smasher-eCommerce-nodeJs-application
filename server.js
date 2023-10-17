@@ -7,7 +7,9 @@ const dbConnect = require('./config/dbConnect')
 const userRouter = require('./routes/user')
 const adminRouter = require('./routes/admin')
 const session = require("express-session")
-const flash = require('express-flash')
+const flash = require('express-flash');
+const nocache = require('nocache');
+const logger = require('morgan')
 
 
 /// env variable or constants
@@ -17,6 +19,7 @@ env.config();
 
 dbConnect()
 
+app.use(logger("dev"));
 // app.use(express.json());
 app.use(urlencoded({ extended: true }))
 app.use(express.static('public'))
@@ -26,10 +29,12 @@ app.set('views', path.join(__dirname, 'views'))
 
 
 app.use(session({
-  secret: 'your-secret-key',
+  secret: 'your-secret-key', 
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: { maxAge: 3600000 } //1 hr
 }));
+app.use(nocache())
 
 app.use(flash())
 
