@@ -1,6 +1,6 @@
 const brandModel = require('../models/brandModel')
 
-module.exports ={
+module.exports = {
     postAdminAddBrand: async (req, res) => {
         try {
 
@@ -17,10 +17,10 @@ module.exports ={
     getAdminEditBrand: async (req, res) => {
         try {
             const brandId = req.params.id
-            
-            const brand = await brandModel.findOne({_id:brandId})
+
+            const brand = await brandModel.findOne({ _id: brandId })
             console.log(brand);
-            res.render('admin/edit-brand',{brand})
+            res.render('admin/edit-brand', { brand })
 
         } catch (error) {
             console.log(error);
@@ -29,7 +29,7 @@ module.exports ={
     },
     postAdminEditBrand: async (req, res) => {
         try {
-            const  brandId = req.params.id;
+            const brandId = req.params.id;
             console.log(brandId);
             await brandModel.findOneAndUpdate({ _id: brandId }, { name: req.body.name })
             res.redirect('/admin/categoriesAndBrands')

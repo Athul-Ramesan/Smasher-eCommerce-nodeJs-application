@@ -152,6 +152,7 @@
                 font-weight: 700;
             }
 
+
             @media screen and (max-width:990px) {
                 .product-grid {
                     margin: 0 0 30px;
@@ -171,11 +172,23 @@
                                             <img class="pic-1" src="/uploads/<%=product.productImage1 %>">
                                             <img class="pic-2" src="/uploads/<%=product.productImage2 %>">
                                         </a>
-                                        <ul class="product-links">
-                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                            <li><a href="#"><i class="far fa-heart"></i></a></li>
+                                        <% if(user) { %>
+                                            <ul class="product-links">
+                                                <li><a class="add-to-cart-button"
+                                                        onclick="addToCart('<%= product._id%>','<%=product.name%>')"><i
+                                                            class="fa fa-shopping-cart"></i></a></li>
+                                                <li><a><i class="far fa-heart"></i></a></li>
+                                            </ul>
+                                            <%}else{ %>
+                                                <ul class="product-links">
+                                                    <li><a class="add-to-cart-button" onload="redirectToLoginPage()"><i
+                                                                class="fa fa-shopping-cart"></i></a></li>
+                                                    <li><a onclick="redirectToLoginPage()"><i
+                                                                class="far fa-heart"></i></a></li>
 
-                                        </ul>
+                                                </ul>
+                                                <%} %>
+
                                     </div>
                                     <div class="product-content">
                                         <ul class="rating">
@@ -193,13 +206,70 @@
                                     </div>
                                 </div>
                             </div>
-                        <%} %>
-                    <% }) %>
+                            <%} %>
+                                <% }) %>
 
-                <%} %>
+                                    <%} %>
             </div>
 
         </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+
+            async function addToCart(id, name) {
+                console.log(id);
+                const requestOptions = {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+
+                }
+                fetch(`/addToCart/${id}`, requestOptions)
+                    .then(response => response.json())
+                    .then(data => {
+                    
+                        
+                        swal(name, 'is added to cart', 'success')
+                        const cartCountElement = document.getElementById('cart-count');
+                        if (cartCountElement) {
+                            cartCountElement.textContent = data.cartCount;
+                           
+                        } 
+                        
+
+
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        swal("Cannot add item to cart", "Kindly try after sometime.");
+                    })
+
+            }
+
+            function redirectToLoginPage() {
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'You must be logged in to access this feature.',
+                    icon: 'info',
+                    iconColor: 'black',
+                    confirmButtonColor: 'black',
+                    showCancelButton: true,
+                    confirmButtonText: 'Go to Login Page',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true, // Reverses the order of the buttons
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect to the login page when the "Go to Login Page" button is clicked
+                        window.location.href = '/login'; // Replace '/login' with your actual login page URL
+                    }
+                });
+            }
+
+
+
+
+
+        </script>
 
         <%- include ('../partials/userFooter') %>
             <%- include ('../layouts/footer') %>

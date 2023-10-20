@@ -13,27 +13,27 @@ module.exports = {
     },
     verifyUser: async (req, res, next) => {
         try {
-            
-        const products = await productModel.find({})
-        if (req.session && req.session.user) {
-            const user = await userModel.findOne({ _id: req.session.user._id })
-            if (user.status === 'Blocked') {
-                req.session.user = null;
-                req.session.userId=null
+
+            const products = await productModel.find({})
+            if (req.session && req.session.user) {
+                const user = await userModel.findOne({ _id: req.session.user._id })
+                if (user.status === 'Blocked') {
+                    req.session.user = null;
+                    req.session.userId = null
+                    next()
+                } else {
+                    next();
+                }
+
+            } else {
+                req.session.user = false;
+                req.session.userId = null
                 next()
-            }else{
-                next();
             }
-            
-        } else {
-            req.session.user = false;
-            req.session.userId=null
-            next()
-        }
         } catch (error) {
             console.log(error);
         }
-        
+
 
     }
 }

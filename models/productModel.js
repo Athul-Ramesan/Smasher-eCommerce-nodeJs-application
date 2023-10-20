@@ -89,7 +89,7 @@ const procuctSchema = new mongoose.Schema({
   },
   createdAt: {
     type: String,
-    
+
   }
 })
 

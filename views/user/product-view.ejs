@@ -134,9 +134,15 @@
                     </div>
                   </div>
                 </div>
-                <a href="#" class="btn btn-outline-warning text-dark  shadow-0"> Add to wishlist </a>
-                <a href="#" class="btn btn-primary shadow-0"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart
+                <%if(user){ %>
+                <a onclick="addToCart('<%=product._id%>','<%=product.name%>')" class="btn btn-primary shadow-0"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart
                 </a>
+                <a  href="#" class="btn btn-outline-warning text-dark  shadow-0"> Add to wishlist </a>
+                <% }else{ %>
+                  <a  onclick="redirectToLoginPage()" class="btn btn-outline-warning text-dark  shadow-0"> Add to wishlist </a>
+                  <a onclick="redirectToLoginPage()" class="btn btn-primary shadow-0"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart
+                  </a>
+                  <% } %>
                 <!-- <a href="#" class="btn btn-light border border-secondary py-2 icon-hover px-3"> <i class="me-1 fa fa-heart fa-lg"></i> Save </a> -->
             </div>
             </main>
@@ -315,7 +321,9 @@
 
         <% } %>
       </section>
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
       <!-- Footer -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script>
         var options = {
           width: 400,
@@ -324,8 +332,55 @@
         };
         new ImageZoom(document.getElementById("img-container"), options);
 
+        async function addToCart(id, name) {
+                console.log(id);
+                const requestOptions = {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+
+                }
+                fetch(`/addToCart/${id}`, requestOptions)
+                    .then(response => response.json())
+                    .then(data => {
+                    
+
+                        swal(name, 'is added to cart', 'success')
+                        const cartCountElement = document.getElementById('cart-count');
+                        if (cartCountElement) {
+                            cartCountElement.textContent = data.cartCount;
+                        }
+
+
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        swal("Cannot add item to cart", "Kindly try after sometime.");
+                    })
+
+            }
+            function redirectToLoginPage() {
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'You must be logged in to access this feature.',
+                    icon: 'info',
+                    iconColor: 'black',
+                    confirmButtonColor: 'black',
+                    showCancelButton: true,
+                    confirmButtonText: 'Go to Login Page',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true, // Reverses the order of the buttons
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect to the login page when the "Go to Login Page" button is clicked
+                        window.location.href = '/login'; // Replace '/login' with your actual login page URL
+                    }
+                });
+            }
+     
+
       </script>
 
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     </section>
 
     <%- include ('../partials/userFooter') %>

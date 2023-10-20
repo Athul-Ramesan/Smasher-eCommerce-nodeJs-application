@@ -59,6 +59,10 @@
                             </div>
                           </div>
                         </div>
+                        <a class="btn btn-primary" id="show_password">
+                          Show
+                        </a>
+
                         <div class="ms-5">
                           <label class="form-label" for="form3Example4cd">Repeat your password</label>
                         </div>
@@ -89,6 +93,18 @@
       </div>
     </div>
     <script>
+      $(document).ready(function(){
+        $('#show_password').on('click',function(){
+          const passwordField = $('#password');
+          const passwordFiledType = passwordField.attr('type');
+          if(passwordFiledType== 'password'){
+            passwordField.attr('type','text')
+          }else{
+            passwordField.attr('type','password');
+            $(this).text('Hide')
+          }
+        })
+      })
       document.addEventListener('DOMContentLoaded', function () {
         const confirmPasswordInput = document.getElementById('confirm-password');
         const passwordMessage = document.getElementById('password-message');

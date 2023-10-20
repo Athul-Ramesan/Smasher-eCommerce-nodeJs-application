@@ -1,8 +1,10 @@
 const productModel = require('../models/productModel')
 const categoryModel = require('../models/categoryModel')
+const  cartModel = require('../models/cartModel')
 const brandModel = require('../models/brandModel')
 const { CATEGORY, BRAND } = require('../utils/constants/schemaName')
 const moment = require('moment')
+
 
 module.exports = {
 
@@ -20,7 +22,7 @@ module.exports = {
         try {
             const categories = await categoryModel.find({})
             const brands = await brandModel.find({})
-            
+
             res.render('admin/add-product', { categories, brands })
         } catch (error) {
             console.log(error);
@@ -42,7 +44,7 @@ module.exports = {
                 brand,
                 tags
             } = req.body
-            
+
 
             const image1 = req.files['productImage1'][0].filename
             const image2 = req.files['productImage2'][0].filename
@@ -64,7 +66,7 @@ module.exports = {
                 discountAmount: discountAmount,
                 brand: brand,
                 tags: tags,
-                createdAt : moment(new Date()).format('MMMM Do YYYY, h:mm:ss a')
+                createdAt: moment(new Date()).format('MMMM Do YYYY, h:mm:ss a')
             });
             await newProduct.save()
                 .then(savedProduct => {
@@ -86,7 +88,7 @@ module.exports = {
     },
     getAdminEditProduct: async (req, res) => {
         try {
-            
+
             const id = req.params.id
             const product = await productModel
                 .findOne({ _id: id })
@@ -94,7 +96,7 @@ module.exports = {
                 .populate(BRAND)
 
 
-            
+
             const categories = await categoryModel.find({});
             const brands = await brandModel.find({})
             res.render('admin/edit-product', { product, brands, categories })
@@ -102,10 +104,10 @@ module.exports = {
             console.log(error);
         }
     },
-    
-    postAdminEditProduct : async(req,res)=>{
+
+    postAdminEditProduct: async (req, res) => {
         try {
-            const productId= req.params.id
+            const productId = req.params.id
             const {
                 productName,
                 description,
@@ -119,43 +121,45 @@ module.exports = {
                 brand,
                 tags
             } = req.body
-           
-           
+
+
             const image1 = req.files['productImage1'][0].filename
             const image2 = req.files['productImage2'][0].filename
             const image3 = req.files['productImage3'][0].filename
 
 
-            await productModel.findOneAndUpdate({_id:productId},
-                {$set: {
-                    name: productName,
-                productImage1: image1,
-                productImage2: image2,
-                productImage3: image3,
-                description: description,
-                details: details,
-                category: category,
-                specificatios: specification,
-                subcategory: subcategory,
-                stock: stock,
-                price: price,
-                discountAmount: discountAmount,
-                brand: brand,
-                tags: tags,
-                createdAt : moment(new Date()).format('MMMM Do YYYY, h:mm:ss a')
+            await productModel.findOneAndUpdate({ _id: productId },
+                {
+                    $set: {
+                        name: productName,
+                        productImage1: image1,
+                        productImage2: image2,
+                        productImage3: image3,
+                        description: description,
+                        details: details,
+                        category: category,
+                        specificatios: specification,
+                        subcategory: subcategory,
+                        stock: stock,
+                        price: price,
+                        discountAmount: discountAmount,
+                        brand: brand,
+                        tags: tags,
+                        createdAt: moment(new Date()).format('MMMM Do YYYY, h:mm:ss a')
 
-            }})
-            
-            
+                    }
+                })
+
+
 
             res.redirect('/admin/products')
 
-          
+
         } catch (error) {
             console.log(error);
         }
-        
-       
+
+
     },
 
     getAdminHideProduct: async (req, res) => {
@@ -180,19 +184,27 @@ module.exports = {
     },
     getProductView: async (req, res) => {
         try {
+            const cart = await cartModel.findOne()
             const productId = req.params.id;
             const product = await productModel.findOne({ _id: productId }).populate('brand')
             console.log(product);
-            res.render('user/product-view', { user: req.session.user, product })
+            res.render('user/product-view', { user: req.session.user, product,cart,wishlist:false })
         } catch (error) {
             console.log(error);
         }
     },
     getShopProduct: async (req, res) => {
         try {
+           
             const products = await productModel.find()
-            
-            res.render('user/shop-product', { products, user: req.session.user })
+           
+            if(req.session.user){
+                const cart = await cartModel.findOne({userId: req.session.user._id})
+                res.render('user/shop-product', { products, user: req.session.user,cart ,wishlist:false })
+            }else{
+                res.render('user/shop-product', { products, user: req.session.user,cart:false ,wishlist:false })
+            }
+           
         } catch (error) {
             console.log(error);
         }

@@ -4,7 +4,9 @@ const schemaName = {
     PRODUCT: 'product',
     CATEGORY: 'category',
     SUBCATEGORY: 'subcategory',
-    BRAND: 'brand'
+    BRAND: 'brand',
+    CART : 'cart'
+
 }
 
 module.exports = schemaName

@@ -14,23 +14,23 @@ module.exports = {
         console.log(req.session);
         res.render('admin/dashboard', { message: req.flash(), admin: true })
     },
-    
+
     getAdminLogin: async (req, res) => {
         try {
-            if(req.session.adminId){
+            if (req.session.adminId) {
                 res.redirect('/admin/dashboard')
-            }else{
+            } else {
                 res.render('admin/admin-login', { message: req.flash() })
             }
-            
+
         } catch (error) {
-            
+
         }
-        
+
     },
     postAdminLogin: async (req, res) => {
         try {
-            
+
             const admin = await adminModel.findOne({ email: req.body.email })
             if (!admin) {
                 req.flash('adminLoginError', 'User name or password is incorrect')
@@ -40,10 +40,10 @@ module.exports = {
                     req.flash('adminLoginError', 'User name or password is incorrect')
                     res.redirect('/admin/login')
                 } else {
-                   
+
                     const adminId = admin._id;
                     req.session.adminId = adminId
-                  
+
                     res.redirect('/admin/dashboard')
                 }
 
@@ -68,37 +68,8 @@ module.exports = {
 
 
 
-    getAdminCategoriesAndBrands: async (req, res) => {
-        try {
-
-            const categories = await categoryModel.find({})
-            const brands = await brandModel.find({})
-
-
-            res.render('admin/categories', { categories, brands, message: req.flash() })
-        } catch (error) {
-            console.log(error);
-        }
-
-    },
-    getAdminAddCategory: (req, res) => {
-
-        res.render('admin/add-category')
-    },
-    postAdminAddCategory: async (req, res) => {
-        try {
-            console.log(req.body.category);
-            const newCategory = new categoryModel({
-                name: req.body.category
-            })
-            await newCategory.save();
-            req.flash('categoryMessage', "New category added succesfully")
-            res.redirect('/admin/categoriesAndBrands')
-        } catch (error) {
-            console.log(error);
-        }
-
-    },
+    
+    
 
 
     getCustomers: async (req, res) => {
@@ -154,7 +125,7 @@ module.exports = {
     },
     getAdminLogout: async (req, res) => {
         try {
-            req.session.adminId=null
+            req.session.adminId = null
             res.redirect('/admin/login')
         } catch (error) {
             console.log(error);

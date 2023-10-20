@@ -9,13 +9,13 @@ const brandController = require('../controller/brandController')
 
 
 router.get('/', adminController.adminLandingPage)
-router.get('/dashboard',auth.verifyAdmin, adminController.getAdminDashboard)
+router.get('/dashboard', auth.verifyAdmin, adminController.getAdminDashboard)
 router.get('/login', adminController.getAdminLogin)
 router.post('/login', adminController.postAdminLogin)
 
-router.get('/products',auth.verifyAdmin, productController.getAdminProduct)
+router.get('/products', auth.verifyAdmin, productController.getAdminProduct)
 
-router.get('/addProduct',auth.verifyAdmin, productController.getAdminAddProdcuct)
+router.get('/addProduct', auth.verifyAdmin, productController.getAdminAddProdcuct)
 
 router.post('/addproduct', upload.fields([
     { name: "productImage1", maxCount: 1 },
@@ -23,33 +23,33 @@ router.post('/addproduct', upload.fields([
     { name: "productImage3", maxCount: 1 }
 ]), productController.postAdminAddProduct)
 
-router.get('/editProduct/:id',auth.verifyAdmin, productController.getAdminEditProduct)
+router.get('/editProduct/:id', auth.verifyAdmin, productController.getAdminEditProduct)
 
-router.post('/editProduct/:id',upload.fields([
+router.post('/editProduct/:id', upload.fields([
     { name: "productImage1", maxCount: 1 },
     { name: "productImage2", maxCount: 1 },
     { name: "productImage3", maxCount: 1 }
-]),productController.postAdminEditProduct)
+]), productController.postAdminEditProduct)
 
-router.get('/hideProduct/:id',auth.verifyAdmin, productController.getAdminHideProduct)
+router.get('/hideProduct/:id', auth.verifyAdmin, productController.getAdminHideProduct)
 
-router.get('/categoriesAndBrands',auth.verifyAdmin, adminController.getAdminCategoriesAndBrands)
+router.get('/categoriesAndBrands', auth.verifyAdmin, categoryController.getAdminCategoriesAndBrands)
 
 
-router.post('/addCategory', adminController.postAdminAddCategory)
+router.post('/addCategory', categoryController.postAdminAddCategory)
 
 
 router.post('/addBrand', brandController.postAdminAddBrand)
 
-router.get('/editBrand/:id',auth.verifyAdmin, brandController.getAdminEditBrand)
+router.get('/editBrand/:id', auth.verifyAdmin, brandController.getAdminEditBrand)
 router.post('/editBrand/:id', brandController.postAdminEditBrand)
 
-router.get('/editCategory/:id',auth.verifyAdmin, categoryController.getAdminEditCategory)
+router.get('/editCategory/:id', auth.verifyAdmin, categoryController.getAdminEditCategory)
 router.post('/editCategory/:id', categoryController.postAdminEditCategory)
 
 
-router.get('/customers',auth.verifyAdmin, adminController.getCustomers)
-router.get('/blockUser/:id',auth.verifyAdmin, adminController.getAdminBlockUser)
+router.get('/customers', auth.verifyAdmin, adminController.getCustomers)
+router.get('/blockUser/:id', auth.verifyAdmin, adminController.getAdminBlockUser)
 
 router.get('/logout', adminController.getAdminLogout)
 module.exports = router

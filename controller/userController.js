@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const userModel = require('../models/userModel');
 const productModel = require('../models/productModel')
 const otpModel = require('../models/otpModel')
+const cartModel = require('../models/cartModel')
 const sendMail = require('../validators/nodeMailer')
 const generateOtp = require('../validators/generateOtp');
 const session = require("express-session");
@@ -21,9 +22,14 @@ module.exports = {
         res.redirect('/home')
     },
     home: async (req, res) => {
-        const products = productModel.find({})
+        const products =await productModel.find({});
+      
         if (req.session && req.session.user) {
-            res.render('user/home', { user: req.session.user, products })
+           
+            const id = req.session.user._id
+            const cart =await cartModel.findOne({userId : id})
+            console.log(cart,'cart');
+            res.render('user/home', { user: req.session.user, products, cart, wishlist:false });
         } else {
             res.render('user/home', { user: false })
         }
@@ -161,12 +167,12 @@ module.exports = {
         if (!findUser) {
             req.flash('verifyEmailError', 'please enter a valid email')
             res.redirect('/forgotPassword')
-        } else if(findUser.status==='Blocked'){
+        } else if (findUser.status === 'Blocked') {
             console.log(findUser);
             req.flash('verifyEmailError', 'Your account has been blocked !')
             res.redirect('/forgotPassword')
-        } else{
-            
+        } else {
+
             req.session.userEmail = email
             console.log(req.session);
             res.redirect('/otpVerificationPassword')
@@ -179,7 +185,7 @@ module.exports = {
         console.log(email);
         console.log("otp :", generatedOtp);
 
-        res.render('user/otp-verification-password',{message:req.flash()})
+        res.render('user/otp-verification-password', { message: req.flash() })
     },
     postOtpVerificationPassword: async (req, res) => {
         try {
@@ -193,9 +199,9 @@ module.exports = {
             if (generatedOtp.otp === enteredOtp) {
 
                 res.redirect('/setNewPassword')
-            }else if(generatedOtp.otp !== enteredOtp){
+            } else if (generatedOtp.otp !== enteredOtp) {
 
-                req.flash('otpError','Failed to match otp')
+                req.flash('otpError', 'Failed to match otp')
                 res.redirect('/otpVerificationPassword')
             }
         } catch (error) {
@@ -212,37 +218,26 @@ module.exports = {
     postSetNewPassword: async (req, res) => {
 
         try {
-            const { oldPassword, newPassword, confirmPassword } = req.body
+            const { newPassword, confirmPassword } = req.body
             const email = req.session.userEmail
             const user = await userModel.findOne({ email: email })
 
             console.log(user);
 
-            await bcrypt.compare(oldPassword, user.password, async (error, result) => {
-                if (error) {
 
-                    console.log(error);
+            if (newPassword === confirmPassword) {
+                const hashedNewPassword = await bcrypt.hash(newPassword, 10)
+                await userModel.findOneAndUpdate({ email: email }, { password: hashedNewPassword })
 
-                } else if (result) {
-                    if (newPassword === confirmPassword) {
-                        const hashedNewPassword = await bcrypt.hash(newPassword, 10)
-                        await userModel.findOneAndUpdate({ email: email }, { password: hashedNewPassword })
+                req.session.user = user
+                console.log(req.session);
+                res.redirect('/home')
+            } else {
+                req.flash("newPasswordError", "Password matching failed")
+                res.redirect('/setNewPassword')
+            }
 
 
-
-                        req.session.user = user
-                        console.log(req.session);
-                        res.redirect('/home')
-                    } else {
-                        req.flash("newPasswordError", "Password matching failed")
-                        res.redirect('/setNewPassword')
-                    }
-
-                } else {
-                    req.flash("newPasswordError", "incorrect old password")
-                    res.redirect('/setNewPassword')
-                }
-            })
 
         } catch (error) {
             console.log(error);
@@ -267,7 +262,7 @@ module.exports = {
         console.log(email);
         console.log("otp :", generatedOtp);
 
-        res.render('otp-verification',{message:req.flash()})
+        res.render('otp-verification', { message: req.flash() })
 
     },
     postSendOtp: async (req, res) => {
@@ -287,8 +282,8 @@ module.exports = {
                 req.session.user = newUser
 
                 res.redirect('/home')
-            }else if(generatedOtp.otp !== enteredOtp){
-                req.flash('otpError','Failed to match otp')
+            } else if (generatedOtp.otp !== enteredOtp) {
+                req.flash('otpError', 'Failed to match otp')
                 res.redirect('/otpverification')
             }
         } catch (error) {
