@@ -5,7 +5,9 @@ const schemaName = {
     CATEGORY: 'category',
     SUBCATEGORY: 'subcategory',
     BRAND: 'brand',
-    CART : 'cart'
+    CART : 'cart',
+    ADDRESS : 'address',
+    ORDER : 'order'
 
 }
 

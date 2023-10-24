@@ -1,5 +1,5 @@
 <%- include ('../layouts/header') %>
-    <%- include ('../partials/userHeader') %>
+<%- include ('../partials/userHeader') %>
 
         <style>
             .product-grid {
@@ -159,6 +159,7 @@
                 }
             }
         </style>
+        
         <div class="container">
             <div class="row">
 
@@ -181,13 +182,13 @@
                                             </ul>
                                             <%}else{ %>
                                                 <ul class="product-links">
-                                                    <li><a class="add-to-cart-button" onload="redirectToLoginPage()"><i
+                                                    <li><a class="add-to-cart-button" onclick="redirectToLoginPage()"><i
                                                                 class="fa fa-shopping-cart"></i></a></li>
                                                     <li><a onclick="redirectToLoginPage()"><i
                                                                 class="far fa-heart"></i></a></li>
 
                                                 </ul>
-                                                <%} %>
+                                                <% } %>
 
                                     </div>
                                     <div class="product-content">
@@ -220,7 +221,7 @@
             async function addToCart(id, name) {
                 console.log(id);
                 const requestOptions = {
-                    method: 'GET',
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
 
                 }

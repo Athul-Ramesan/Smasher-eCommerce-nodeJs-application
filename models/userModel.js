@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
     status: {
         type: String,
         default: "Active"
+    },
+    mobile: {
+        type: Number
+
     }
 }, { timestamps: true });
 

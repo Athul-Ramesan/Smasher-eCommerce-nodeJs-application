@@ -4,9 +4,13 @@ const userModel = require('../models/userModel');
 const productModel = require('../models/productModel')
 const otpModel = require('../models/otpModel')
 const cartModel = require('../models/cartModel')
+const otpService = require('../services/otpService')
 const sendMail = require('../validators/nodeMailer')
+
 const generateOtp = require('../validators/generateOtp');
 const session = require("express-session");
+
+const user = require("../models/userModel");
 
 const hash = (password) => {
     try {
@@ -69,7 +73,9 @@ module.exports = {
                     } else {
 
                         req.session.user = req.body
-                        console.log(req.session);
+
+                        await otpService.sendOtp(req.session.user.email)
+                        
                         res.redirect('/otpverification')
                     }
 
@@ -156,12 +162,12 @@ module.exports = {
             }
         }
     },
-    getForgotPassword: async (req, res) => {
-        res.render('user/forgot-password', { message: req.flash() })
+    getVerifyEmail: async (req, res) => {
+        res.render('user/verify-email', { message: req.flash() })
     },
-    postForgotPassword: async (req, res) => {
-
-        const email = req.body.email;
+    postVerifyEmail: async (req, res) => {
+        try {
+            const email = req.body.email;
         console.log(email);
         const findUser = await userModel.findOne({ email: email })
         if (!findUser) {
@@ -175,17 +181,23 @@ module.exports = {
 
             req.session.userEmail = email
             console.log(req.session);
+            otpService.sendOtp(req.session.userEmail)
             res.redirect('/otpVerificationPassword')
         }
+            
+        } catch (error) {
+            console.log(error);
+        }
+        
     },
     getOtpVerificationPassword: async (req, res) => {
-        const generatedOtp = await generateOtp();
-        const email = req.session.userEmail
-        sendMail.sendOtpVerificationEmail(generatedOtp, email);
-        console.log(email);
-        console.log("otp :", generatedOtp);
+        try {
+            res.render('user/otp-verification-password', { message: req.flash() })
+        } catch (error) {
+            console.log(error);
+        }
 
-        res.render('user/otp-verification-password', { message: req.flash() })
+        
     },
     postOtpVerificationPassword: async (req, res) => {
         try {
@@ -244,28 +256,26 @@ module.exports = {
         }
     },
 
-    getResendOtpPassword: async (req, res) => {
-        const generatedOtp = await generateOtp();
-        console.log(req.session);
-        const email = req.session.userEmail
-        sendMail.sendOtpVerificationEmail(generatedOtp, email);
-        console.log(email);
-        console.log("otp :", generatedOtp);
-
-        res.render('user/otp-verification-password')
+    resendOtp :async (req,res)=>{
+        try {
+            const email = req.session.user.email
+            await otpService.sendOtp(email);
+            res.redirect('/otpverification');
+        } catch (error) {
+            console.log(error);
+        }
     },
-    getSendOtp: async (req, res) => {
-
-        const generatedOtp = await generateOtp();
-        const email = req.session.user.email
-        sendMail.sendOtpVerificationEmail(generatedOtp, email);
-        console.log(email);
-        console.log("otp :", generatedOtp);
-
+    getVerifyOtp: async (req, res) => {
+        try {
+            
         res.render('otp-verification', { message: req.flash() })
+        } catch (error) {
+            console.log(error);
+        }
+        
 
     },
-    postSendOtp: async (req, res) => {
+    postVerifyOtp: async (req, res) => {
         try {
             const generatedOtp = await otpModel.findOne({ userEmail: req.session.user.email })
             const enteredOtp = req.body.otp;
@@ -291,6 +301,64 @@ module.exports = {
         }
 
 
+    },
+
+    getProfile:async (req,res)=>{
+        try {
+            const user =await userModel.findOne({email: req.session.user.email});
+            const cart = await cartModel.findOne({userId: req.session.user._id})
+            res.render('user/profile',{user,cart,wishlist:false})
+
+        } catch (error) {
+            console.log(error);
+        }
+        
+    },
+    postChangePassword :async(req,res)=>{
+        try {
+            const {currentPassword, newPassword,confirmPassword} = req.body;
+            
+        const user = await userModel.findOne({_id: req.session.user._id});
+
+        console.log(user,'user');
+
+        const storedPassword = user.password;
+
+        const match = await bcrypt.compare(currentPassword,storedPassword)
+           
+        if(match){
+            if(newPassword === confirmPassword){
+                const checkNewPassword = await bcrypt.compare (newPassword,storedPassword)
+                if(checkNewPassword){
+                    res.json({error: 'Your current password and new password are same'})
+                }else{
+                    const password =await bcrypt.hash(newPassword,10);
+                    console.log(password);
+                    await userModel.findOneAndUpdate({_id: req.session.user._id},{password :password})
+                    console.log(res);
+                    res.json({success: true})
+                }
+                
+            }else{
+                res.json({error: 'Both new password and confrim password must be same'})
+            }
+           
+        }else{
+            res.json({error: 'Current password must be valid'})
+        }     
+
+        } catch (error) {
+            console.log(error);
+        }
+        
+    },
+    
+    checkout : async(req,res)=>{
+        try {
+            res.render ('user/checkout',{user:true,cart:true,wishlist:false})
+        } catch (error) {
+            console.log(error);
+        }
     },
 
     getLogout: (req, res) => {

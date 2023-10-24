@@ -1,0 +1,92 @@
+<%- include ('../layouts/header') %>
+<%- include ('../partials/userHeader') %>
+
+<style>
+
+.checkout .form-control{
+    border-radius: 0px !important;
+}
+.checkout .form-control:focus{
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+}
+.checkout .nav-link{
+    border: 1px solid #000;
+    border-radius: 0px;
+    margin-bottom: 8px;
+}
+.checkout .tab-content{
+    padding-right: 10px;
+}
+
+</style>
+
+<div class="py-3 py-md-4 checkout">
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <h4>Shipping Addresses</h4>
+            <a href="/addAddress" class="btn-lg btn btn-outline-success"><i class="fa-sharp fa-solid fa-plus"></i>Add new address</a>
+        </div>
+        
+        <hr>
+
+        <div class="row">
+            <%if(addresses){ %>
+                <%addresses.forEach((address,index)=>{ %>
+
+                
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 g-2 shadow">
+                        <div class="card">
+                            <!-- Card Header -->
+                            <div class=" d-flex justify-content-between align-items-center">
+                                <h5 class="card-title text-muted m-2 ps-2">Address No.<%=index+1 %></h5>
+                                
+
+                                
+                                <!-- Dropdown menu -->
+                                <div class="dropdown">
+                                    <button class="btn btn-link" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="#">Edit</a>
+                                        <a class="dropdown-item" href="#">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card content -->
+                            <hr>
+                            <div class="card-body">
+                                <div class="d-flex">
+                                    <span class="m-1 font-weight-bold text-uppercase"> <%=address.name %>,  </span>   
+                                </div>
+                                <span class="m-1 font-weight-bold text-uppercase"><%=address.mobile %> </span> 
+                                <div class="d-flex">
+                                    <span class="m-1 font-weight-bold text-uppercase"> <%=address.houseName %></span>
+                                    <span class="m-1 font-weight-bold text-uppercase"><%=address.locapty %> </span>
+                                    <span class="m-1 font-weight-bold text-uppercase"> <%=address.pincode %> </span>
+                                </div>
+                                <div class="d-flex">
+                                    <span class="m-1 font-weight-bold text-uppercase"><%=address.district %> </span>
+                                    <span class="m-1 font-weight-bold text-uppercase"><%=address.state %> </span>
+                                </div>    
+         
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                
+            </div>
+            <% }) %>
+        <% }%>
+
+        </div>
+    </div>
+</div>
+
+
+<%- include ('../partials/userFooter') %>
+<%- include ('../layouts/footer') %>

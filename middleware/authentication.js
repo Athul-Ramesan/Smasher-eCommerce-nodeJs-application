@@ -35,6 +35,27 @@ module.exports = {
         }
 
 
+    },
+    auth :async(req,res,next)=>{
+        try {
+            if (req.session && req.session.user) {
+                const user = await userModel.findOne({ _id: req.session.user._id })
+                if (user.status === 'Blocked') {
+                    req.session.user = null;
+                    req.session.userId = null
+                    next()
+                } else {
+                    next();
+                }
+
+            } else {
+                req.session.user = false;
+                req.session.userId = null
+                res.redirect('/home')
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 

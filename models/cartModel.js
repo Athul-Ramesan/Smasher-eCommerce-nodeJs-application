@@ -17,7 +17,7 @@ const cartSchema = new mongoose.Schema({
             type: Number
         }
     }],
-    toatalAmount : {
+    totalAmount : {
         type : Number
     }
     
