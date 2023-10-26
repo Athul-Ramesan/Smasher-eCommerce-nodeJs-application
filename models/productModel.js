@@ -90,6 +90,10 @@ const procuctSchema = new mongoose.Schema({
   createdAt: {
     type: String,
 
+  },
+  status: {
+    type: String,
+    default: 'In stock'
   }
 })
 

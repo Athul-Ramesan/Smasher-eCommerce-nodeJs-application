@@ -17,13 +17,16 @@ module.exports = {
             const products = await productModel.find({})
             if (req.session && req.session.user) {
                 const user = await userModel.findOne({ _id: req.session.user._id })
-                if (user.status === 'Blocked') {
-                    req.session.user = null;
-                    req.session.userId = null
-                    next()
-                } else {
-                    next();
+                if(user){
+                    if (user.status === 'Blocked') {
+                        req.session.user = null;
+                        req.session.userId = null
+                        next()
+                    } else {
+                        next();
+                    }
                 }
+                
 
             } else {
                 req.session.user = false;

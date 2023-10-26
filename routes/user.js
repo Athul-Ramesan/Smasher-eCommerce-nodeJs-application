@@ -5,7 +5,8 @@ const userController = require('../controller/userController')
 const productController = require('../controller/productController')
 const auth = require('../middleware/authentication')
 const cartController = require('../controller/cartController')
-const addressController = require('../controller/addressController')
+const addressController = require('../controller/addressController');
+const orderController = require('../controller/orderController');
 
 
 router.get('/', userController.landingPage)
@@ -46,7 +47,7 @@ router.post('/updateCartQuantity',cartController.postUpdateCartQuantity)
 router.get('/removeFromCart/:id',cartController.getRemoveFromCart)
 
 router.get('/profile',auth.auth, userController.getProfile)
-
+router.post('/editUserDetails',userController.editUserDetails)
 
 router.post('/changePassword',userController.postChangePassword)
 
@@ -54,7 +55,14 @@ router.get('/address',auth.auth,addressController.getAddress)
 router.get('/addAddress',auth.auth,addressController.getAddAddress)
 router.post('/addAddress',addressController.postAddAddress)
 
+router.get('/editAddress/:id',addressController.getEditAddress)
+router.post('/editAddress/:id',addressController.postEditAddress)
+
+router.get('/deleteAddress/:id',addressController.getDeleteAddress)
+
 router.get('/checkout',auth.auth,auth.verifyUser,userController.checkout)
+
+router.post('/checkout',auth.auth,auth.verifyUser,orderController.postCheckout)
 
 router.get('/logout', userController.getLogout)
 module.exports = router

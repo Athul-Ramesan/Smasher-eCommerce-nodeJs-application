@@ -68,8 +68,8 @@ module.exports = {
 
 
 
-    
-    
+
+
 
 
     getCustomers: async (req, res) => {
@@ -123,6 +123,33 @@ module.exports = {
         }
 
     },
+    liveSearchUser: async (req, res) => {
+        const query = req.query.q
+        try {
+            console.log(query);
+            const users = await userModel.find(
+                {
+                    name:
+                        { $regex: query, $options: 'i' }
+                }
+            )
+            res.json({ users })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'An error occurred while searching users' })
+        }
+    },
+    // liveSearchProduct :async(req,res)=>{
+    //     const query = req.query.q;
+    //     try {
+    //         const products = await productModel.find({name: 
+    //             {$regex :query, $options: 'i'}})
+    //             res.json({products})
+    //     } catch (error) {
+    //         console.log(error);
+    //         res.status(500).json({ error: 'An error occurred while searching products' })
+    //     }
+    // },
     getAdminLogout: async (req, res) => {
         try {
             req.session.adminId = null

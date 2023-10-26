@@ -2,8 +2,6 @@
   <%- include ('../partials/userHeader') %>
 
     <style>
-    
-
       .checkout .form-control {
         border-radius: 0px !important;
       }
@@ -27,158 +25,166 @@
 
 
 
-      <div class="py-3 py-md-4 checkout " id="main-div">
-        <div class="container">
-          <h4 class="text-weight-bold text-center">PROFILE</h4>
-          <hr>
+    <div class="py-3 py-md-4 checkout " id="main-div">
+      <div class="container">
+        <h4 class="text-weight-bold text-center">PROFILE</h4>
+        <hr>
 
 
-          <div class="row">
-            <div class="d-flex flex-column col-md-4">
-              
-                <div class="shadow bg-white p-3 ">
-                  <h4 class="text-weight-bold text-center text-black">
-                    USER
+        <div class="row">
+          <div class="d-flex flex-column col-md-4">
 
-                  </h4>
-                  <hr>
-                  <div class="d-flex align-items-center ps-5 ms-5">
-                    <img class="img-fluid" width="200px" src="/images/user.jpeg" alt="">
-                  </div>
-                  <div class="text-center">
-                    <h6>User: ATHUL RAMESHAN K V</h6>
-                    <h6>Email:athulrameshankv.ar@gmail.com</h6>
-                  </div>
-                </div>
-            
-                <hr>
-                <div class="shadow bg-white p-3 mb-0">
-                  <h4 class="text-weight-bold text-center text-black">
-                    Personal Information
-                  </h4>
-                    <form id="editUserDetails" >
-                    <div class="g-2">
-                      <label for="name" class="m-2"><h6>Name</h6>
-                      </label>
-                      <input type="text" name=" name">
+            <div class="shadow bg-white p-3 ">
+              <h4 class="text-weight-bold text-center text-black">
+                USER
 
-                    </div>
-                    <div class="div">
-                        <label for="phone" class="m-1"> <h6>Mobile</h6>
-                        </label>
-                        <input type="tel" class="me-auto" name=" mobile">
-                    </div>
-                     <button type="submit" class="btn-outline-success btn text-dark">Save Changes</button>
-                   
-                    </form>
-
-                  
-                  <hr>
-                  <button  class="btn btn-info" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                    <i class="fas fa-plus-circle"></i> Change password
-                  </button>
-                </div>
-                    <!--modal data-->
-
-                    <div class="modal fade tickerTimes" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-                      <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="changePasswordModalLabel">Change password</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div id="flashMessage" class="alert alert-danger" style="display: none;"></div>
-                            <div class="modal-body">
-                              <form id="passwordChangeForm">
-                                  <div class="form-group">
-                                      <label for="currentPassword">Current Password:</label>
-                                      <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
-                                  </div>
-                                  <div class="form-group">
-                                      <label for="newPassword">New Password:</label>
-                                      <input type="password" class="form-control" id="password" name="newPassword" required>
-                                  </div>
-                                  <div class="form-group">
-                                      <label for="confirmPassword">Confirm Password:</label>
-                                      <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-                                  </div>
-                                  <br>
-                                  <button type="submit" class="btn btn-primary" id="changePasswordButton">Save</button>
-                              </form>
-                            </div>
-                          </div>
-                      </div>
-                  </div>
-
-                   <!--modal data end-->
+              </h4>
+              <hr>
+              <div class="d-flex align-items-center ps-5 ms-5">
+                <img class="img-fluid" width="200px" src="/images/user.jpeg" alt="">
+              </div>
+              <div class="text-center">
+                <h6 id="user-name">User: <%= user.name %>
+                </h6>
+                <h6>Email: <%= user.email %>
+                </h6>
+              </div>
             </div>
 
-            <div class=" col-md-8">
-
-
-       
-                <div class="shadow bg-white p-3">
-                  <h4 class="text-primary">
-                    <div class="row">
-                      <div class="col-md-5 m-4">
-                          <div class="card border rounded shadow bg-light">
-                              <div class="card-top d-flex justify-content-center">
-                                  <img width="250px" class="img-fluid" src="/images/orders.jpg" alt="Orders Image">
-                              </div>
-                              <div class="card-body rounded bg-dark">
-                                  <a href="/orders" style="text-decoration: none;">
-                                      <h5 class="card-title text-white text-center">Orders</h5>
-                                  </a>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-5 m-4">
-                          <div class="card border rounded shadow bg-light">
-                              <div class="card-top d-flex justify-content-center">
-                                  <img width="200px class="img-fluid" src="/images/address.jpg" alt="Address Image">
-                              </div>
-                              <div class="card-body rounded bg-dark">
-                                  <a href="/address" style="text-decoration: none;">
-                                      <h5 class="card-title text-white text-center">Address</h5>
-                                  </a>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-5 m-4">
-                          <div class="card border rounded shadow bg-light">
-                              <div class="card-top d-flex justify-content-center">
-                                  <img width="200px" class="img-fluid" src="/images/wish.jpg" alt="Orders Image">
-                              </div>
-                              <div class="card-body rounded bg-dark">
-                                  <a href="/orders" style="text-decoration: none;">
-                                      <h5 class="card-title text-white text-center">Wishlist</h5>
-                                  </a>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-5 m-4">
-                          <div class="card border rounded shadow bg-light">
-                              <div class="card-top d-flex justify-content-center">
-                                  <img width="200px class="img-fluid" src="/images/reviews.jpg" alt="Address Image">
-                              </div>
-                              <div class="card-body rounded bg-dark">
-                                  <a href="/orders" style="text-decoration: none;">
-                                      <h5 class="card-title text-white text-center">Reviews</h5>
-                                  </a>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  
-                    
-                  
-                 
-
-                  
+            <hr>
+            <div class="shadow bg-white p-3 mb-0">
+              <h4 class="text-weight-bold text-center text-black">
+                Update Information <button class="btn btn-outline-success" id="editLink"
+                  onclick="toggleEdit(); return false;">Edit</button>
+              </h4>
+              <form id="editUserDetails">
+                <div class="g-2">
+                  <label for="name" class="m-2">
+                    <h6>Name</h6>
+                  </label>
+                  <input required disabled type="text" id='nameInput' value="<%=user.name%>" name="name">
 
                 </div>
-             
-              <!-- <div class="col-md-4">
+                <div class="div">
+                  <label for="phone" class="m-1">
+                    <h6>Mobile</h6>
+                  </label>
+                  <input type="number" disabled id='mobileInput' class="me-auto" value="<%=user.mobile%>"" name="mobile">
+                </div>
+                <button type="submit" style="display: none;" id="save-changes" class="btn-outline-success btn text-dark">Save Changes</button>
+
+              </form>
+
+
+              <hr>
+              <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                <i class="fas fa-plus-circle"></i> Change password
+              </button>
+            </div>
+            <!--modal data-->
+
+            <div class="modal fade tickerTimes" id="changePasswordModal" tabindex="-1"
+              aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div id="flashMessage" class="alert alert-danger" style="display: none;"></div>
+                  <div class="modal-body">
+                    <form id="passwordChangeForm">
+                      <div class="form-group">
+                        <label for="currentPassword">Current Password:</label>
+                        <input type="password" class="form-control" id="currentPassword" name="currentPassword"
+                          required>
+                      </div>
+                      <div class="form-group">
+                        <label for="newPassword">New Password:</label>
+                        <input type="password" class="form-control" id="password" name="newPassword" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="confirmPassword">Confirm Password:</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                          required>
+                      </div>
+                      <br>
+                      <button type="submit" class="btn btn-primary" id="changePasswordButton">Save</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--modal data end-->
+          </div>
+
+          <div class=" col-md-8">
+
+
+
+            <div class="shadow bg-white p-3">
+              <h4 class="text-primary">
+                <div class="row">
+                  <div class="col-md-5 m-4">
+                    <div class="card border rounded shadow bg-light">
+                      <div class="card-top d-flex justify-content-center">
+                        <img width="250px" class="img-fluid" src="/images/orders.jpg" alt="Orders Image">
+                      </div>
+                      <div class="card-body rounded bg-dark">
+                        <a href="/orders" style="text-decoration: none;">
+                          <h5 class="card-title text-white text-center">Orders</h5>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-5 m-4">
+                    <div class="card border rounded shadow bg-light">
+                      <div class="card-top d-flex justify-content-center">
+                        <img width="200px class=" img-fluid" src="/images/address.jpg" alt="Address Image">
+                      </div>
+                      <div class="card-body rounded bg-dark">
+                        <a href="/address" style="text-decoration: none;">
+                          <h5 class="card-title text-white text-center">Address</h5>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-5 m-4">
+                    <div class="card border rounded shadow bg-light">
+                      <div class="card-top d-flex justify-content-center">
+                        <img width="200px" class="img-fluid" src="/images/wish.jpg" alt="Orders Image">
+                      </div>
+                      <div class="card-body rounded bg-dark">
+                        <a href="/orders" style="text-decoration: none;">
+                          <h5 class="card-title text-white text-center">Wishlist</h5>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-5 m-4">
+                    <div class="card border rounded shadow bg-light">
+                      <div class="card-top d-flex justify-content-center">
+                        <img width="200px class=" img-fluid" src="/images/reviews.jpg" alt="Address Image">
+                      </div>
+                      <div class="card-body rounded bg-dark">
+                        <a href="/orders" style="text-decoration: none;">
+                          <h5 class="card-title text-white text-center">Reviews</h5>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
+
+
+            </div>
+
+            <!-- <div class="col-md-4">
                 <div class="shadow bg-white p-3">
                   <h4 class="text-dark">
 
@@ -192,55 +198,96 @@
                 </div>
               </div> -->
 
-            </div>
-
           </div>
-       
+
+        </div>
+
       </div>
     </div>
     </div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-  $('#passwordChangeForm').submit((e)=>{
-    e.preventDefault();
-    $.ajax({
-      url : '/changePassword',
-      method: 'POST',
-      data: $('#passwordChangeForm').serialize(),
-      success: (response)=>{
-            if(response.error){
+    <script>
+      $('#passwordChangeForm').submit((e) => {
+        e.preventDefault();
+        $.ajax({
+          url: '/changePassword',
+          method: 'POST',
+          data: $('#passwordChangeForm').serialize(),
+          success: (response) => {
+            if (response.error) {
               console.log(response);
 
               $('#flashMessage').text(response.error).show()
-              
-            }else{
-             
-              swal('Password changed successfully').then(()=>{
+
+            } else {
+
+              swal('Password changed successfully').then(() => {
                 $('#changePasswordModal').modal('hide');
               })
-              
-              
+
+
             }
-      }
-    })
-  })
-  $('#editUserDetaiils').submit((e)=>{
-    e.preventDefault();
-    $.ajax({
-      url: '/editUserDetails',
-      method: 'POST',
-      data : $('#editUserDetaiils').serialize(),
-      success : (response)=>{
-        if(response.error){
-          
+          }
+        })
+      })
+      function toggleEdit() {
+        const nameInput = document.getElementById('nameInput');
+        const mobileInput = document.getElementById('mobileInput');
+        const editLink = document.getElementById('editLink');
+        const saveChanges= document.getElementById('save-changes')
+        if (nameInput.hasAttribute('disabled')) {
+          // Enable the inputs
+          nameInput.removeAttribute('disabled');
+          mobileInput.removeAttribute('disabled');
+
+          saveChanges.style.display= 'block'
+          // Change "Edit" link to "Cancel"
+          editLink.textContent = "Cancel";
+        } else {
+          // Disable the inputs
+          nameInput.setAttribute('disabled', 'true');
+          mobileInput.setAttribute('disabled', 'true');
+          saveChanges.style.display= 'none'
+          // Change "Cancel" link back to "Edit"
+          editLink.textContent = "Edit";
         }
       }
-    })
-  })
+
+      $('#editUserDetails').submit((e) => {
+        const s = $('#editUserDetails').serialize();
+        console.log(s);
+        e.preventDefault();
+        $.ajax({
+          url: '/editUserDetails',
+          method: 'POST',
+          data: s,
+          success: (response) => {
+            if (response) {
+              console.log(response);
+              const nameInput = document.getElementById('nameInput');
+              const mobileInput = document.getElementById('mobileInput');
+              const editLink = document.getElementById('editLink');
+              const userName = document.getElementById('user-name')
 
 
-</script>
+              swal('','User details updated successfully').then(() => {
+
+                nameInput.value = response.newName
+                mobileInput.value = response.newMobile
+                userName.textContent = response.newName
+                nameInput.setAttribute('disabled', 'true');
+                mobileInput.setAttribute('disabled', 'true');
+                editLink.textContent = "Edit";
+              })
+
+            }
+          }
+        })
+      })
+
+
+    </script>
     <%- include ('../partials/userFooter') %>
       <%- include ('../layouts/footer') %>

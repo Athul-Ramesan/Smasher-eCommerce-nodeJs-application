@@ -1,92 +1,146 @@
 <%- include ('../layouts/header') %>
-<%- include ('../partials/userHeader') %>
+    <%- include ('../partials/userHeader') %>
 
-<style>
+        <style>
+            .checkout .form-control {
+                border-radius: 0px !important;
+            }
 
-.checkout .form-control{
-    border-radius: 0px !important;
-}
-.checkout .form-control:focus{
-    border: 1px solid #000 !important;
-    box-shadow: none !important;
-}
-.checkout .nav-link{
-    border: 1px solid #000;
-    border-radius: 0px;
-    margin-bottom: 8px;
-}
-.checkout .tab-content{
-    padding-right: 10px;
-}
+            .checkout .form-control:focus {
+                border: 1px solid #000 !important;
+                box-shadow: none !important;
+            }
 
-</style>
+            .checkout .nav-link {
+                border: 1px solid #000;
+                border-radius: 0px;
+                margin-bottom: 8px;
+            }
 
-<div class="py-3 py-md-4 checkout">
-    <div class="container">
-        <div class="d-flex justify-content-between">
-            <h4>Shipping Addresses</h4>
-            <a href="/addAddress" class="btn-lg btn btn-outline-success"><i class="fa-sharp fa-solid fa-plus"></i>Add new address</a>
-        </div>
-        
-        <hr>
+            .checkout .tab-content {
+                padding-right: 10px;
+            }
+        </style>
 
-        <div class="row">
-            <%if(addresses){ %>
-                <%addresses.forEach((address,index)=>{ %>
-
-                
+        <div class="py-3 py-md-4 checkout">
             <div class="container">
-                <div class="row">
-                    <div class="col-md-12 g-2 shadow">
-                        <div class="card">
-                            <!-- Card Header -->
-                            <div class=" d-flex justify-content-between align-items-center">
-                                <h5 class="card-title text-muted m-2 ps-2">Address No.<%=index+1 %></h5>
-                                
+                <div class="d-flex justify-content-between">
+                    <h4>Shipping Addresses</h4>
+                    <a href="/addAddress" class="btn-lg btn btn-outline-success"><i
+                            class="fa-sharp fa-solid fa-plus"></i>Add new address</a>
+                </div>
 
-                                
-                                <!-- Dropdown menu -->
-                                <div class="dropdown">
-                                    <button class="btn btn-link" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="#">Edit</a>
-                                        <a class="dropdown-item" href="#">Delete</a>
+                <hr>
+
+                <div class="row">
+
+                    <%addresses.address.forEach((address,index)=>{ %>
+
+
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12 g-2 shadow">
+                                    <div class="card">
+                                        <!-- Card Header -->
+                                        <div class=" d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title text-muted m-2 ps-2">Address No.<%=index+1 %>
+                                            </h5>
+
+
+
+                                            <!-- Dropdown menu -->
+                                            <div class="dropdown">
+                                                <button class="btn btn-link" type="button" id="dropdownMenuButton"
+                                                    data-bs-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a class="dropdown-item"
+                                                        href="/editAddress/<%=address._id%>">Edit</a>
+                                                    <a class="dropdown-item remove-button"
+                                                        href="/deleteAddress/<%=address._id%>">Delete</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Card content -->
+                                        <hr>
+                                        <div class="card-body">
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                    <%=address.name %>
+                                                </span>
+                                            </div>
+                                            <span class="m-1 font-weight-bold text-uppercase">
+                                                <%=address.mobile %>
+                                            </span>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                    <%=address.houseName %>
+                                                </span>
+                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                    <%=address.locality %>
+                                                </span>
+                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                    <%=address.pincode %>
+                                                </span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                    <%=address.district %>
+                                                </span>
+                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                    <%=address.state %>
+                                                </span>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Card content -->
-                            <hr>
-                            <div class="card-body">
-                                <div class="d-flex">
-                                    <span class="m-1 font-weight-bold text-uppercase"> <%=address.name %>,  </span>   
-                                </div>
-                                <span class="m-1 font-weight-bold text-uppercase"><%=address.mobile %> </span> 
-                                <div class="d-flex">
-                                    <span class="m-1 font-weight-bold text-uppercase"> <%=address.houseName %></span>
-                                    <span class="m-1 font-weight-bold text-uppercase"><%=address.locapty %> </span>
-                                    <span class="m-1 font-weight-bold text-uppercase"> <%=address.pincode %> </span>
-                                </div>
-                                <div class="d-flex">
-                                    <span class="m-1 font-weight-bold text-uppercase"><%=address.district %> </span>
-                                    <span class="m-1 font-weight-bold text-uppercase"><%=address.state %> </span>
-                                </div>    
-         
-                            </div>
+
+
                         </div>
-                    </div>
+                        <% }) %>
+
+
                 </div>
-        
-                
             </div>
-            <% }) %>
-        <% }%>
-
         </div>
-    </div>
-</div>
+
+        <script>
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const removeButtons = document.querySelectorAll('.remove-button')
+                removeButtons.forEach((button) => {
+                    button.addEventListener('click', (event) => {
+                        event.preventDefault()
+
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, delete it!'
+                        }).then((result) => {
+                            if(result.isConfirmed){
+                                window.location.href = button.href
+                            }
+                            
+                        })
+                    })
+                })
+            })
 
 
-<%- include ('../partials/userFooter') %>
-<%- include ('../layouts/footer') %>
+
+
+
+
+
+
+        </script>
+        <%- include ('../partials/userFooter') %>
+            <%- include ('../layouts/footer') %>

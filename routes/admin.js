@@ -14,6 +14,7 @@ router.get('/login', adminController.getAdminLogin)
 router.post('/login', adminController.postAdminLogin)
 
 router.get('/products', auth.verifyAdmin, productController.getAdminProduct)
+router.get('/live-product-search',adminController.liveSearchProduct)
 
 router.get('/addProduct', auth.verifyAdmin, productController.getAdminAddProdcuct)
 
@@ -50,6 +51,6 @@ router.post('/editCategory/:id', categoryController.postAdminEditCategory)
 
 router.get('/customers', auth.verifyAdmin, adminController.getCustomers)
 router.get('/blockUser/:id', auth.verifyAdmin, adminController.getAdminBlockUser)
-
+router.get('/live-user-search',adminController.liveSearchUser)
 router.get('/logout', adminController.getAdminLogout)
 module.exports = router

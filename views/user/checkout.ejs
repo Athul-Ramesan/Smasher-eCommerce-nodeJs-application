@@ -25,9 +25,9 @@
     <div class="container">
         <h4>Checkout</h4>
         <hr>
-
+ <form id="form-checkout">
         <div class="row">
-            <div class="col-md-12 mb-4">
+            <!-- <div class="col-md-12 mb-4">
                 <div class="shadow bg-white p-3">
                     <h4 class="text-primary">
                         Item Total Amount :
@@ -38,61 +38,78 @@
                     <br/>
                     <small>* Tax and other charges are included ?</small>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="shadow bg-white p-3">
-                    <h4 class="text-primary">
-                        Basic Information
-                    </h4>
-                    <hr>
+            </div> -->
+            <h6 class="text-dark">
+                Select Address
+            </h6>
+            <div class="col-md-6 ">
+                <div class="shadow bg-white p-3" >
+                    
 
-                    <form action="" method="POST">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label>Full Name</label>
-                                <input type="text" name="fullname" class="form-control" placeholder="Enter Full Name" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label>Phone Number</label>
-                                <input type="number" name="phone" class="form-control" placeholder="Enter Phone Number" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label>Email Address</label>
-                                <input type="email" name="email" class="form-control" placeholder="Enter Email Address" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label>Pin-code (Zip-code)</label>
-                                <input type="number" name="pincode" class="form-control" placeholder="Enter Pin-code" />
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <label>Full Address</label>
-                                <textarea name="address" class="form-control" rows="2"></textarea>
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <label>Select Payment Mode: </label>
-                                <div class="d-md-flex align-items-start">
-                                    <div class="nav col-md-3 flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                                        <button class="nav-link fw-bold" id="cashOnDeliveryTab-tab" data-bs-toggle="pill" data-bs-target="#cashOnDeliveryTab" type="button" role="tab" aria-controls="cashOnDeliveryTab" aria-selected="true">Cash on Delivery</button>
-                                        <button class="nav-link fw-bold" id="onlinePayment-tab" data-bs-toggle="pill" data-bs-target="#onlinePayment" type="button" role="tab" aria-controls="onlinePayment" aria-selected="false">Online Payment</button>
-                                    </div>
-                                    <div class="tab-content col-md-9" id="v-pills-tabContent">
-                                        <div class="tab-pane fade" id="cashOnDeliveryTab" role="tabpanel" aria-labelledby="cashOnDeliveryTab-tab" tabindex="0">
-                                            <h6>Cash on Delivery Mode</h6>
-                                            <hr/>
-                                            <button type="button" class="btn btn-primary">Place Order (Cash on Delivery)</button>
+                    
+                       
 
+
+                                
+
+                                    <%addresses.address.forEach((address,index)=>{ %>
+                
+                
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-1">
+                                                    <input class="m-3" type="radio" name="address" value="<%=address._id%>" checked>
+                                                </div>
+                                                <div class="col-md-10  g-2 shadow">
+                                                    <div class="">
+                                                        <!-- Card Header -->
+                                                        
+                                                        <!-- Card content -->
+                                               
+                                                        <div class="card-body">
+                                                            <div class="d-flex">
+                                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                                    <%=address.name %>
+                                                                </span>
+                                                            </div>
+                                                            <span class="m-1 font-weight-bold text-uppercase">
+                                                                <%=address.mobile %>
+                                                            </span>
+                                                            <div class="d-flex">
+                                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                                    <%=address.houseName %>
+                                                                </span>
+                                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                                    <%=address.locality %>
+                                                                </span>
+                                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                                    <%=address.pincode %>
+                                                                </span>
+                                                            </div>
+                                                            <div class="d-flex">
+                                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                                    <%=address.district %>
+                                                                </span>
+                                                                <span class="m-1 font-weight-bold text-uppercase">
+                                                                    <%=address.state %>
+                                                                </span>
+                                                            </div>
+                
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                
+                
                                         </div>
-                                        <div class="tab-pane fade" id="onlinePayment" role="tabpanel" aria-labelledby="onlinePayment-tab" tabindex="0">
-                                            <h6>Online Payment Mode</h6>
-                                            <hr/>
-                                            <button type="button" class="btn btn-warning">Pay Now (Online Payment)</button>
-                                        </div>
-                                    </div>
-                                </div>
+                                        <% }) %>
+                
+                
+                               
 
-                            </div>
-                        </div>
-                    </form>
+
+                          
+             
 
                 </div>
             </div>
@@ -105,13 +122,13 @@
 
 
                     <div class=""> 
-                        <label class="m-5" for=""><input type="radio" name="modeOfPayment">
+                        <label class="m-5" for=""><input type="radio" name="paymentMethod" value="cod">
                             Cash On Delivery(COD)</label>
                         <img width="150px"  src="/images/cod1.png" alt="" >
                     </div>
                     <hr>
                     <div class="d-flex">
-                        <label class="m-5" for=""><input type="radio" name="modeOfPayment">
+                        <label class="m-5" for=""><input type="radio" name="paymentMethod" value="online">
                             Razorpay</label>
                             <div class="ms-5 ps-3 ">
                                 <img class="ps-3" width="150px"  src="/images/raz.png" alt="" >
@@ -127,9 +144,27 @@
             </div>
 
         </div>
+    </form>
     </div>
 </div>
 
+<script>
 
+    $('#form-checkout').submit((e)=>{
+        e.preventDefault();
+
+
+        $.ajax({
+            url : '/checkout',
+            method : 'POST',
+            data : $('#form-checkout').serialize(),
+            success : (response)=>{
+                
+            }
+        })
+    })
+
+
+</script>
 <%- include ('../partials/userFooter') %>
 <%- include ('../layouts/footer') %>
