@@ -32,21 +32,22 @@ const orderSchema = new mongoose.Schema({
         default: 'Order Placed'
     },
     shippingAddress:{
-        type:String,
-        ref: ADDRESS
+        type: {}
     },
     paymentMethod:{
         type: String,
         required: true
     },
     paymentStatus:{
-
+        type: String,
+        default: "Pending"
     },
     returnReason:{
-
+        type: String,
     },
     totalAmount:{
-
+        type: Number,
+        required: true
     }
 
 })

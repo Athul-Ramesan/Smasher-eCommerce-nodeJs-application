@@ -33,7 +33,9 @@
                 <hr>
 
                 <div class="row">
+                    <%if ( addresses){%>
 
+                        
                     <%addresses.address.forEach((address,index)=>{ %>
 
 
@@ -103,7 +105,7 @@
                         </div>
                         <% }) %>
 
-
+                        <%}%>
                 </div>
             </div>
         </div>

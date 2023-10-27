@@ -1,5 +1,5 @@
 <%- include ('../layouts/header') %>
-<%- include ('../partials/userHeader') %>
+    <%- include ('../partials/userHeader') %>
 
         <style>
             .product-grid {
@@ -159,10 +159,116 @@
                 }
             }
         </style>
-        
-        <div class="container">
-            <div class="row">
 
+        <div class="container">
+
+            <!-- offcanvas starts here -->
+            
+            <div class="col-md-2">
+                <br>
+                <button class="btn btn-dark" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+                    <i class="fa fa-filter"> | </i>Filter
+                    </button>
+                    
+    
+                <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
+                    aria-labelledby="offcanvasWithBothOptionsLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Filter</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <!-- Add a form element around the existing content -->
+                        <form action="/filterProducts" method="post">
+                            <div class="filter-sidebar">
+                                <h4 class="filter-title">Filter by Category</h4>
+                                <ul class="filter-list">
+                                    <!-- Radio buttons for category -->
+                                    <% if( categories){ %>
+                                        <% categories.forEach((category)=>{%>
+                                            <li class="filter-item">
+                                                <input type="radio" name="category" id="category1" class="filter-radio"
+                                                    value="<%= category._id %>">
+                                                <label for="category1" class="filter-label"><%= category.name %></label>
+                                            </li>
+                                            <% }) %>
+                                    <%} %>
+                                   
+                                    <!-- Add more radio buttons for other categories -->
+                                </ul>
+    
+                                <h4 class="filter-title">Filter by Brand</h4>
+                                <ul class="filter-list">
+                                    <!-- Checkbox inputs for brands -->
+                                    <% if( brands){ %>
+                                        <% brands.forEach((brand)=>{%>
+                                    <li class="filter-item">
+                                        <input type="checkbox" value="<%= brand._id %>" name="brand" id="brand1" class="filter-checkbox">
+                                        <label for="brand1"  class="filter-label"> <%= brand.name %></label> 
+                                    </li>
+                                    <% }) %>
+                                    <%} %>
+                                    <!-- Add more checkboxes for other brands -->
+                                </ul>
+    
+                                <!-- <h4 class="filter-title">Filter by RAM</h4>
+                                <select name="RAM" class="filter-select">
+                                    <option value="" selected></option> 
+                                    <option value="2GB">2GB</option>
+                                    <option value="4GB">4GB</option>
+                                    <option value="8GB">8GB</option>
+                                    <option value="16GB">16GB</option>
+                                </select> -->
+    
+                                <!-- <h4 class="filter-title">Filter by Internal Storage</h4>
+                                <select name="InternalStorage" class="filter-select">
+                                    <option value="" selected></option> 
+                                    <option value="32GB">32GB</option>
+                                    <option value="64GB">64GB</option>
+                                    <option value="128GB">128GB</option>
+                                    <option value="256GB">256GB</option>
+                                    <option value="512GB">512GB</option>
+                                </select> -->
+    
+                                <!-- <h4 class="filter-title">Filter by Price</h4>
+                                <ul class="filter-list"> -->
+                                    
+                                    <!-- <li class="filter-item">
+                                        <input type="checkbox" value="lte10000" name="DiscountPrice" id="price1" class="filter-checkbox">
+                                        <label for="price1" class="filter-label">₹10,000 and Below</label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <input type="checkbox" name="DiscountPrice" value="gte10001" id="price2" class="filter-checkbox">
+                                        <label for="price2" class="filter-label">₹10,001 - ₹15,000</label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <input type="checkbox" name="DiscountPrice" value="gte 15001" id="price3" class="filter-checkbox">
+                                        <label for="price3" class="filter-label">₹15,001 - ₹25,000</label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <input type="checkbox" name="DiscountPrice" id="price4" class="filter-checkbox">
+                                        <label for="price4" class="filter-label">₹25,001 - ₹50,000</label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <input type="checkbox" name="DiscountPrice" id="price5" class="filter-checkbox">
+                                        <label for="price5" class="filter-label">₹50,001 and Above</label>
+                                    </li>
+                                </ul> -->
+    
+                                <button type="submit" class="apply-button">Apply</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+<!-- off canvas ends here -->
+            
+            <div class="row">
+                <% if(message) { %>
+                <span><%= message.productSearchMessage%> </span>
+                <% } %>
                 <% if(products) { %>
                     <% products.forEach((product)=>{ %>
                         <% if(product.active){ %>
@@ -218,34 +324,31 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
 
-            async function addToCart(id, name) {
+            function addToCart(id, name) {
                 console.log(id);
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
 
-                }
-                fetch(`/addToCart/${id}`, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                    
-                        
-                        swal(name, 'is added to cart', 'success')
+                $.ajax({
+                    url: `/addToCart/${id}`,
+                    method: 'POST',
+                    dataType: 'json', // Expect JSON response
+                    contentType: 'application/json', // Set request content type
+                })
+                    .done(function (data) {
+                        console.log(data.cartCount);
+                        swal(name, 'is added to cart', 'success');
                         const cartCountElement = document.getElementById('cart-count');
                         if (cartCountElement) {
                             cartCountElement.textContent = data.cartCount;
-                           
-                        } 
-                        
-
-
+                        }
                     })
-                    .catch((err) => {
-                        console.error(err);
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        console.error(errorThrown);
                         swal("Cannot add item to cart", "Kindly try after sometime.");
-                    })
-
+                    });
             }
+
+
+
 
             function redirectToLoginPage() {
                 Swal.fire({

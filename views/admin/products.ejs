@@ -7,9 +7,15 @@
             <div class=" container ml-auto col-md-10">
                 <a href="addproduct/" class="btn btn-dark rounded-pill my-4  m-3 px-5 py-2">Add Product</a>
             </div>
-            <div class="me-4">
-                <input type="text" class="shadow form-control pe-5 me-5 mt-4" placeholder="Search" id="searchInput"
-                    oninput="liveSearch()">
+            <div class=" ">
+                <form action="/admin/adminSearchProduct" method="post" role="search">
+                    <div class="input-group">
+                        <input type="search" placeholder="Search " name="query" class="form-control" />
+                        <button class="btn bg-white" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
             <!-- <button class="btn btn-secondary me-2">SEARCH USER</button> -->
         </div>

@@ -1,10 +1,10 @@
 const productModel = require('../models/productModel')
 const categoryModel = require('../models/categoryModel')
-const  cartModel = require('../models/cartModel')
+const cartModel = require('../models/cartModel')
 const brandModel = require('../models/brandModel')
 const { CATEGORY, BRAND } = require('../utils/constants/schemaName')
 const moment = require('moment')
-
+const userModel = require('../models/userModel')
 
 module.exports = {
 
@@ -17,7 +17,28 @@ module.exports = {
         }
 
     },
+    postAdminSearchProduct: async(req,res)=>{
+        const query = req.body.query;
+        console.log(req.body);
+        try {
+            await productModel.find({
+                 
+                    name:{ $regex :'^'+ query,$options: 'i'} 
+                  
+            }).then((result)=>{
+                if(result!== null){
+                    const products = result;
+                    console.log(result);
+                    res.render('admin/products', { products })
+                }else{
 
+                }
+               
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    },
     getAdminAddProdcuct: async (req, res) => {
         try {
             const categories = await categoryModel.find({})
@@ -184,27 +205,112 @@ module.exports = {
     },
     getProductView: async (req, res) => {
         try {
-            const cart = await cartModel.findOne()
+            const user = await userModel.findOne({ email: req.session.user.email });
+            const cart = await cartModel.findOne({ userId: req.session.user._id });
             const productId = req.params.id;
             const product = await productModel.findOne({ _id: productId }).populate('brand')
+
             console.log(product);
-            res.render('user/product-view', { user: req.session.user, product,cart,wishlist:false })
+            res.render('user/product-view', { user, product, cart, wishlist: false })
         } catch (error) {
             console.log(error);
         }
     },
     getShopProduct: async (req, res) => {
         try {
-           
+
             const products = await productModel.find()
-           
-            if(req.session.user){
-                const cart = await cartModel.findOne({userId: req.session.user._id})
-                res.render('user/shop-product', { products, user: req.session.user,cart ,wishlist:false })
-            }else{
-                res.render('user/shop-product', { products, user: req.session.user,cart:false ,wishlist:false })
+            const categories = await categoryModel.find()
+            const brands = await brandModel.find()
+
+            if (req.session.user) {
+                const user = await userModel.findById(req.session.user._id)
+                const cart = await cartModel.findOne({ userId: req.session.user._id })
+                res.render('user/shop-product', { products, user, brands, cart, categories, wishlist: false ,message: req.flash()})
+            } else {
+                res.render('user/shop-product', { products, brands, categories, user: req.session.user, cart: false, wishlist: false, message: req.flash() })
             }
-           
+
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    postFilterProdcuts: async (req, res) => {
+        const brand = req.body.brand;
+        const category = req.body.category
+        const categories = await categoryModel.find()
+        const brands = await brandModel.find()
+        try {
+            if (req.session.user) {
+                if (brand && category) {
+                    const products = await productModel.find({ brand: brand, category: category })
+                    console.log(products);
+                    const user = await userModel.findById(req.session.user._id)
+                    const cart = await cartModel.findOne({ userId: req.session.user._id })
+                    res.render('user/shop-product', { products, user, cart, brands, categories, wishlist: false })
+
+                } else if (brand || category) {
+                    const products = await productModel.find({
+                        $or:
+                            [{ category: category }, { brand: brand }]
+                    })
+                    console.log(products);
+                    const user = await userModel.findById(req.session.user._id)
+                    const cart = await cartModel.findOne({ userId: req.session.user._id })
+                    res.render('user/shop-product', { products, user, cart, brands, categories, wishlist: false })
+                }
+            } else {
+                if (brand && category) {
+                    const products = await productModel.find({ brand: brand, category: category })
+                    console.log(products);
+
+                    res.render('user/shop-product', { products, user: false, cart: false, brands, categories, wishlist: false })
+
+                } else if (brand || category) {
+                    const products = await productModel.find({
+                        $or:
+                            [{ category: category }, { brand: brand }]
+                    })
+                    console.log(products);
+                    res.render('user/shop-product', { products, user: false, cart: false, brands, categories, wishlist: false })
+                }
+            }
+
+
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    postSearchProduct: async (req, res) => {
+        const query = req.body.query;
+        try {
+            await productModel.find({ 
+                $or :[
+                {name: { $regex:'^' + query, $options: 'i' } },
+                {tags: { $regex:'^' + query, $options: 'i' } }
+                ]
+            }).then(async (result) => {
+                console.log(result);
+                if (result.length!==0 && query.length >0) {
+
+
+                    const products = result
+                    const categories = await categoryModel.find()
+                    const brands = await brandModel.find()
+
+                    if (req.session.user) {
+                        const user = await userModel.findById(req.session.user._id)
+                        const cart = await cartModel.findOne({ userId: req.session.user._id })
+                        res.render('user/shop-product', { products, user, brands, cart, categories, wishlist: false,message: req.flash() })
+                    } else {
+                        res.render('user/shop-product', { products, brands, categories, user: req.session.user, cart: false, wishlist: false ,message: req.flash()})
+                    }
+
+                }else{
+                    req.flash('productSearchMessage','! No item found as per your request')
+                    res.redirect('/shopProduct')
+                }
+            }).catch(error=> console.log(error))
         } catch (error) {
             console.log(error);
         }

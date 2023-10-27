@@ -64,14 +64,6 @@ module.exports = {
         }
     },
 
-
-
-
-
-
-
-
-
     getCustomers: async (req, res) => {
         try {
 
@@ -88,14 +80,46 @@ module.exports = {
                 currentPage: page,
                 perPage,
                 totalCount,
-                totalPages: Math.ceil(totalCount / perPage)
+                totalPages: Math.ceil(totalCount / perPage),
+                message: req.flash()
             })
 
 
         } catch (error) {
-
+            console.log(error);
         }
 
+    },
+    postAdminSearchUser: async (req, res) => {
+        const query = req.body.query;
+        try {
+            await userModel.find({ name: { $regex: query, $options: 'i' } })
+                .then(async (result) => {
+                    if (result !== null && query.length > 0) {
+                        const users = result
+                        const page = parseInt(req.query.page) || 1; // Get the page number from query parameters
+                        const perPage = 10; // Number of items per page
+                        const totalCount = result.length
+
+
+                        res.render("admin/customers", {
+                            users,
+                            currentPage: page,
+                            perPage,
+                            totalCount,
+                            totalPages: Math.ceil(totalCount / perPage),
+                            message: req.flash()
+                        })
+                    } else {
+                        req.flash('adminUserMessage', 'No user found')
+                        res.redirect('/admin/customers')
+                    }
+                })
+        } catch (error) {
+            console.log(error);
+            req.flash('adminUserMessage', 'Something went wrong')
+            res.redirect('/admin/customers')
+        }
     },
     getAdminBlockUser: async (req, res) => {
         try {

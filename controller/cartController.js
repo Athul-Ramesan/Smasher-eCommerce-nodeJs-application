@@ -19,6 +19,8 @@ module.exports = {
                 console.log('no user cart');    
                 userCart = await cartModel.create({ userId: user._id, items: [{productId: productId, quantity: 1}] })
                 const cartCount = userCart.items.length
+console.log(cartCount,'cartCount');
+
                  res.json({ success: true, cartCount })
 
             }else{
@@ -37,6 +39,7 @@ module.exports = {
                 console.log('userCart', userCart);
                 await cartModel.findOneAndUpdate({ userId: user._id }, userCart)
                 const cartCount = userCart.items.length
+                console.log(cartCount, 'cartCount');
                 res.json({ success: true, cartCount })
             }
 

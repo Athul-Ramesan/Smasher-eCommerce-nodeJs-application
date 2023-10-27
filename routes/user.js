@@ -39,8 +39,11 @@ router.get('/resendOtp', userController.resendOtp)
 router.get('/productView/:id',auth.verifyUser,productController.getProductView) ///here auth auth.verifyUser,
 
 router.get('/shopProduct',auth.verifyUser, productController.getShopProduct) ///here auth auth.verifyUser,
+router.post('/filterProducts',productController.postFilterProdcuts)
+router.post('/searchProduct',productController.postSearchProduct)
 
-router.get('/cart',auth.verifyUser,cartController.getCart)
+
+router.get('/cart',auth.auth,auth.verifyUser,cartController.getCart)
 
 router.post('/addToCart/:id',cartController.getAddToCart)
 router.post('/updateCartQuantity',cartController.postUpdateCartQuantity)
@@ -60,10 +63,16 @@ router.post('/editAddress/:id',addressController.postEditAddress)
 
 router.get('/deleteAddress/:id',addressController.getDeleteAddress)
 
+router.get('/orders',auth.auth,auth.verifyUser,orderController.getOrders)
+router.get('/orderDetails/:id',auth.auth,auth.verifyUser,orderController.getOrderDetails)
+router.get('/cancelOrder/:id',auth.auth,auth.verifyUser,orderController.getCancelOrder)
+
+
 router.get('/checkout',auth.auth,auth.verifyUser,userController.checkout)
 
 router.post('/checkout',auth.auth,auth.verifyUser,orderController.postCheckout)
 
+router.get('/orderSuccess/:id',auth.auth,auth.verifyUser,orderController.getOrderSuccess)
 router.get('/logout', userController.getLogout)
 module.exports = router
 

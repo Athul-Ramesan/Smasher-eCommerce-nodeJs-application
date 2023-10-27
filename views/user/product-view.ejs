@@ -186,7 +186,7 @@
                         </ul>
                       </div>
                     </div>
-                    <table class="table border mt-3 mb-2">
+                    <!-- <table class="table border mt-3 mb-2">
                       <tr>
                         <th class="py-2">Display:</th>
                         <td class="py-2">13.3-inch LED-backlit display with IPS</td>
@@ -207,7 +207,7 @@
                         <th class="py-2">Graphics</th>
                         <td class="py-2">Intel Iris Plus Graphics 640</td>
                       </tr>
-                    </table>
+                    </table> -->
                   </div>
                   <div class="tab-pane fade mb-2" id="ex1-pills-2" role="tabpanel" aria-labelledby="ex1-tab-2">
                     Tab content or sample information now <br />
@@ -244,7 +244,7 @@
                 <!-- Pills content -->
               </div>
             </div>
-            <div class="col-lg-4">
+            <!-- <div class="col-lg-4">
               <div class="px-0 border rounded-2 shadow-0">
                 <div class="card">
                   <div class="card-body">
@@ -301,7 +301,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -318,31 +318,27 @@
         };
         new ImageZoom(document.getElementById("img-container"), options);
 
-        async function addToCart(id, name) {
+        function addToCart(id, name) {
                 console.log(id);
-                const requestOptions = {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
 
-                }
-                fetch(`/addToCart/${id}`, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                    
-
-                        swal(name, 'is added to cart', 'success')
+                $.ajax({
+                    url: `/addToCart/${id}`,
+                    method: 'POST',
+                    dataType: 'json', // Expect JSON response
+                    contentType: 'application/json', // Set request content type
+                })
+                    .done(function (data) {
+                        console.log(data.cartCount);
+                        swal(name, 'is added to cart', 'success');
                         const cartCountElement = document.getElementById('cart-count');
                         if (cartCountElement) {
                             cartCountElement.textContent = data.cartCount;
                         }
-
-
                     })
-                    .catch((err) => {
-                        console.error(err);
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        console.error(errorThrown);
                         swal("Cannot add item to cart", "Kindly try after sometime.");
-                    })
-
+                    });
             }
             function redirectToLoginPage() {
                 Swal.fire({

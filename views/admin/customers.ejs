@@ -2,9 +2,16 @@
   <%-include ('../partials/adminSidebar') %>
 
   <div class="form-group float-end m-2 d-flex">
-    <div class="me-4">
-      <input type="text" class="shadow form-control pe-5 me-5" placeholder="Search" id="searchInput" oninput="liveSearch()">
-    </div>
+    <div class=" ">
+      <form action="/admin/adminSearchUser" method="post" role="search">
+          <div class="input-group">
+              <input type="search" placeholder="Search " name="query" class="form-control" />
+              <button class="btn bg-white" type="submit">
+                  <i class="fa fa-search"></i>
+              </button>
+          </div>
+      </form>
+  </div>
     <!-- <button class="btn btn-secondary me-2">SEARCH USER</button> -->
   </div>
     <div class="container m-5 card shadow">
@@ -12,6 +19,9 @@
         <h2>USER LIST</h2>
         
       </div>
+      <% if(message){ %>
+      <span class="text-danger"><%=message.adminUserMessage %></span>
+      <% }%>
       <div class="table-responsive">
         <div class="d-flex justify-content-end align-items-center">
         </div>
@@ -62,7 +72,7 @@
       </div>
 
 
-      <% if (users.length> 0) { %>
+      <% if (users.length> 0 ) { %>
         <div class="d-flex justify-content-between align-items-center mt-3">
           <p class="text-primary">Showing <%= (currentPage - 1) * perPage + 1 %>-
               <% if(currentPage===totalPages){%>
@@ -88,34 +98,7 @@
     </div>
 
     <script>
-      function liveSearch() {
-        const searchInput = document.getElementById('searchInput').value;
-        fetch(`live-user-search?q=${searchInput}`)
-          .then((response) => response.json())
-          .then(data => {
-
-            const usersTable = document.getElementById('usersTable');
-            const tbody = usersTable.querySelector('tbody');
-            tbody.innerHTML = ''  //clearing the existing rows
-            console.log(data);
-            data.users.forEach(user => {
-              tbody.innerHTML +=
-                `<tr>
-          <td>${user._id}</td>
-          <td>${user.name}</td>
-          <td class="text-success">${user.status}</td>
-          <td>
-            <a href="admin/blockUser/${user._id}">
-              <button onclick="return confirm('Are you sure you want to block the user')" class="btn btn-danger">Block</button>
-              </a>
-              </td>
-              </tr>`;
-            })
-
-          }).catch(error => {
-            console.log(error);
-          })
-      }
+     
     </script>
 
     <%-include ('../layouts/footer') %>

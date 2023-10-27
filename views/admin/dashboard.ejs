@@ -1,10 +1,54 @@
 <%-include ('../layouts/header') %>
 <%-include ('../partials/adminSidebar') %>
 
-<div style="height: 100vh;">
-    <h1> Dashboard</h1>
+
+    <canvas class="card  m-5" id="salesGraph" style="width: 50;"></canvas>
+<div>
+    
 </div>
 
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    
+const ctx = document.getElementById("salesGraph").getContext("2d");
+
+// If a chart already exists, destroy it
+if (window.myChart) {
+    window.myChart.destroy();
+}
+const barColors = ["red", "green","blue","orange","brown"]
+
+window.myChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+        labels:[1,2,3,4,5,6,7],
+        datasets: [
+            {
+                label: "Sales",
+                data: [1,2,3,4,5,6,4],
+                backgroundColor: "blue",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 3,
+            },
+        ],
+    },
+    options: {
+        scales: {
+            x: [{
+                grid: {
+                    display: true
+                }
+            }],
+            y: [{
+                beginAtZero: true,
+                maxTicksLimit: 5
+            }]
+        }
+},
+});
+</script>
 
 
 <%-include ('../layouts/footer') %>

@@ -159,7 +159,14 @@
             method : 'POST',
             data : $('#form-checkout').serialize(),
             success : (response)=>{
-                
+                console.log(response)
+                if(response.success){
+                    
+                    console.log(`/orderSuccess/${response.orderId}`);
+                    window.location.href = `/orderSuccess/${response.orderId}`
+                }else{
+                    console.log(response.error);
+                }
             }
         })
     })
