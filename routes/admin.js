@@ -6,17 +6,22 @@ const auth = require('../middleware/authentication');
 const productController = require('../controller/productController')
 const categoryController = require('../controller/categoryController')
 const brandController = require('../controller/brandController')
+const orderController = require('../controller/orderController')
 
 
-router.get('/', adminController.adminLandingPage)
-router.get('/dashboard', auth.verifyAdmin, adminController.getAdminDashboard)
 router.get('/login', adminController.getAdminLogin)
 router.post('/login', adminController.postAdminLogin)
 
-router.get('/products', auth.verifyAdmin, productController.getAdminProduct)
-router.post('/adminSearchProduct', auth.verifyAdmin,productController.postAdminSearchProduct)
 
-router.get('/addProduct', auth.verifyAdmin, productController.getAdminAddProdcuct)
+router.use(auth.verifyAdmin)   // protecting admin routes
+
+router.get('/', adminController.adminLandingPage)
+router.get('/dashboard',  adminController.getAdminDashboard)
+
+router.get('/products',  productController.getAdminProduct)
+router.post('/adminSearchProduct', productController.postAdminSearchProduct)
+
+router.get('/addProduct',  productController.getAdminAddProdcuct)
 
 router.post('/addproduct', upload.fields([
     { name: "productImage1", maxCount: 1 },
@@ -24,7 +29,7 @@ router.post('/addproduct', upload.fields([
     { name: "productImage3", maxCount: 1 }
 ]), productController.postAdminAddProduct)
 
-router.get('/editProduct/:id', auth.verifyAdmin, productController.getAdminEditProduct)
+router.get('/editProduct/:id',  productController.getAdminEditProduct)
 
 router.post('/editProduct/:id', upload.fields([
     { name: "productImage1", maxCount: 1 },
@@ -32,9 +37,9 @@ router.post('/editProduct/:id', upload.fields([
     { name: "productImage3", maxCount: 1 }
 ]), productController.postAdminEditProduct)
 
-router.get('/hideProduct/:id', auth.verifyAdmin, productController.getAdminHideProduct)
+router.get('/hideProduct/:id',  productController.getAdminHideProduct)
 
-router.get('/categoriesAndBrands', auth.verifyAdmin, categoryController.getAdminCategoriesAndBrands)
+router.get('/categoriesAndBrands',  categoryController.getAdminCategoriesAndBrands)
 
 
 router.post('/addCategory', categoryController.postAdminAddCategory)
@@ -42,15 +47,20 @@ router.post('/addCategory', categoryController.postAdminAddCategory)
 
 router.post('/addBrand', brandController.postAdminAddBrand)
 
-router.get('/editBrand/:id', auth.verifyAdmin, brandController.getAdminEditBrand)
+router.get('/editBrand/:id',  brandController.getAdminEditBrand)
 router.post('/editBrand/:id', brandController.postAdminEditBrand)
 
-router.get('/editCategory/:id', auth.verifyAdmin, categoryController.getAdminEditCategory)
+router.get('/editCategory/:id',  categoryController.getAdminEditCategory)
 router.post('/editCategory/:id', categoryController.postAdminEditCategory)
 
 
-router.get('/customers', auth.verifyAdmin, adminController.getCustomers)
-router.get('/blockUser/:id', auth.verifyAdmin, adminController.getAdminBlockUser)
-router.post('/adminSearchUser', auth.verifyAdmin,adminController.postAdminSearchUser)
+router.get('/customers',  adminController.getCustomers)
+router.get('/blockUser/:id',  adminController.getAdminBlockUser)
+router.post('/adminSearchUser', adminController.postAdminSearchUser)
+
+router .get('/orders',orderController.getAdminOrders)
+router .get('/orderDetails/:id',orderController.getAdminOrderDetails)
+router.put('/updateOrderStatus',orderController.putAdminUpdateOrderStatus)
+
 router.get('/logout', adminController.getAdminLogout)
 module.exports = router

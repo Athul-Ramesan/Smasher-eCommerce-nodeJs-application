@@ -6,9 +6,9 @@ const otpModel = require('../models/otpModel')
 const cartModel = require('../models/cartModel')
 const otpService = require('../services/otpService')
 const sendMail = require('../validators/nodeMailer')
-const addressModel= require('../models/addressModel')
-const generateOtp = require('../validators/generateOtp');
-const session = require("express-session");
+
+
+
 
 
 
@@ -33,9 +33,9 @@ module.exports = {
             const id = req.session.user._id
             const cart =await cartModel.findOne({userId : id})
             console.log(cart,'cart');
-            res.render('user/home', { user: req.session.user, products, cart, wishlist:false });
+            res.render('user/home', { user: req.session.user, products, cart, wishlist:false, message:req.flash() });
         } else {
-            res.render('user/home', { user: false })
+            res.render('user/home', { user: false,products })
         }
 
 
@@ -374,19 +374,7 @@ module.exports = {
         }
         
     },
-    checkout : async(req,res)=>{
-        try {
-            const userId = req.session.user._id
-            const user = await userModel.findOne({ email: req.session.user.email });
-            const cart = await cartModel.findOne({ userId: req.session.user._id });
-            const addresses = await addressModel.findOne({ userId: userId })
-            res.render('user/checkout', { user, cart, wishlist: false, addresses, message: req.flash() })
-
-        } catch (error) {
-            console.log(error);
-            res.render('user/404')
-        }
-    },
+    
 
     getLogout: (req, res) => {
         req.session.user = null;

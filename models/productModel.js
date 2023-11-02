@@ -88,7 +88,7 @@ const procuctSchema = new mongoose.Schema({
     default: true
   },
   createdAt: {
-    type: String,
+    type: Date,
 
   },
   status: {

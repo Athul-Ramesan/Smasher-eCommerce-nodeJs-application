@@ -45,6 +45,7 @@ router.post('/searchProduct',productController.postSearchProduct)
 
 router.get('/cart',auth.auth,auth.verifyUser,cartController.getCart)
 
+
 router.post('/addToCart/:id',cartController.getAddToCart)
 router.post('/updateCartQuantity',cartController.postUpdateCartQuantity)
 router.get('/removeFromCart/:id',cartController.getRemoveFromCart)
@@ -68,9 +69,12 @@ router.get('/orderDetails/:id',auth.auth,auth.verifyUser,orderController.getOrde
 router.get('/cancelOrder/:id',auth.auth,auth.verifyUser,orderController.getCancelOrder)
 
 
-router.get('/checkout',auth.auth,auth.verifyUser,userController.checkout)
+router.get('/checkout',auth.auth,auth.verifyUser,orderController.checkout)
 
 router.post('/checkout',auth.auth,auth.verifyUser,orderController.postCheckout)
+router.get('/addAddressCheckout',auth.auth,auth.verifyUser,addressController.getAddAddress)
+router.post('/addAddressCheckout',auth.auth,auth.verifyUser,addressController.postAddAddress)
+router.post('/verifyPayment',auth.auth,auth.verifyUser,orderController.verifyPayment)
 
 router.get('/orderSuccess/:id',auth.auth,auth.verifyUser,orderController.getOrderSuccess)
 router.get('/logout', userController.getLogout)

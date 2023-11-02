@@ -172,18 +172,21 @@
                     </button>
                     
     
-                <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
+                <div class="offcanvas offcanvas-start p-0"   data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
                     aria-labelledby="offcanvasWithBothOptionsLabel">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Filter</h5>
+                    <div class="offcanvas-header bg-black text-center">
+                        <h5 class="offcanvas-title text-white " id="offcanvasWithBothOptionsLabel">FILTER</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
-                    <div class="offcanvas-body">
+                    <div class="offcanvas-body container-fluid" >
                         <!-- Add a form element around the existing content -->
                         <form action="/filterProducts" method="post">
-                            <div class="filter-sidebar">
-                                <h4 class="filter-title">Filter by Category</h4>
-                                <ul class="filter-list">
+                            <div class="filter-sidebar p-0">
+                                <div class="bg-light text-center p-0">
+                                    <h4 class="filter-title">Filter by Category</h4>
+                                </div>
+                                
+                                <ul class="filter-list" style="list-style: none;">
                                     <!-- Radio buttons for category -->
                                     <% if( categories){ %>
                                         <% categories.forEach((category)=>{%>
@@ -191,21 +194,26 @@
                                                 <input type="radio" name="category" id="category1" class="filter-radio"
                                                     value="<%= category._id %>">
                                                 <label for="category1" class="filter-label"><%= category.name %></label>
+                                                <hr>
                                             </li>
                                             <% }) %>
                                     <%} %>
+                                    
                                    
                                     <!-- Add more radio buttons for other categories -->
                                 </ul>
     
-                                <h4 class="filter-title">Filter by Brand</h4>
-                                <ul class="filter-list">
+                                <div class="bg-light text-center p-0">
+                                    <h4 class="filter-title">Filter by Brand</h4>
+                                </div>
+                                <ul class="filter-list " style="list-style: none;">
                                     <!-- Checkbox inputs for brands -->
                                     <% if( brands){ %>
                                         <% brands.forEach((brand)=>{%>
                                     <li class="filter-item">
                                         <input type="checkbox" value="<%= brand._id %>" name="brand" id="brand1" class="filter-checkbox">
                                         <label for="brand1"  class="filter-label"> <%= brand.name %></label> 
+                                        <hr>
                                     </li>
                                     <% }) %>
                                     <%} %>
@@ -256,7 +264,7 @@
                                     </li>
                                 </ul> -->
     
-                                <button type="submit" class="apply-button">Apply</button>
+                                <button type="submit" class="apply-button btn btn-larg btn-dark " style="width: 100%;">Apply</button>
                             </div>
                         </form>
                     </div>
@@ -318,7 +326,17 @@
 
                                     <%} %>
             </div>
-
+            <div class="pagination d-flex justify-content-center g-2 m-5">
+                <%if(currentPage>1){%>
+            <a href="/shopProduct?page=<%=currentPage-1%>" class="btn btn-sm btn-outline-dark ">Prev</a>
+            <% } %>
+            
+                <a href="/shopProduct?page=<%=currentPage%>"  class="btn btn-sm btn-outline-dark "><%=currentPage%></a>
+            
+                <%if(currentPage< totalPages){%>
+            <a href="/shopProduct?page=<%=currentPage+1%>" class="btn btn-sm btn-outline-dark ">Next</a>
+                <% } %>
+            </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -128,13 +128,13 @@
                             <h2>Pricing</h2>
                             <div class="form-group">
                                 <label for="basePrice">Base Price:</label>
-                                <input type="number" name="price" class="form-control bg-light" id="basePrice"
+                                <input type="number" min="0" name="price" class="form-control bg-light" id="basePrice"
                                     placeholder="Enter base price" required />
                             </div>
                             <br>
                             <div class="form-group ">
                                 <label for="discountAmount">Discount Amount:</label>
-                                <input type="number" name="discountAmount" class="form-control bg-light"
+                                <input type="number" min="0" name="discountAmount" class="form-control bg-light"
                                     id="discountAmount" placeholder="Enter discount amount" required />
                             </div>
                         </div>
@@ -147,7 +147,7 @@
 
                             <div class="form-group">
                                 <label for="quantity">Quantity:</label>
-                                <input type="number" name="stock" class="form-control bg-light" id="quantity"
+                                <input type="number" min="0" name="stock" class="form-control bg-light" id="quantity"
                                     placeholder="Enter quantity" required />
                             </div>
                         </div>
@@ -215,4 +215,4 @@
 
 
 
-        <%-include ('../layouts/footer') %>
+        <%-include ('../layouts/adminFooter') %>

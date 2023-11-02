@@ -1,33 +1,34 @@
 <%- include ('../layouts/header') %>
-<%- include ('../partials/userHeader') %>
+    <%- include ('../partials/userHeader') %>
 
-<style>
+        <style>
+            .checkout .form-control {
+                border-radius: 0px !important;
+            }
 
-.checkout .form-control{
-    border-radius: 0px !important;
-}
-.checkout .form-control:focus{
-    border: 1px solid #000 !important;
-    box-shadow: none !important;
-}
-.checkout .nav-link{
-    border: 1px solid #000;
-    border-radius: 0px;
-    margin-bottom: 8px;
-}
-.checkout .tab-content{
-    padding-right: 10px;
-}
+            .checkout .form-control:focus {
+                border: 1px solid #000 !important;
+                box-shadow: none !important;
+            }
 
-</style>
+            .checkout .nav-link {
+                border: 1px solid #000;
+                border-radius: 0px;
+                margin-bottom: 8px;
+            }
 
-<div class="py-3 py-md-4 checkout">
-    <div class="container">
-        <h4>Checkout</h4>
-        <hr>
- <form id="form-checkout">
-        <div class="row">
-            <!-- <div class="col-md-12 mb-4">
+            .checkout .tab-content {
+                padding-right: 10px;
+            }
+        </style>
+
+        <div class="py-3 py-md-4 checkout">
+            <div class="container">
+                <h4>Checkout</h4>
+                <hr>
+                <form id="form-checkout">
+                    <div class="row">
+                        <!-- <div class="col-md-12 mb-4">
                 <div class="shadow bg-white p-3">
                     <h4 class="text-primary">
                         Item Total Amount :
@@ -39,33 +40,40 @@
                     <small>* Tax and other charges are included ?</small>
                 </div>
             </div> -->
-            <h6 class="text-dark">
-                Select Address
-            </h6>
-            <div class="col-md-6 ">
-                <div class="shadow bg-white p-3" >
-                    
+                        <div class="d-flex ">
+                            <h6 class="text-dark">
+                                Select Address
+                            </h6>
+                            <a href="/addAddressCheckout" class="ms-4 mb-2 btn btn btn-outline-info"><i
+                                    class="fa-sharp fa-solid fa-plus"></i>Add new address</a>
 
-                    
-                       
+                        </div>
+
+                        <div class="col-md-6 ">
+                            <div class="shadow bg-white p-3">
 
 
-                                
+
+
+
+
+                                <%if(addresses){%>
 
                                     <%addresses.address.forEach((address,index)=>{ %>
-                
-                
+
+
                                         <div class="container">
                                             <div class="row">
                                                 <div class="col-md-1">
-                                                    <input class="m-3" type="radio" name="address" value="<%=address._id%>" checked>
+                                                    <input class="m-3" type="radio" required name="address"
+                                                        value="<%=address._id%>" checked>
                                                 </div>
                                                 <div class="col-md-10  g-2 shadow">
                                                     <div class="">
                                                         <!-- Card Header -->
-                                                        
+
                                                         <!-- Card content -->
-                                               
+
                                                         <div class="card-body">
                                                             <div class="d-flex">
                                                                 <span class="m-1 font-weight-bold text-uppercase">
@@ -94,84 +102,157 @@
                                                                     <%=address.state %>
                                                                 </span>
                                                             </div>
-                
+
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                
-                
+
+
                                         </div>
                                         <% }) %>
-                
-                
-                               
 
 
-                          
-             
-
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="shadow bg-white p-3">
-                    <h4 class="text-dark">
-                        Select Payment Method
-                    </h4>
-                    <hr>
+                                            <% } %>
 
 
-                    <div class=""> 
-                        <label class="m-5" for=""><input type="radio" name="paymentMethod" value="cod">
-                            Cash On Delivery(COD)</label>
-                        <img width="150px"  src="/images/cod1.png" alt="" >
-                    </div>
-                    <hr>
-                    <div class="d-flex">
-                        <label class="m-5" for=""><input type="radio" name="paymentMethod" value="online">
-                            Razorpay</label>
-                            <div class="ms-5 ps-3 ">
-                                <img class="ps-3" width="150px"  src="/images/raz.png" alt="" >
+
+
+
                             </div>
-                        
-                    </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="shadow bg-white p-3">
+                                <h4 class="text-dark">
+                                    Select Payment Method
+                                </h4>
+                                <hr>
 
-                    <div>
-                        <button class="btn btn-block w-100 btn-outline-primary text-dark me-auto "> PLACE ORDER</button>
-                    </div>
 
-                </div>
+                                <div class="">
+                                    <label class="m-5" for=""><input type="radio" name="paymentMethod" value="cod">
+                                        Cash On Delivery(COD)</label>
+                                    <img width="150px" src="/images/cod1.png" alt="">
+                                </div>
+                                <hr>
+                                <div class="d-flex">
+                                    <label class="m-5" for=""><input type="radio" name="paymentMethod" value="online">
+                                        Razorpay</label>
+                                    <div class="ms-5 ps-3 ">
+                                        <img class="ps-3" width="150px" src="/images/raz.png" alt="">
+                                    </div>
+
+                                </div>
+
+
+                                <div>
+                                    <span class="errorMessage"></span>
+                                </div>
+
+
+                                <div>
+                                    <button class="btn btn-block w-100 btn-outline-primary text-dark me-auto "> PLACE
+                                        ORDER</button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
             </div>
-
         </div>
-    </form>
-    </div>
-</div>
 
-<script>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script>
 
-    $('#form-checkout').submit((e)=>{
-        e.preventDefault();
+            $('#form-checkout').submit((e) => {
+                e.preventDefault();
 
 
-        $.ajax({
-            url : '/checkout',
-            method : 'POST',
-            data : $('#form-checkout').serialize(),
-            success : (response)=>{
-                console.log(response)
-                if(response.success){
-                    
-                    console.log(`/orderSuccess/${response.orderId}`);
-                    window.location.href = `/orderSuccess/${response.orderId}`
-                }else{
-                    console.log(response.error);
+                $.ajax({
+                    url: '/checkout',
+                    method: 'POST',
+                    data: $('#form-checkout').serialize(),
+                    success: (response) => {
+                        console.log(response)
+                        if (response.paymentMethod === 'cod') {
+
+                            console.log(`/orderSuccess/${response.orderId}`);
+                            window.location.href = `/orderSuccess/${response.orderId}`
+                        } else {
+                           handlePayNowClick(response)
+
+                            // } else {
+                            //     const message = document.getElementById('#errorMessage');
+                            //     message.innerText = response.message
+                        }
+                    }
+
+                })
+            })
+                function handlePayNowClick(order){
+                    console.log(order);
+                            var options = {
+                                "key": "rzp_test_ZLOedi08NLKHof", // Enter the Key ID generated from the Dashboard
+                                "amount": order.createdOrder.amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                                "currency": "INR",
+                                "name": "SMASHER",
+                                "description": "Test Transaction",
+                                "image": "/images/logo.png",
+                                "order_id": order.createdOrder.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                                "handler": function (response) {
+                                    console.log(response, 'handler');
+                                    verifyPayment(response,order)
+                                 
+                                },
+                                "prefill": {
+                                    "name": "Gaurav Kumar",
+                                    "email": "gaurav.kumar@example.com",
+                                    "contact": "9000090000"
+                                },
+                                "notes": {
+                                    "address": "Razorpay Corporate Office"
+                                },
+                                "theme": {
+                                    "color": "#3399cc"
+                                }
+                            };
+                            var rzp1 = new Razorpay(options);
+                            rzp1.open();
+                            // rzp1.on('payment.failed', function (response) {
+                            //     alert(response.error.code);
+                            //     alert(response.error.description);
+                            //     alert(response.error.source);
+                            //     alert(response.error.step);
+                            //     alert(response.error.reason);
+                            //     alert(response.error.metadata.order_id);
+                            //     alert(response.error.metadata.payment_id);
+                            // });
+
                 }
-            }
-        })
-    })
+                function verifyPayment(payment, order) {
+                    $.ajax({
+                        method: 'post',
+                        url: '/verifyPayment',
+                        data: {
+                            payment,
+                            order
+                        },
+                        success: (response) => {
+                            if (response.success) {
+                                window.location.href = `/orderSuccess/${response.orderId}`
+                            } else {
+                                console.log('response not get');
+                                location.href = '*'
+                            }
+
+                        }
+                    })
+                }
+           
 
 
-</script>
-<%- include ('../partials/userFooter') %>
-<%- include ('../layouts/footer') %>
+        </script>
+        <%- include ('../partials/userFooter') %>
+            <%- include ('../layouts/footer') %>

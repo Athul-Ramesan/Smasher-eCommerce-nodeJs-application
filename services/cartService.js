@@ -6,26 +6,7 @@ const userModel = require('../models/userModel');
 
 
 module.exports = {
-    // getCart :async (userId)=>{
-    //     return new Promise (async(resolve,reject)=>{
-                        
-    //         try {
-    //             let cart = await cartModel.findOne({user:userId}).populate({
-    //                 path: 'items.productId',
-    //                 ref : 'product'
-    //             })
-    //             if(!cart){
-    //                 const error =  new Error('cart not available for this user')
-    //                 error.status = 400;
-    //                 reject(error)
-    //             }
-
-
-    //         } catch (error) {
-    //             reject(error)
-    //         }
-    //     })
-    // },
+  
     calculateCartTotal : async(userId)=>{
         try {
             const cart = await cartModel.findOne({ userId: userId })

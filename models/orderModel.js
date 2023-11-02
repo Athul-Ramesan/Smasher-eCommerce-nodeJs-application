@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const {USER, PRODUCT, ORDER ,ADDRESS} = require('../utils/constants/schemaName')
 
 const orderSchema = new mongoose.Schema({
+    orderId : {
+        type : String,
+        required: true
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref : USER
@@ -35,8 +39,8 @@ const orderSchema = new mongoose.Schema({
         type: {}
     },
     paymentMethod:{
-        type: String,
-        required: true
+        type: String
+        
     },
     paymentStatus:{
         type: String,

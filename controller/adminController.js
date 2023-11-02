@@ -65,22 +65,23 @@ module.exports = {
     },
 
     getCustomers: async (req, res) => {
+        const itemsPerPage = 10;
+        const currentPage =parseInt( req.query.page) || 1;
+        const skip = (currentPage - 1) * itemsPerPage;
         try {
+            totalItems = await userModel.countDocuments();
+            const totalPages = Math.ceil(totalItems / itemsPerPage)
 
-            const page = parseInt(req.query.page) || 1; // Get the page number from query parameters
-            const perPage = 10; // Number of items per page
-            const skip = (page - 1) * perPage;
-
-            const users = await userModel.find().skip(skip).limit(perPage);
-            const totalCount = await userModel.countDocuments();
-            console.log(users);
+            const users = await userModel
+            .find()
+            .skip(skip)
+            .limit(itemsPerPage);
+           
 
             res.render("admin/customers", {
                 users,
-                currentPage: page,
-                perPage,
-                totalCount,
-                totalPages: Math.ceil(totalCount / perPage),
+                currentPage,
+                totalPages,
                 message: req.flash()
             })
 

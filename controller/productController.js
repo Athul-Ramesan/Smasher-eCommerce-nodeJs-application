@@ -9,31 +9,51 @@ const userModel = require('../models/userModel')
 module.exports = {
 
     getAdminProduct: async (req, res) => {
+        const itemsPerPage = 10;
+        const currentPage =parseInt( req.query.page) || 1;
+        const skip = (currentPage - 1) * itemsPerPage;
         try {
-            const products = await productModel.find({})
-            res.render('admin/products', { products })
+            totalItems = await productModel.countDocuments();
+            const totalPages = Math.ceil(totalItems / itemsPerPage)
+            console.log(totalPages);
+
+            const products = await productModel
+            .find()
+            .skip(skip)
+            .limit(itemsPerPage)
+
+
+            const formatedProducts = products.map(doc=>({
+                ...doc.toObject(),
+                createdAt : moment(doc.createdAt).format('MMMM Do YYYY, h:mm:ss a'),
+            }))
+            res.render('admin/products', { 
+                products :formatedProducts,
+                totalPages,
+                currentPage
+             })
         } catch (error) {
             console.log(error);
         }
 
     },
-    postAdminSearchProduct: async(req,res)=>{
+    postAdminSearchProduct: async (req, res) => {
         const query = req.body.query;
         console.log(req.body);
         try {
             await productModel.find({
-                 
-                    name:{ $regex :'^'+ query,$options: 'i'} 
-                  
-            }).then((result)=>{
-                if(result!== null){
+
+                name: { $regex: '^' + query, $options: 'i' }
+
+            }).then((result) => {
+                if (result !== null) {
                     const products = result;
                     console.log(result);
                     res.render('admin/products', { products })
-                }else{
+                } else {
 
                 }
-               
+
             })
         } catch (error) {
             console.log(error);
@@ -82,12 +102,12 @@ module.exports = {
                 category: category,
                 specificatios: specification,
                 subcategory: subcategory,
-                stock: stock,
-                price: price,
-                discountAmount: discountAmount,
+                stock: Math.abs(stock),
+                price: Math.abs(price),
+                discountAmount: Math.abs(discountAmount),
                 brand: brand,
                 tags: tags,
-                createdAt: moment(new Date()).format('MMMM Do YYYY, h:mm:ss a')
+                createdAt: new Date()
             });
             await newProduct.save()
                 .then(savedProduct => {
@@ -161,9 +181,9 @@ module.exports = {
                         category: category,
                         specificatios: specification,
                         subcategory: subcategory,
-                        stock: stock,
-                        price: price,
-                        discountAmount: discountAmount,
+                        stock: Math.abs(stock),
+                        price: Math.abs(price),
+                        discountAmount: Math.abs(discountAmount),
                         brand: brand,
                         tags: tags,
                         createdAt: moment(new Date()).format('MMMM Do YYYY, h:mm:ss a')
@@ -217,18 +237,49 @@ module.exports = {
         }
     },
     getShopProduct: async (req, res) => {
+        const itemsPerPage = 5;
+        const currentPage = parseInt(req.query.page) || 1;
+        const skip = (currentPage - 1) * itemsPerPage;
         try {
+            const totalitems = await productModel.countDocuments();
+            const totalPages = Math.ceil(totalitems / itemsPerPage)
 
-            const products = await productModel.find()
+
+
+            const products = await productModel
+                .find({ active: true })
+                .skip(skip)
+                .limit(itemsPerPage)
+
             const categories = await categoryModel.find()
             const brands = await brandModel.find()
 
             if (req.session.user) {
                 const user = await userModel.findById(req.session.user._id)
                 const cart = await cartModel.findOne({ userId: req.session.user._id })
-                res.render('user/shop-product', { products, user, brands, cart, categories, wishlist: false ,message: req.flash()})
+                res.render('user/shop-product', {
+                    currentPage,
+                    totalPages,
+                    products,
+                    user,
+                    brands,
+                    cart,
+                    categories,
+                    wishlist: false,
+                    message: req.flash()
+                })
             } else {
-                res.render('user/shop-product', { products, brands, categories, user: req.session.user, cart: false, wishlist: false, message: req.flash() })
+                res.render('user/shop-product', {
+                    currentPage,
+                    totalPages,
+                    products,
+                    brands,
+                    categories,
+                    user: req.session.user,
+                    cart: false,
+                    wishlist: false,
+                    message: req.flash()
+                })
             }
 
         } catch (error) {
@@ -236,43 +287,100 @@ module.exports = {
         }
     },
     postFilterProdcuts: async (req, res) => {
+        const itemsPerPage = 5;
+        const currentPage = parseInt(req.query.page) || 1;
+        const skip = (currentPage - 1) * itemsPerPage;
+
         const brand = req.body.brand;
         const category = req.body.category
-        const categories = await categoryModel.find()
-        const brands = await brandModel.find()
+
         try {
+            const totalitems = await productModel.countDocuments();
+            const totalPages = Math.ceil(totalitems / itemsPerPage)
+
+
+            const categories = await categoryModel.find()
+            const brands = await brandModel.find()
+
             if (req.session.user) {
                 if (brand && category) {
-                    const products = await productModel.find({ brand: brand, category: category })
+                    const products = await productModel.find({ brand: brand, category: category, active: true })
                     console.log(products);
                     const user = await userModel.findById(req.session.user._id)
                     const cart = await cartModel.findOne({ userId: req.session.user._id })
-                    res.render('user/shop-product', { products, user, cart, brands, categories, wishlist: false })
+
+                    res.render('user/shop-product', {
+                        currentPage,
+                        totalPages,
+                        products,
+                        user,
+                        cart,
+                        message: req.flash(),
+                        brands,
+                        categories,
+                        wishlist: false
+                    })
 
                 } else if (brand || category) {
                     const products = await productModel.find({
-                        $or:
-                            [{ category: category }, { brand: brand }]
+                        $and: [{ active: true },
+                        {
+                            $or:
+                                [{ category: category }, { brand: brand }]
+                        }
+                        ]
                     })
                     console.log(products);
                     const user = await userModel.findById(req.session.user._id)
                     const cart = await cartModel.findOne({ userId: req.session.user._id })
-                    res.render('user/shop-product', { products, user, cart, brands, categories, wishlist: false })
+                    res.render('user/shop-product', {
+                        currentPage,
+                        totalPages,
+                        products,
+                        user,
+                        cart,
+                        brands,
+                        categories,
+                        wishlist: false,
+                        message: req.flash()
+                    })
                 }
             } else {
                 if (brand && category) {
-                    const products = await productModel.find({ brand: brand, category: category })
+                    const products = await productModel.find({ brand: brand, category: category ,active:true})
                     console.log(products);
 
-                    res.render('user/shop-product', { products, user: false, cart: false, brands, categories, wishlist: false })
+                    res.render('user/shop-product', {
+                        currentPage,
+                        totalPages,
+                        products,
+                        user: false,
+                        cart: false,
+                        brands,
+                        categories,
+                        wishlist: false,
+                        message: req.flash()
+                    })
 
                 } else if (brand || category) {
                     const products = await productModel.find({
                         $or:
                             [{ category: category }, { brand: brand }]
+
+
                     })
                     console.log(products);
-                    res.render('user/shop-product', { products, user: false, cart: false, brands, categories, wishlist: false })
+                    res.render('user/shop-product', {
+                        currentPage,
+                        totalPages,
+                        products,
+                        user: false,
+                        cart: false,
+                        brands,
+                        categories,
+                        wishlist: false,
+                        message: req.flash()
+                    })
                 }
             }
 
@@ -284,14 +392,14 @@ module.exports = {
     postSearchProduct: async (req, res) => {
         const query = req.body.query;
         try {
-            await productModel.find({ 
-                $or :[
-                {name: { $regex:'^' + query, $options: 'i' } },
-                {tags: { $regex:'^' + query, $options: 'i' } }
+            await productModel.find({
+                $or: [
+                    { name: { $regex: '^' + query, $options: 'i' } },
+                    { tags: { $regex: '^' + query, $options: 'i' } }
                 ]
             }).then(async (result) => {
                 console.log(result);
-                if (result.length!==0 && query.length >0) {
+                if (result.length !== 0 && query.length > 0) {
 
 
                     const products = result
@@ -301,16 +409,16 @@ module.exports = {
                     if (req.session.user) {
                         const user = await userModel.findById(req.session.user._id)
                         const cart = await cartModel.findOne({ userId: req.session.user._id })
-                        res.render('user/shop-product', { products, user, brands, cart, categories, wishlist: false,message: req.flash() })
+                        res.render('user/shop-product', { products, user, brands, cart, categories, wishlist: false, message: req.flash() })
                     } else {
-                        res.render('user/shop-product', { products, brands, categories, user: req.session.user, cart: false, wishlist: false ,message: req.flash()})
+                        res.render('user/shop-product', { products, brands, categories, user: req.session.user, cart: false, wishlist: false, message: req.flash() })
                     }
 
-                }else{
-                    req.flash('productSearchMessage','! No item found as per your request')
+                } else {
+                    req.flash('productSearchMessage', '! No item found as per your request')
                     res.redirect('/shopProduct')
                 }
-            }).catch(error=> console.log(error))
+            }).catch(error => console.log(error))
         } catch (error) {
             console.log(error);
         }

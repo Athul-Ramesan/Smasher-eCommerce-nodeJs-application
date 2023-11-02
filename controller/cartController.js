@@ -1,7 +1,7 @@
 const userModel = require('../models/userModel')
 const cartModel = require('../models/cartModel')
 const productModel = require('../models/productModel');
-
+const addressModel = require('../models/addressModel')
 
 const cartService = require('../services/cartService')
 
@@ -69,6 +69,7 @@ console.log(cartCount,'cartCount');
             res.render('user/404')
         }
     },
+   
 
     postUpdateCartQuantity: async (req, res) => {
         try {
