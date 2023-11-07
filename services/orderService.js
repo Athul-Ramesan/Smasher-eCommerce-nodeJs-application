@@ -1,6 +1,7 @@
 const cartModel = require('../models/cartModel')
 const addressModel = require('../models/addressModel')
 const orderModel = require('../models/orderModel')
+const productModel = require('../models/productModel')
 const Razorpay = require('razorpay')
 const uuid =require('uuid')
 
@@ -14,7 +15,7 @@ module.exports = {
     generateOrder: async (userId, addressId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                console.log('hiiii');
+                
                 const generatedOrderId = generateOrderId();
             console.log('generatedOrderId',generatedOrderId);
 
@@ -35,6 +36,7 @@ module.exports = {
                     expectedDeliveryDate: new Date(orderedDate).setDate(orderedDate.getDate() + 7)
                 })
                 const order = await data.save()
+               
 
                 if (order) {
                     resolve({
@@ -59,7 +61,7 @@ module.exports = {
     },
     razorpay: async (generatedOrderId,totalAmount)=>{
         return new Promise ((resolve,reject)=>{
-            var razorpay = new Razorpay({ key_id: 'rzp_test_ZLOedi08NLKHof', key_secret: 'JgTsfJUr8zUD26HaeJd0brUM' })
+            var razorpay = new Razorpay({ key_id: process.env.PAYMENT_KEY_ID, key_secret: process.env.PAYMENT_KEY_SECRET })
 
         
             const razorpayOrder = razorpay.orders.create({
@@ -75,7 +77,33 @@ console.log(razorpayOrder);
             resolve(razorpayOrder)
         })
         
+    },
+    stockUpdate :async (orderId)=>{
+        try {
+            const order = await orderModel.findOne({_id:orderId})
+            for (const item of order.items) {
+                const productId = item.productId;
+                const quantity = item.quantity;
+    
+                const product = await productModel.findOne({ _id: productId })
+    
+                balanceStock = product.stock - quantity;
+                if (balanceStock <= 0) {
+                    product.stock = balanceStock;
+                    product.status = 'Out of stock';
+                    await product.save()
+                } else {
+                    product.stock = balanceStock;
+                    await product.save()
+                }
+                
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        
     }
+    
 }
 
 

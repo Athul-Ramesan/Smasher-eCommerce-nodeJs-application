@@ -1,6 +1,7 @@
 
 const categoryModel = require('../models/categoryModel')
-const brandModel = require('../models/brandModel')
+const brandModel = require('../models/brandModel');
+const productModel = require('../models/productModel')
 const { CATEGORY, BRAND } = require('../utils/constants/schemaName')
 
 module.exports = {
@@ -12,7 +13,12 @@ module.exports = {
             const brands = await brandModel.find({})
 
 
-            res.render('admin/categories', { categories, brands, message: req.flash() })
+            res.render('admin/categories', {
+                categories,
+                brands,
+                message: req.flash(),
+                title: 'Categories & Brands'
+            })
         } catch (error) {
             console.log(error);
         }
@@ -21,7 +27,7 @@ module.exports = {
 
     getAdminAddCategory: (req, res) => {
 
-        res.render('admin/add-category')
+        res.render('admin/add-category', { title: 'Admin-add-cat' })
     },
     postAdminAddCategory: async (req, res) => {
         try {
@@ -44,7 +50,10 @@ module.exports = {
 
             const category = await categoryModel.findOne({ _id: categoryId })
 
-            res.render('admin/edit-category', { category })
+            res.render('admin/edit-category', {
+                category,
+                title: 'admin-edit-cat'
+            })
 
         } catch (error) {
             console.log(error);
@@ -60,5 +69,6 @@ module.exports = {
             console.log(error);
         }
     },
+
 
 }

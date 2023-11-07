@@ -80,9 +80,15 @@ module.exports = {
             const user = await userModel.findOne({ email: req.session.user.email });
             const cart = await cartModel.findOne({ userId: req.session.user._id });
             const addresses = await addressModel.findOne({ userId: userId })
-
-            if (cart.items.length > 0) {
-                res.render('user/checkout', { user, cart, wishlist: false, addresses, message: req.flash() })
+            const product = await 
+            if (cart) {
+                res.render('user/checkout', {
+                    user,
+                    cart,
+                    wishlist: false,
+                    addresses,
+                    message: req.flash()
+                })
             } else {
                 res.redirect('/cart')
             }
@@ -109,62 +115,34 @@ module.exports = {
 
             if (paymentMethod && addressId) {
 
-                const {order,generatedOrderId}= await orderService.generateOrder(userId,addressId)
-                
-                if (paymentMethod === 'cod'){
-                   await orderModel.findOneAndUpdate(
-                    {
-                        orderId : generatedOrderId
-                    },
-                    {
-                        paymentMethod: paymentMethod
-                    }
-                    ).then(result=>{
+                const { order, generatedOrderId } = await orderService.generateOrder(userId, addressId)
 
-                        console.log(result,'result');
-                        res.json({ success: true, paymentMethod:'cod' })
-                    }).catch(err=>console.log(err))
-                }else if(paymentMethod === 'online'){
-                    await orderService.razorpay(generatedOrderId,totalAmount)
-                    .then((createdOrder)=>{
-                        
-                        res.json({success: true,createdOrder, paymentMethod:'online'})
-                    })
+                if (paymentMethod === 'cod') {
+                    await orderModel.findOneAndUpdate(
+                        {
+                            orderId: generatedOrderId
+                        },
+                        {
+                            paymentMethod: paymentMethod
+                        }
+                    ).then(async (result) => {
+
+                        await cartModel.findOneAndDelete({ userId: userId })
+                        const orderId = result._id
+                        console.log(orderId, 'orderIdddd');
+                        console.log(result, 'result');
+                        orderService.stockUpdate(orderId)
+                        res.json({ success: true, paymentMethod: 'cod', orderId })
+                    }).catch(err => console.log(err))
+                } else if (paymentMethod === 'online') {
+                    await orderService.razorpay(generatedOrderId, totalAmount)
+                        .then((createdOrder) => {
+
+                            res.json({ success: true, createdOrder, paymentMethod: 'online' })
+                        })
                 }
-                
-                
-    
-                    // const result = await cartModel.findOneAndDelete({ userId: userId })
-                    // console.log(result);
-                    // await order.save().then(async (result) => {
-                    //     const orderId = result._id
-                    //     console.log(orderId);
-                    //     for (const item of order.items) {
-                    //         const productId = item.productId;
-                    //         const quantity = item.quantity;
-    
-    
-    
-                    //         const product = await productModel.findOne({ _id: productId })
-    
-                    //         balanceStock = product.stock - quantity;
-                    //         if (balanceStock <= 0) {
-                    //             product.stock = balanceStock;
-                    //             product.status = 'Out of stock';
-                    //             await product.save()
-                    //         } else {
-                    //             product.stock = balanceStock;
-                    //             await product.save()
-                    //         }
-    
-                    //     }
-                    //     res.json({ success: true, orderId })
-                    // }).catch(error => {
-                    //     res.json({ success: false })
-                    // })
-                
 
-                
+
             } else {
                 if (paymentMethod && !addressId) {
                     res.json({ success: false, message: 'please select shipping address' })
@@ -175,41 +153,48 @@ module.exports = {
             }
 
         } catch (error) {
+            res.json({ error: 'something went wrong, please try again' })
             console.log(error);
         }
 
     },
-    verifyPayment :async (req,res)=>{
-
+    verifyPayment: async (req, res) => {
+        const userId = new mongoose.Types.ObjectId(req.session.user._id)
         try {
-                console.log("it is the body", req.body);
-                let hmac = crypto.createHmac("sha256", 'JgTsfJUr8zUD26HaeJd0brUM');
-                hmac.update(
-                  req.body.payment.razorpay_order_id +
-                    "|" +
-                    req.body.payment.razorpay_payment_id
-                );
-            
-                hmac = hmac.digest("hex");
-                console.log(hmac);
-                if (hmac === req.body.payment.razorpay_signature) {
+            console.log("it is the body", req.body);
+            let hmac = crypto.createHmac("sha256", 'JgTsfJUr8zUD26HaeJd0brUM');
+            hmac.update(
+                req.body.payment.razorpay_order_id +
+                "|" +
+                req.body.payment.razorpay_payment_id
+            );
 
-                    console.log('inside hmac');
-                  const generatedOrderId = req.body.order.createdOrder.receipt
-                
-                  await orderModel.findOneAndUpdate({orderId: generatedOrderId}, {
+            hmac = hmac.digest("hex");
+            console.log(hmac);
+            if (hmac === req.body.payment.razorpay_signature) {
+
+                console.log('inside hmac');
+                const generatedOrderId = req.body.order.createdOrder.receipt
+
+                await orderModel.findOneAndUpdate({ orderId: generatedOrderId }, {
                     paymentStatus: "Paid",
                     paymentMethod: "Online",
-                  }).then((result)=>{
-                    console.log(result,'result');
-                  })
-                  console.log("hmac success");
-                  res.json({ success: true });
-                } else {
-                  console.log("hmac failed");
-                  res.json({ failure: true});
-                    }
-     
+                }, { new: true }).then(async (result) => {
+                    console.log(result, 'result');
+                    const orderId = result._id;
+                    orderService.stockUpdate(orderId);
+                    await cartModel.findOneAndDelete({ userId: userId })
+                    res.json({ success: true, orderId });
+                }).catch(error => {
+                    console.log(error);
+                })
+                console.log("hmac success");
+
+            } else {
+                console.log("hmac failed");
+                res.json({ failure: true });
+            }
+
         } catch (error) {
             console.log(error);
         }

@@ -66,7 +66,7 @@
                                             <div class="row">
                                                 <div class="col-md-1">
                                                     <input class="m-3" type="radio" required name="address"
-                                                        value="<%=address._id%>" checked>
+                                                        value="<%=address._id%>" id="addressRadio-<%=index%>" >
                                                 </div>
                                                 <div class="col-md-10  g-2 shadow">
                                                     <div class="">
@@ -162,10 +162,10 @@
                 </form>
             </div>
         </div>
-
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <script>
-
+            document.getElementById('addressRadio-0').checked= true;
             $('#form-checkout').submit((e) => {
                 e.preventDefault();
 
@@ -174,8 +174,9 @@
                     url: '/checkout',
                     method: 'POST',
                     data: $('#form-checkout').serialize(),
-                    success: (response) => {
-                        console.log(response)
+                    success: ((response) => {
+                        if(response.success){
+                            console.log(response)
                         if (response.paymentMethod === 'cod') {
 
                             console.log(`/orderSuccess/${response.orderId}`);
@@ -187,7 +188,32 @@
                             //     const message = document.getElementById('#errorMessage');
                             //     message.innerText = response.message
                         }
-                    }
+                        }else{
+                            if(response.error){
+                                //toastify here
+                            }
+                            if(!response.success){
+                                Swal.fire({
+                                    title: response.message,
+                                    showClass: {
+                                        popup: `
+                                        animate__animated
+                                        animate__fadeInUp
+                                        animate__faster
+                                        `
+                                    },
+                                    hideClass: {
+                                        popup: `
+                                        animate__animated
+                                        animate__fadeOutDown
+                                        animate__faster
+                                        `
+                                    }
+                                });
+                            }
+                        }
+                        
+                    })
 
                 })
             })
@@ -220,15 +246,15 @@
                             };
                             var rzp1 = new Razorpay(options);
                             rzp1.open();
-                            // rzp1.on('payment.failed', function (response) {
-                            //     alert(response.error.code);
-                            //     alert(response.error.description);
-                            //     alert(response.error.source);
-                            //     alert(response.error.step);
-                            //     alert(response.error.reason);
-                            //     alert(response.error.metadata.order_id);
-                            //     alert(response.error.metadata.payment_id);
-                            // });
+                            rzp1.on('payment.failed', function (response) {
+                                alert(response.error.code);
+                                alert(response.error.description);
+                                alert(response.error.source);
+                                alert(response.error.step);
+                                alert(response.error.reason);
+                                alert(response.error.metadata.order_id);
+                                alert(response.error.metadata.payment_id);
+                            });
 
                 }
                 function verifyPayment(payment, order) {

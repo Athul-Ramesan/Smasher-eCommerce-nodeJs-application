@@ -25,37 +25,35 @@
             <div class="row gx-5">
               <aside class="col-lg-6">
                 <div class="border rounded-4 mb-3 d-flex justify-content-center">
-                  <a id="img-container" data-fslightbox="mygalley" class="rounded-4" target="_blank" data-type="image"
-                    href="#">
-                    <img style="max-width: 100%; max-height: 100vh; margin: auto;" class="rounded-4 fit"
-                      src="/uploads/<%=product.productImage1 %>" />
-                  </a>
+                  <div id="img-container">
+                    <img id="main-image" style="max-width: 100%; max-height: 100vh; margin: auto;" class="rounded-4 fit"
+                    src="/uploads/<%= product.productImage1 %>" />
+                  </div>
+                    
+                
                 </div>
                 <div class="d-flex justify-content-center mb-3">
-                  <a data-fslightbox="mygalley" class="border mx-1 rounded-2" target="_blank" data-type="image" href="#"
-                    class="item-thumb">
-                    <img width="110" height="110" class="rounded-2" src="/uploads/<%=product.productImage2 %>" />
-                  </a>
-                  <a data-fslightbox="mygalley" class="border mx-1 rounded-2" target="_blank" data-type="image" href="#"
-                    class="item-thumb">
-                    <img width="110" height="110" class="rounded-2" src="/uploads/<%=product.productImage3 %>" />
-                  </a>
-                  <a data-fslightbox="mygalley" class="border mx-1 rounded-2" target="_blank" data-type="image" href="#"
-                    class="item-thumb">
-                    <img width="110" height="110" class="rounded-2" src="/uploads/<%=product.productImage1 %>" />
-                  </a>
-                  <a data-fslightbox="mygalley" class="border mx-1 rounded-2" target="_blank" data-type="image" href="#"
-                    class="item-thumb">
-                    <img width="110" height="110" class="rounded-2" src="/uploads/<%=product.productImage2 %>" />
-                  </a>
-                  <a data-fslightbox="mygalley" class="border mx-1 rounded-2" target="_blank" data-type="image" href="#"
-                    class="item-thumb">
-                    <img width="110" height="110" class="rounded-2" src="/uploads/<%=product.productImage3 %>" />
-                  </a>
+                  <div class="col-6 col-md-3">
+                    <img src="/uploads/<%= product.productImage2 %>" alt="Product Image 2"
+                      class="img-thumbnail rounded sub-image" onclick="selectImage(this)" />
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <img src="/uploads/<%= product.productImage3 %>" alt="Product Image 3"
+                      class="img-thumbnail rounded sub-image" onclick="selectImage(this)" />
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <img src="/uploads/<%= product.productImage2 %>" alt="Product Image 4"
+                      class="img-thumbnail rounded sub-image" onclick="selectImage(this)" />
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <img src="/uploads/<%= product.productImage3 %>" alt="Product Image 5"
+                      class="img-thumbnail rounded sub-image" onclick="selectImage(this)" />
+                  </div>
                 </div>
                 <!-- thumbs-wrap.// -->
                 <!-- gallery-wrap .end// -->
               </aside>
+              
               <main class="col-lg-6">
                 <div class="ps-lg-3">
                   <h4 class="title text-dark">
@@ -74,13 +72,17 @@
                       </span>
                     </div>
                     <span class="text-muted"><i class="fas fa-shopping-basket fa-sm mx-1"></i>154 orders</span>
-                    <% if(product.active) {%>
+                    <% if(product.stock>0) {%>
                       <span class="text-success ms-2">In stock</span>
                       <%}else{%>
                         <span class="text-danger ms-2">out-of stock</span>
                         <%}%>
                   </div>
-
+                  <% if(product.stock<10) {%>
+                  <div class="alert alert-danger">
+                    Only <%=product.stock %> Item left in Stock
+                  </div>
+                  <%}%>
                   <div class="mb-3">
                     <span class="h5">₹1999</span>
                     <span class="text-muted">/-</span>
@@ -121,7 +123,11 @@
                   
                 </div>
                 <%if(user){ %>
-                <a onclick="addToCart('<%=product._id%>','<%=product.name%>')" class="btn btn-primary shadow-0"> <i class="me-1 fa fa-shopping-basket"></i> Add to cart
+                <a  onclick="addToCart('<%=product._id%>','<%=product.name%>')" class="btn btn-primary shadow-0"> <i class="me-1 fa fa-shopping-basket" 
+                  <%if(product.stock===0){ %>
+                    disabled
+                    <% } %>
+                  ></i> Add to cart
                 </a>
                 <a  href="#" class="btn btn-outline-warning text-dark  shadow-0"> Add to wishlist </a>
                 <% }else{ %>
@@ -311,13 +317,22 @@
       <!-- Footer -->
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script>
-        var options = {
+
+        document.addEventListener('DOMContentLoaded',()=>{
+          var options = {
           width: 400,
           zoomWidth: 500,
           offset: { vertical: 0, horizontal: 10 }
         };
         new ImageZoom(document.getElementById("img-container"), options);
+      })
+        
 
+         // Function to switch main image when a sub-image is clicked
+    function selectImage(subImage) {
+      var mainImage = document.getElementById("main-image");
+      mainImage.src = subImage.src;
+    }
         function addToCart(id, name) {
                 console.log(id);
 
@@ -328,7 +343,7 @@
                     contentType: 'application/json', // Set request content type
                 })
                     .done(function (data) {
-                        console.log(data.cartCount);
+                        console.log(data);
                         swal(name, 'is added to cart', 'success');
                         const cartCountElement = document.getElementById('cart-count');
                         if (cartCountElement) {
@@ -358,6 +373,7 @@
                     }
                 });
             }
+      
      
 
       </script>

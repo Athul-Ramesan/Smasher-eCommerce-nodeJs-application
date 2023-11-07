@@ -50,7 +50,7 @@
                           <div class="">
                             <div class="col-md-4 col-6 mb-5">
                               <label class="mb-2 d-block">Quantity</label>
-                              <div class="input-group mb-3" style="width: 150px;">
+                              <div class="input-group mb-3 decrement-button" style="width: 150px;">
                                 <button class="btn btn-white border border-secondary px-3" type="button"
                                   id="decrement-quantity-<%=item.productId._id%>""
                                 onclick=" increaseQuantity('<%=item.productId._id%>',-1,'<%=item.productId.price%>')" >
@@ -259,9 +259,22 @@
 
     <!-- JavaScript Section -->
     <script>
+      
+
+      document.addEventListener("DOMContentLoaded", function () {
+  // Add an event listener to all quantity input elements
+  const quantityInputs = document.querySelectorAll('.quantity');
+  quantityInputs.forEach(function (input) {
+    // Check input value and disable the decrement button if it's 1
+    const decrementButton = document.getElementById(`decrement-quantity-${input.getAttribute('data-product-id')}`);
+    if (parseInt(input.value) === 1) {
+      decrementButton.disabled = true;
+    }
+  });
+});
 
       function increaseQuantity(id, netChange, price) {
-        const quantiyInput = document.getElementById(`quantity_${id}`);
+        const quntityInput = document.getElementById(`quantity_${id}`);
 
 
 
@@ -278,30 +291,30 @@
               quantity: netChange
             },
             success: (data) => {
-              quantiyInput.value = data.newQuantity
+              quntityInput.value = data.newQuantity
               const productTotalAmount = data.newQuantity * price
               productTotal.textContent = 'Total ₹ ' + productTotalAmount
               totalAmount.textContent = `  ₹${data.totalAmount}.00`
               grandTotal.textContent = `   ₹${data.totalAmount}.00`
 
-              if (parseInt(quantiyInput.value) < 2) {
-                console.log('insideif');
+              if (parseInt(quntityInput.value) < 2) {
+                
                 document.getElementById(`decrement-quantity-${id}`).setAttribute('disabled', true)
               } else {
-                console.log('inside else');
+               
                 document.getElementById(`decrement-quantity-${id}`).removeAttribute("disabled")
               }
-              if ((data.stock - parseInt(quantiyInput.value)) === 2) {
+              if ((data.stock - parseInt(quntityInput.value)) === 2) {
                 document.getElementById(`stock-message-${id}`).textContent = 'Only two items left in stock'
                 document.getElementById(`stock-message-${id}`).style.color = 'red'
               } else {
                 document.getElementById(`stock-message-${id}`).textContent = ''
               }
 
-              if ((data.stock - parseInt(quantiyInput.value)) === 0) {
+              if ((data.stock - parseInt(quntityInput.value)) === 0) {
                 document.getElementById(`increment-quantity-${id}`).setAttribute('disabled', true)
               } else {
-                console.log('inside else');
+                
                 document.getElementById(`increment-quantity-${id}`).removeAttribute("disabled")
               }
 

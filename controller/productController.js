@@ -30,7 +30,8 @@ module.exports = {
             res.render('admin/products', { 
                 products :formatedProducts,
                 totalPages,
-                currentPage
+                currentPage,
+                title : "Admin-products"
              })
         } catch (error) {
             console.log(error);
@@ -91,6 +92,7 @@ module.exports = {
             const image2 = req.files['productImage2'][0].filename
             const image3 = req.files['productImage3'][0].filename
 
+            
 
             const newProduct = new productModel({
                 name: productName,
@@ -164,9 +166,12 @@ module.exports = {
             } = req.body
 
 
-            const image1 = req.files['productImage1'][0].filename
-            const image2 = req.files['productImage2'][0].filename
-            const image3 = req.files['productImage3'][0].filename
+
+           
+                const image1 = req.files['productImage1'][0].filename
+                const image2 = req.files['productImage2'][0].filename
+                const image3 = req.files['productImage3'][0].filename
+                    
 
 
             await productModel.findOneAndUpdate({ _id: productId },
@@ -185,8 +190,8 @@ module.exports = {
                         price: Math.abs(price),
                         discountAmount: Math.abs(discountAmount),
                         brand: brand,
-                        tags: tags,
-                        createdAt: moment(new Date()).format('MMMM Do YYYY, h:mm:ss a')
+                        tags: tags
+                        
 
                     }
                 })
@@ -224,10 +229,10 @@ module.exports = {
 
     },
     getProductView: async (req, res) => {
+        const productId = req.params.id;
         try {
             const user = await userModel.findOne({ email: req.session.user.email });
             const cart = await cartModel.findOne({ userId: req.session.user._id });
-            const productId = req.params.id;
             const product = await productModel.findOne({ _id: productId }).populate('brand')
 
             console.log(product);

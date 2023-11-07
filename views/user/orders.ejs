@@ -43,7 +43,7 @@
 
                                         <% if(order.status==='Cancelled' ){ %>
                                             <span class="text-danger">Order Cancelled </span>
-                                            <%}else if(order.status=='Rejected' ){%>
+                                            <%}else if( order.status=='Rejected' ){%>
                                                 <span class="text-danger">Order Rejected </span>
                                                 <%}else{%>
                                                     <a href="/cancelOrder/<%= order._id %>"

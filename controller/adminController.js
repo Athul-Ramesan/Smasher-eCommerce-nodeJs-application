@@ -2,17 +2,241 @@ const adminModel = require('../models/adminModel');
 const categoryModel = require('../models/categoryModel')
 const brandModel = require('../models/brandModel')
 const userModel = require('../models/userModel')
-const productModel = require('../models/productModel')
+const orderModel = require('../models/orderModel')
 const { CATEGORY, BRAND } = require('../utils/constants/schemaName')
 
 
 module.exports = {
-    adminLandingPage: (erq, res) => {
+    adminLandingPage: (req, res) => {
         res.redirect('/admin/dashboard')
     },
-    getAdminDashboard: (req, res) => {
-        console.log(req.session);
-        res.render('admin/dashboard', { message: req.flash(), admin: true })
+    getAdminDashboard: async (req, res) => {
+        try {
+            const bestSellingProductsGroup = await orderModel.aggregate([
+                {
+                    $match: {
+                        status: {
+                            $nin: ['Rejected', 'Cancelled']
+                        }
+                    }
+                },
+                {
+                    $unwind: '$items'
+                },
+                {
+                    $group: {
+                        _id: '$items.productId',
+                        totalProducts: { $sum: '$items.quantity' }
+                    }
+                },
+                {
+                    $sort: { 'totalProducts': -1 }
+                },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'productDetails'
+                    }
+                }
+            ]);
+
+            const bestSellingProducts = []
+            const totalProducts = []
+            let totalProductsCount = 0
+            bestSellingProductsGroup.forEach(doc => {
+                bestSellingProducts.push(doc.productDetails[0]);
+                totalProducts.push(doc.totalProducts);
+                totalProductsCount += doc.totalProducts
+            })
+            res.render('admin/dashboard', {
+                message: req.flash(),
+                admin: true,
+                bestSellingProducts,
+                totalProducts,
+                totalProductsCount,
+                title: "Admin-Dashboard"
+            })
+        } catch (error) {
+            console.log(error);
+        }
+
+
+    },
+    getAdminDashboardData: async (req, res) => {
+        console.log(req.url);
+        try {
+            if (req.url === '/countOrdersByDay') {
+
+                const revenueAndSalesByDay = await orderModel.aggregate([
+                    {
+                        $match: {
+                            status: {
+                                $nin: ['Rejected', 'Cancelled']
+                            }
+                        }
+                    },
+                    {
+                        $unwind: '$items'
+                    },
+                    {
+                        $group: {
+                            _id: {
+                                date: {
+                                    $dateToString: {
+                                        format: '%Y-%m-%d',
+                                        date: '$orderedDate'
+                                    }
+                                }
+                            },
+                            totalQuantity: { $sum: '$items.quantity' },
+                            revenue: { $sum: '$totalAmount' },
+                            sales: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $sort: { '_id.date': 1 }
+                    }
+                ]);
+
+
+
+                let totalRevenue = 0;
+                let totalSales = 0;
+                const timePeriods = [];
+                const dataPerPeriod = [];
+                const salesPerPeriod = [];
+                revenueAndSalesByDay.forEach((doc) => {
+                    totalRevenue += doc.revenue;
+                    totalSales += doc.sales;
+                    timePeriods.push(doc._id.date)
+                    dataPerPeriod.push(doc.revenue);
+                    salesPerPeriod.push(doc.sales);
+                });
+                console.log(totalRevenue, 'totalRevenue');
+                console.log(totalSales, 'totalSales');
+                console.log(timePeriods, 'days');
+                console.log(revenueAndSalesByDay, 'revenueAndSalesByWeek');
+                res.json({
+                    totalRevenue,
+                    totalSales,
+                    timePeriods,
+                    dataPerPeriod,
+                    salesPerPeriod,
+                    label: 'Daily'
+                })
+
+
+            } else if (req.url === '/countOrdersByWeek') {
+
+                const revenueAndSalesByWeek = await orderModel.aggregate([
+                    {
+                        $match: {
+                            status: {
+                                $nin: ['Rejected', 'Cancelled']
+                            }
+                        }
+                    },
+                    {
+                        $unwind: '$items'
+                    },
+                    {
+                        $group: {
+                            _id: {
+                                $isoWeek: '$orderedDate',
+                            },
+                            revenue: { $sum: '$totalAmount' },
+                            sales: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $sort: { _id: 1 }
+                    }
+                ])
+
+                let totalRevenue = 0;
+                let totalSales = 0;
+                const timePeriods = [];
+                const dataPerPeriod = [];
+                const salesPerPeriod = [];
+                revenueAndSalesByWeek.forEach((doc) => {
+                    totalRevenue += doc.revenue;
+                    totalSales += doc.sales;
+                    timePeriods.push(doc._id)
+                    dataPerPeriod.push(doc.revenue);
+                    salesPerPeriod.push(doc.sales);
+                });
+                console.log(totalRevenue, 'totalRevenue');
+                console.log(totalSales, 'totalSales');
+                console.log(timePeriods, 'weeks');
+                console.log(revenueAndSalesByWeek, 'revenueAndSalesByWeek');
+                res.json({
+                    totalRevenue,
+                    totalSales,
+                    timePeriods,
+                    dataPerPeriod,
+                    salesPerPeriod,
+                    label: 'Weekly'
+                })
+
+            } else if (req.url === '/countOrdersByYear') {
+                const revenueAndSalesByYear = await orderModel.aggregate([
+                    {
+                        $match: {
+                            status: {
+                                $nin: ['Rejected', 'Cancelled']
+                            }
+                        }
+                    },
+                    {
+                        $unwind: '$items'
+                    },
+                    {
+                        $group: {
+                            _id: {
+                                $year: '$orderedDate'
+                            },
+                            revenue: { $sum: '$totalAmount' },
+                            sales: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $sort: { _id: 1 }
+                    }
+                ])
+                let totalRevenue = 0;
+                let totalSales = 0;
+                const timePeriods = [];
+                const dataPerPeriod = [];
+                const salesPerPeriod = [];
+                revenueAndSalesByYear.forEach((doc) => {
+                    totalRevenue += doc.revenue;
+                    totalSales += doc.sales;
+                    timePeriods.push(doc._id)
+                    dataPerPeriod.push(doc.revenue);
+                    salesPerPeriod.push(doc.sales);
+                });
+                console.log(totalRevenue, 'totalRevenue');
+                console.log(totalSales, 'totalSales');
+                console.log(timePeriods, 'Years');
+                console.log(revenueAndSalesByYear, 'revenueAndSalesByYear');
+                res.json({
+                    totalRevenue,
+                    totalSales,
+                    timePeriods,
+                    dataPerPeriod,
+                    salesPerPeriod,
+                    label: 'Yearly'
+                })
+
+
+            }
+
+
+        } catch (error) {
+            console.log(error);
+        }
     },
 
     getAdminLogin: async (req, res) => {
@@ -20,7 +244,9 @@ module.exports = {
             if (req.session.adminId) {
                 res.redirect('/admin/dashboard')
             } else {
-                res.render('admin/admin-login', { message: req.flash() })
+                res.render('admin/admin-login', { 
+                    message: req.flash(),
+                    title:"Admin-Login" })
             }
 
         } catch (error) {
@@ -66,17 +292,17 @@ module.exports = {
 
     getCustomers: async (req, res) => {
         const itemsPerPage = 10;
-        const currentPage =parseInt( req.query.page) || 1;
+        const currentPage = parseInt(req.query.page) || 1;
         const skip = (currentPage - 1) * itemsPerPage;
         try {
             totalItems = await userModel.countDocuments();
             const totalPages = Math.ceil(totalItems / itemsPerPage)
 
             const users = await userModel
-            .find()
-            .skip(skip)
-            .limit(itemsPerPage);
-           
+                .find()
+                .skip(skip)
+                .limit(itemsPerPage);
+
 
             res.render("admin/customers", {
                 users,

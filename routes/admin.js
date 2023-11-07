@@ -17,6 +17,9 @@ router.use(auth.verifyAdmin)   // protecting admin routes
 
 router.get('/', adminController.adminLandingPage)
 router.get('/dashboard',  adminController.getAdminDashboard)
+router.get('/countOrdersByDay',adminController.getAdminDashboardData)
+router.get('/countOrdersByWeek',adminController.getAdminDashboardData)
+router.get('/countOrdersByYear',adminController.getAdminDashboardData)
 
 router.get('/products',  productController.getAdminProduct)
 router.post('/adminSearchProduct', productController.postAdminSearchProduct)

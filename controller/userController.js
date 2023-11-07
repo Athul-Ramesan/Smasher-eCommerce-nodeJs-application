@@ -107,7 +107,10 @@ module.exports = {
             if (req.session.user) {
                 res.redirect('/home')
             } else {
-                res.render('user/login', { message: req.flash() })
+                res.render('user/login', {
+                     message: req.flash() ,
+                     title: 'Smasher-Login'
+                    })
             }
 
         } catch (error) {
@@ -307,7 +310,12 @@ module.exports = {
         try {
             const user =await userModel.findOne({email: req.session.user.email});
             const cart = await cartModel.findOne({userId: req.session.user._id})
-            res.render('user/profile',{user,cart,wishlist:false})
+            res.render('user/profile',{
+                user,
+                cart,
+                wishlist:false,
+                title : 'User-profile'
+            })
 
         } catch (error) {
             console.log(error);

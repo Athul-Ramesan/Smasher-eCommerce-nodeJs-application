@@ -7,6 +7,7 @@ const auth = require('../middleware/authentication')
 const cartController = require('../controller/cartController')
 const addressController = require('../controller/addressController');
 const orderController = require('../controller/orderController');
+const categoryController = require('../controller/categoryController');
 
 
 router.get('/', userController.landingPage)
@@ -75,6 +76,8 @@ router.post('/checkout',auth.auth,auth.verifyUser,orderController.postCheckout)
 router.get('/addAddressCheckout',auth.auth,auth.verifyUser,addressController.getAddAddress)
 router.post('/addAddressCheckout',auth.auth,auth.verifyUser,addressController.postAddAddress)
 router.post('/verifyPayment',auth.auth,auth.verifyUser,orderController.verifyPayment)
+
+
 
 router.get('/orderSuccess/:id',auth.auth,auth.verifyUser,orderController.getOrderSuccess)
 router.get('/logout', userController.getLogout)
