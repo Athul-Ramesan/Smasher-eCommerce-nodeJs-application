@@ -6,7 +6,7 @@
         <div class="form-group justify-content-between m-2 d-flex">
             
             <div class=" ">
-                
+                <a href="/admin/orderReturnRequest" class="btn btn-outline-danger ms-5">Return requests</a>
             </div>
             <!-- <button class="btn btn-secondary me-2">SEARCH USER</button> -->
         </div>
@@ -30,7 +30,7 @@
                         </thead>
                         <tbody>
                             <form action="">
-                                <% orders.forEach((order,index)=>{ %>
+                                <% orders.reverse().forEach((order,index)=>{ %>
 
                                     <tr>
                                         <th class="count">
@@ -47,15 +47,22 @@
                                         </td>
 
                                         <td class="text-success">
-                                            <select class="select-status" id="statusSelect-<%=order._id %> " data-order-id="<%= order._id %>">
+                                        <%if(order.status !== 'Returned'){ %>
+                                            <%if(order.status !== 'Delivered'){ %>
+                                                <select class="select-status" id="statusSelect-<%=order._id %> " data-order-id="<%= order._id %>">
                                                 
-                                                <option  <%=order.status === "Order Placed" ? "selected" : "" %>>Order Placed</option>
-                                                <option  <%=order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
-                                                <option  <%=order.status === "Shipped" ? "selected" : "" %>>Shipped</option>
-                                                <option  <%=order.status === "Rejected" ? "selected" : "" %>>Rejected</option>
-                                                
-                                            </select>
-
+                                                    <option  <%=order.status === "Order Placed" ? "selected" : "" %>>Order Placed</option>
+                                                    <option  <%=order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
+                                                    <option  <%=order.status === "Shipped" ? "selected" : "" %>>Shipped</option>
+                                                    <option  <%=order.status === "Rejected" ? "selected" : "" %>>Rejected</option>
+                                                    
+                                                </select>
+                                            <% }else{ %>
+                                                Delivered
+                                            <% } %>
+                                        <% }else{ %>    
+                                            Return requested
+                                        <% } %>
                                         </td>
                                         <td>
                                             <%=order.totalAmount %>
@@ -130,6 +137,7 @@ function updateOrderStatus(orderId, newStatus) {
                     const paymentStatus = document.getElementById(`paymentStatus-${orderId}`);
                     paymentStatus.innerText = data.paymentStatus;
                 }
+                window.location.reload();
             } else {
                 console.log('status update failed');
             }

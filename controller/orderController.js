@@ -5,9 +5,13 @@ const cartModel = require('../models/cartModel')
 const productModel = require('../models/productModel');
 const { default: mongoose } = require('mongoose');
 const moment = require('moment')
-const crypto = require('crypto')
+const crypto = require('crypto');
+const invoiceService = require('../services/invoice');
+
 
 const orderService = require('../services/orderService');
+const path = require('path');
+
 
 
 module.exports = {
@@ -59,7 +63,7 @@ module.exports = {
             if (id && status) {
 
                 if (status === "Delivered") {
-                    await orderModel.updateOne({ _id: id }, { $set: { status: status, paymentStatus: 'Paid' } })
+                    await orderModel.updateOne({ _id: id }, { $set: { status: status, paymentStatus: 'Paid',deliveredDate: new Date() } })
 
                     res.json({ success: true, paymentStatus: 'Paid' })
                 } else {
@@ -74,13 +78,22 @@ module.exports = {
             console.log(error);
         }
     },
+    getAdminOrderReturnRequest : async(req,res)=>{
+    
+        try {
+            const orders = await orderModel.find({ status: 'Return requested'}).populate('items.productId')
+            res.render('admin/return-request', { orders, dates: null })
+        } catch (error) {
+            console.log(error);
+        }
+    },
     checkout: async (req, res) => {
         try {
             const userId = req.session.user._id
             const user = await userModel.findOne({ email: req.session.user.email });
             const cart = await cartModel.findOne({ userId: req.session.user._id });
             const addresses = await addressModel.findOne({ userId: userId })
-            const product = await 
+
             if (cart) {
                 res.render('user/checkout', {
                     user,
@@ -261,7 +274,14 @@ module.exports = {
             const user = await userModel.findOne({ email: req.session.user.email });
             const cart = await cartModel.findOne({ userId: req.session.user._id });
 
-            res.render('user/orders', { user, cart, orders, wishlist: false, message: req.flash() })
+            res.render('user/orders', {
+                user,
+                cart,
+                orders,
+                wishlist: false,
+                dates: null,
+                message: req.flash()
+            })
         } catch (error) {
             console.log(error);
         }
@@ -275,7 +295,12 @@ module.exports = {
             const user = await userModel.findOne({ email: req.session.user.email });
             const cart = await cartModel.findOne({ userId: req.session.user._id });
 
-            res.render('user/orderDetails', { user, cart, wishlist: false, order })
+            res.render('user/orderDetails', {
+                user,
+                cart,
+                wishlist: false,
+                order
+            })
         } catch (error) {
             console.log(error);
         }
@@ -289,12 +314,14 @@ module.exports = {
                 .then(async (result) => {
                     if (result) {
                         const order = result
+   
                         for (const item of order.items) {
                             const productId = item.productId;
                             const quantity = item.quantity;
 
                             const product = await productModel.findOne({ _id: productId })
 
+                            
                             newStock = product.stock + quantity;
                             if (newStock > 0) {
                                 product.stock = newStock;
@@ -314,5 +341,76 @@ module.exports = {
             console.log(error);
         }
 
+    },
+    getReturnOrder :async (req,res)=>{
+        const orderId = req.params.id;
+        console.log(req.url);
+        try {
+            if(req.url === `/cancelReturn/${orderId}`){
+                await orderModel.findOneAndUpdate({ _id: orderId }, { status: 'Delivered' })
+                
+                res.redirect('/orders')
+            }else if(req.url === `/acceptReturnRequest/${orderId}`){
+                await orderModel.findOneAndUpdate({ _id: orderId }, { status: 'Return Accepted' })
+                .then(async(result)=>{
+                    console.log(result,'retern accept');
+                    const order = await orderModel.findOne({ _id: orderId})
+                    console.log(order);
+                   await userModel.updateOne(
+                    {_id:req.session.user._id},
+                    {$inc : {walletAmount: order.totalAmount}}
+                    ).then(result=>{
+                        console.log(result,'wallet');
+                    })
+
+                })
+                res.redirect('/admin/orderReturnRequest')
+            }else if(req.url===`/rejectReturnRequest/${orderId}`){
+                await orderModel.findOneAndUpdate({ _id: orderId }, { status: 'Delivered(Return rejected)' })
+                res.redirect('/admin/orderReturnRequest')
+            }else{
+                await orderModel.findOneAndUpdate({ _id: orderId }, { status: 'Return requested' })
+                res.redirect('/orders')
+            }
+            
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    createInvoice: async (req, res) => {
+
+        const orderId = req.params.id;
+        console.log(orderId);
+        try {
+            await orderModel.findOne({ _id: orderId })
+                .populate('items.productId')
+                .then(async (result) => {
+                    console.log(result);
+                    await invoiceService.createInvoice(result);
+                    res.json({ success: true })
+                })
+                .catch((error) => {
+                    console.log(error);
+                    res.json({ success: false, message: "Can't generate Invoice this time" })
+                })
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    },
+    downloadInvoice: async (req, res) => {
+        const orderId = req.params.id;
+        console.log(req.params);
+        try {
+
+
+            const filePath = path.join(__dirname, '..', `/public/pdf/${orderId}.pdf`)
+            console.log(filePath);
+            res.download(filePath, 'invoice.pdf')
+
+        } catch (error) {
+            console.log(error);
+        }
     }
 }

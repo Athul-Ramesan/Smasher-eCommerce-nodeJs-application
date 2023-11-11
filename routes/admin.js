@@ -7,7 +7,7 @@ const productController = require('../controller/productController')
 const categoryController = require('../controller/categoryController')
 const brandController = require('../controller/brandController')
 const orderController = require('../controller/orderController')
-
+const offerController = require('../controller/offerController')
 
 router.get('/login', adminController.getAdminLogin)
 router.post('/login', adminController.postAdminLogin)
@@ -20,6 +20,8 @@ router.get('/dashboard',  adminController.getAdminDashboard)
 router.get('/countOrdersByDay',adminController.getAdminDashboardData)
 router.get('/countOrdersByWeek',adminController.getAdminDashboardData)
 router.get('/countOrdersByYear',adminController.getAdminDashboardData)
+
+router.post('/downloadSalesReport',adminController.downloadSalesReport)
 
 router.get('/products',  productController.getAdminProduct)
 router.post('/adminSearchProduct', productController.postAdminSearchProduct)
@@ -64,6 +66,15 @@ router.post('/adminSearchUser', adminController.postAdminSearchUser)
 router .get('/orders',orderController.getAdminOrders)
 router .get('/orderDetails/:id',orderController.getAdminOrderDetails)
 router.put('/updateOrderStatus',orderController.putAdminUpdateOrderStatus)
+router.get('/orderReturnRequest',orderController.getAdminOrderReturnRequest)
+router.get('/acceptReturnRequest/:id',orderController.getReturnOrder)
+router.get('/rejectReturnRequest/:id',orderController.getReturnOrder)
+
+router.get('/offers',offerController.getAdminOffer)
+router.post('/addProductOffer',offerController.addProductOffer)
+router.post('/addCategoryOffer',offerController.addCategoryOffer)
+router.get('/removeProductOffer/:id',offerController.removeOffer)
+router.get('/removeCategoryOffer/:id',offerController.removeOffer)
 
 router.get('/logout', adminController.getAdminLogout)
 module.exports = router

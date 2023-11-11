@@ -68,6 +68,12 @@ router.get('/deleteAddress/:id',addressController.getDeleteAddress)
 router.get('/orders',auth.auth,auth.verifyUser,orderController.getOrders)
 router.get('/orderDetails/:id',auth.auth,auth.verifyUser,orderController.getOrderDetails)
 router.get('/cancelOrder/:id',auth.auth,auth.verifyUser,orderController.getCancelOrder)
+router.get('/returnOrder/:id',auth.auth,auth.verifyUser,orderController.getReturnOrder)
+router.get('/cancelReturn/:id',auth.auth,auth.verifyUser,orderController.getReturnOrder)
+
+
+router.get('/createInvoice/:id',auth.auth,auth.verifyUser,orderController.createInvoice)
+router.get('/downloadInvoice/:id',auth.auth,auth.verifyUser,orderController.downloadInvoice)
 
 
 router.get('/checkout',auth.auth,auth.verifyUser,orderController.checkout)

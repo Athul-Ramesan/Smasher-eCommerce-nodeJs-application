@@ -4,7 +4,7 @@ const brandModel = require('../models/brandModel')
 const userModel = require('../models/userModel')
 const orderModel = require('../models/orderModel')
 const { CATEGORY, BRAND } = require('../utils/constants/schemaName')
-
+const services = require('../services/salesReport')
 
 module.exports = {
     adminLandingPage: (req, res) => {
@@ -303,6 +303,7 @@ module.exports = {
                 .skip(skip)
                 .limit(itemsPerPage);
 
+                console.log(users,'users');
 
             res.render("admin/customers", {
                 users,
@@ -409,6 +410,53 @@ module.exports = {
             console.log(error);
         }
 
+    },
+    downloadSalesReport : async (req,res)=>{
+        console.log(req.body);
+        try {
+            const { startDate, endDate, fileFormat} = req.body;
+            console.log(new Date(startDate),'new date');
+            const totalSales = await orderModel.aggregate([
+                {
+                    $match : {
+                        paymentStatus : 'Paid'
+                    }
+                },
+                {
+                    $group : { 
+                        _id : null,
+                        totalSales : {
+                            $sum : '$totalAmount'
+                        }
+                    }
+                }
+            ])
+            console.log(totalSales,'totalSales');
+            const sum = totalSales.length > 0 ? totalSales[0].totalSales : 0
+
+            await orderModel.find({
+                paymentStatus: "Paid",
+                orderedDate : {
+                    $gte : new Date(startDate),
+                    $lte : new Date(endDate)
+                }
+            }).then(async(result)=>{
+                if(fileFormat ==='pdf'){
+                    const filePath= await services.pdfSalesReport(result,startDate,endDate,sum)
+                    console.log(filePath);
+                   res.download(filePath,'sales-report.pdf')
+                }else{
+                    const filePath= await services.excelSalesReport(result,startDate,endDate,sum)
+                    console.log(filePath);
+                    res.download(filePath)
+                }
+               
+            }).catch(err=>{
+                console.log(err);
+            })
+        } catch (error) {
+            console.log(error);
+        }
     }
 
 

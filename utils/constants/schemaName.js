@@ -7,7 +7,9 @@ const schemaName = {
     BRAND: 'brand',
     CART : 'cart',
     ADDRESS : 'address',
-    ORDER : 'order'
+    ORDER : 'order',
+    OFFER : 'offer',
+    WALLET : 'wallet'
 
 }
 

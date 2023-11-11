@@ -70,13 +70,13 @@
                                                         <a class="btn btn-outline-dark m-1"
                                                             href="/admin/editProduct/<%=product._id%>">Edit</a>
                                                         <%if (product.active){ %>
-                                                            <a class="btn btn-outline-warning m-1 text-dark"
+                                                            <a class="btn btn-outline-warning m-1 text-dark remove-button"
                                                                 href="/admin/hideProduct/<%=product._id%>"
-                                                                onclick="return confirm('Do you want to delete--> ?')">Delete</a>
+                                                                >Delete</a>
                                                             <% }else { %>
-                                                                <a class="btn btn-outline-success m-1 text-dark"
+                                                                <a class="btn btn-outline-success m-1 text-dark remove-button"
                                                                     href="/admin/hideProduct/<%=product._id%>"
-                                                                    onclick="return confirm('Do you want to delete--> ?')">Active</a>
+                                                                    >Active</a>
                                                                 <% } %>
 
                                                     </div>
@@ -104,6 +104,29 @@
         </div>
         </div>
 <script>
+
+const removeButtons = document.querySelectorAll('.remove-button')
+                removeButtons.forEach((button) => {
+                    button.addEventListener('click', (event) => {
+                        event.preventDefault()
+
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Confirm'
+                        }).then((result) => {
+                            if(result.isConfirmed){
+                                window.location.href = button.href
+                            }
+                            
+                        })
+                    })
+                })
+
     // function liveSearch() {
     //     const searchInput = document.getElementById('searchInput').value;
     //     fetch(`live-product-search?q=${searchInput}`)

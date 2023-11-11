@@ -10,7 +10,7 @@ const session = require("express-session")
 const flash = require('express-flash');
 const nocache = require('nocache');
 const logger = require('morgan')
-
+require('./services/cron')
 
 /// env variable or constants
 env.config();

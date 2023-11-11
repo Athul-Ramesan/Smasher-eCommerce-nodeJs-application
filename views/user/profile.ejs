@@ -69,9 +69,11 @@
                   <label for="phone" class="m-1">
                     <h6>Mobile</h6>
                   </label>
-                  <input type="number" disabled id='mobileInput' class="me-auto" value="<%=user.mobile%>"" name="mobile">
+                  <input type="number" disabled id='mobileInput' class="me-auto" value="<%=user.mobile%>"" name="
+                    mobile">
                 </div>
-                <button type="submit" style="display: none;" id="save-changes" class="btn-outline-success btn text-dark">Save Changes</button>
+                <button type="submit" style="display: none;" id="save-changes"
+                  class="btn-outline-success btn text-dark">Save Changes</button>
 
               </form>
 
@@ -98,27 +100,30 @@
                         <label for="currentPassword">Current Password:</label>
                         <div class="d-flex">
                           <input type="password" class="form-control" id="currentPassword" name="currentPassword"
-                          required>
-                          <button type="button" class="btn btn-outline-secondary" id="currentPasswordToggle" style="background-color: rgba(0, 0, 0, 0.889);"><i class="fa fa-eye"></i></button>
+                            required>
+                          <button type="button" class="btn btn-outline-secondary" id="currentPasswordToggle"
+                            style="background-color: rgba(0, 0, 0, 0.889);"><i class="fa fa-eye"></i></button>
                         </div>
-                        
+
                       </div>
                       <div class="form-group">
                         <label for="newPassword">New Password:</label>
                         <div class="d-flex">
                           <input type="password" class="form-control" id="newPassword" name="newPassword" required>
-                          <button type="button" class="btn btn-outline-secondary" id="newPasswordToggle" style="background-color: rgba(0, 0, 0, 0.889);"><i class="fa fa-eye"></i></button>
+                          <button type="button" class="btn btn-outline-secondary" id="newPasswordToggle"
+                            style="background-color: rgba(0, 0, 0, 0.889);"><i class="fa fa-eye"></i></button>
                         </div>
-                       
+
                       </div>
                       <div class="form-group">
                         <label for="confirmPassword">Confirm Password:</label>
                         <div class="d-flex">
                           <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
-                          required>
-                          <button type="button" class="btn btn-outline-secondary" id="ConfirmPasswordToggle" style="background-color: rgba(0, 0, 0, 0.889);"><i class="fa fa-eye"></i></button>
+                            required>
+                          <button type="button" class="btn btn-outline-secondary" id="ConfirmPasswordToggle"
+                            style="background-color: rgba(0, 0, 0, 0.889);"><i class="fa fa-eye"></i></button>
                         </div>
-                       
+
                       </div>
                       <br>
                       <button type="submit" class="btn btn-primary" id="changePasswordButton">Save</button>
@@ -131,14 +136,11 @@
             <!--modal data end-->
           </div>
 
-          <div class=" col-md-8">
-
-
-
+          <div class=" col-md-5">
             <div class="shadow bg-white p-3">
               <h4 class="text-primary">
                 <div class="row">
-                  <div class="col-md-5 m-4">
+                  <div class="col-md-5 m-2">
                     <div class="card border rounded shadow bg-light">
                       <div class="card-top d-flex justify-content-center">
                         <img width="250px" class="img-fluid" src="/images/orders.jpg" alt="Orders Image">
@@ -150,10 +152,10 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-5 m-4">
+                  <div class="col-md-5 m-2">
                     <div class="card border rounded shadow bg-light">
                       <div class="card-top d-flex justify-content-center">
-                        <img width="200px class=" img-fluid" src="/images/address.jpg" alt="Address Image">
+                        <img width="150px" class="img-fluid" src="/images/address.jpg" alt="Address Image">
                       </div>
                       <div class="card-body rounded bg-dark">
                         <a href="/address" style="text-decoration: none;">
@@ -162,7 +164,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-5 m-4">
+                  <div class="col-md-5 m-2">
                     <div class="card border rounded shadow bg-light">
                       <div class="card-top d-flex justify-content-center">
                         <img width="200px" class="img-fluid" src="/images/wish.jpg" alt="Orders Image">
@@ -174,7 +176,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-5 m-4">
+                  <div class="col-md-5 m-2">
                     <div class="card border rounded shadow bg-light">
                       <div class="card-top d-flex justify-content-center">
                         <img width="200px class=" img-fluid" src="/images/reviews.jpg" alt="Address Image">
@@ -187,16 +189,38 @@
                     </div>
                   </div>
                 </div>
-
-
-
-
-
-
-
             </div>
+          </div>
+          <div class=" col-md-3">
+            <div class="shadow card bg-white p-3">
+              <div class="card-title text-center text-dark rounded-2 p-3 fw-bold bg-light">
+                <h4> WALLET</h4>
+                <hr>
+                <div class="card-body fw-bold bg-light">
+                  Wallet Balance : ₹ <%=user.walletAmount %>
+                </div>
+                <hr>
+              </div>
+              <div class="card-body shadow bg-light">
+                <h5 class="text-center">Referal link :</h5>
+              </div>
+              <div class="copy-container">
+                <input type="text" value="http://localhost:3000/signup?referalUserId=<%=user._id%>" id="copyText" readonly />
+                <button onclick="copyTextToClipboard()">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
 
-            <!-- <div class="col-md-4">
+
+
+
+
+
+
+
+          <!-- <div class="col-md-4">
                 <div class="shadow bg-white p-3">
                   <h4 class="text-dark">
 
@@ -210,7 +234,7 @@
                 </div>
               </div> -->
 
-          </div>
+
 
         </div>
 
@@ -220,6 +244,7 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
       $('#passwordChangeForm').submit((e) => {
         e.preventDefault();
@@ -249,20 +274,20 @@
         const nameInput = document.getElementById('nameInput');
         const mobileInput = document.getElementById('mobileInput');
         const editLink = document.getElementById('editLink');
-        const saveChanges= document.getElementById('save-changes')
+        const saveChanges = document.getElementById('save-changes')
         if (nameInput.hasAttribute('disabled')) {
           // Enable the inputs
           nameInput.removeAttribute('disabled');
           mobileInput.removeAttribute('disabled');
 
-          saveChanges.style.display= 'block'
+          saveChanges.style.display = 'block'
           // Change "Edit" link to "Cancel"
           editLink.textContent = "Cancel";
         } else {
           // Disable the inputs
           nameInput.setAttribute('disabled', 'true');
           mobileInput.setAttribute('disabled', 'true');
-          saveChanges.style.display= 'none'
+          saveChanges.style.display = 'none'
           // Change "Cancel" link back to "Edit"
           editLink.textContent = "Edit";
         }
@@ -285,7 +310,7 @@
               const userName = document.getElementById('user-name')
 
 
-              swal('','User details updated successfully').then(() => {
+              swal('', 'User details updated successfully').then(() => {
 
                 nameInput.value = response.newName
                 mobileInput.value = response.newMobile
@@ -299,37 +324,61 @@
           }
         })
       })
-      document.addEventListener('DOMContentLoaded',()=>{
+      document.addEventListener('DOMContentLoaded', () => {
         const currentPasswordInput = document.getElementById('currentPassword');
         const newPasswordInput = document.getElementById('newPassword')
         const confirmPasswordInput = document.getElementById('confirmPassword')
 
         toggleButtons = {
-          currentPassword : document.getElementById('currentPasswordToggle'),
-          newPassword : document.getElementById('newPasswordToggle'),
-          confirmPassword : document.getElementById('ConfirmPasswordToggle')
+          currentPassword: document.getElementById('currentPasswordToggle'),
+          newPassword: document.getElementById('newPasswordToggle'),
+          confirmPassword: document.getElementById('ConfirmPasswordToggle')
         }
 
-        function togglePasswordVisibility (input,toggleButton){
+        function togglePasswordVisibility(input, toggleButton) {
           const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-          input.setAttribute('type',type);
-          
-          const iconClass = type ==="password" ? 'fa-eye' : 'fa-eye-slash';
+          input.setAttribute('type', type);
+
+          const iconClass = type === "password" ? 'fa-eye' : 'fa-eye-slash';
           toggleButton.innerHTML = `<i class="fa ${iconClass}" ></i>`
         }
-        for(const key in toggleButtons){
-          if(Object.hasOwnProperty.call(toggleButtons,key)){
+        for (const key in toggleButtons) {
+          if (Object.hasOwnProperty.call(toggleButtons, key)) {
             const toggleButton = toggleButtons[key];
             const inputField = document.getElementById(key);
 
-            toggleButton.addEventListener('click',()=>{
-              togglePasswordVisibility(inputField,toggleButton);
-          })
+            toggleButton.addEventListener('click', () => {
+              togglePasswordVisibility(inputField, toggleButton);
+            })
           }
         }
       })
+      function copyTextToClipboard() {
+        /* Get the text field */
+        var copyText = document.getElementById("copyText");
+
+        /* Select the text field */
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+        /* Copy the text inside the text field to the clipboard */
+        document.execCommand("copy");
+
+        Toastify({
+
+          text: "Copied to clipboard: " + copyText.value,
+
+          duration: 3000,
+          position: "center",
+          className: "info",
+          style: {
+            background: "linear-gradient(to right,#00e600, #96c93d)",
+          }
+
+        }).showToast()
       
-      
+      }
+
 
     </script>
     <%- include ('../partials/userFooter') %>

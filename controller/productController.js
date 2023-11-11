@@ -5,12 +5,28 @@ const brandModel = require('../models/brandModel')
 const { CATEGORY, BRAND } = require('../utils/constants/schemaName')
 const moment = require('moment')
 const userModel = require('../models/userModel')
-
+const cropImage = require('../services/imageCrop')
+const path = require('path')
 module.exports = {
+    getProductData: async (req, res) => {
+        try {
+            await productModel.find({})
+                .then(result => {
+                    res.json({ data: result })
+                })
+                .catch(error => {
+                    console.log(error);
+                    throw new Error('something went wrong fetching data')
+
+                })
+        } catch (error) {
+            console.log(error);
+        }
+    },
 
     getAdminProduct: async (req, res) => {
         const itemsPerPage = 10;
-        const currentPage =parseInt( req.query.page) || 1;
+        const currentPage = parseInt(req.query.page) || 1;
         const skip = (currentPage - 1) * itemsPerPage;
         try {
             totalItems = await productModel.countDocuments();
@@ -18,21 +34,21 @@ module.exports = {
             console.log(totalPages);
 
             const products = await productModel
-            .find()
-            .skip(skip)
-            .limit(itemsPerPage)
+                .find()
+                .skip(skip)
+                .limit(itemsPerPage)
 
 
-            const formatedProducts = products.map(doc=>({
+            const formatedProducts = products.map(doc => ({
                 ...doc.toObject(),
-                createdAt : moment(doc.createdAt).format('MMMM Do YYYY, h:mm:ss a'),
+                createdAt: moment(doc.createdAt).format('MMMM Do YYYY, h:mm:ss a'),
             }))
-            res.render('admin/products', { 
-                products :formatedProducts,
+            res.render('admin/products', {
+                products: formatedProducts,
                 totalPages,
                 currentPage,
-                title : "Admin-products"
-             })
+                title: "Admin-products"
+            })
         } catch (error) {
             console.log(error);
         }
@@ -50,9 +66,13 @@ module.exports = {
                 if (result !== null) {
                     const products = result;
                     console.log(result);
-                    res.render('admin/products', { products })
+                    res.render('admin/products', {
+                        products,
+                        totalPages: null,
+                        currentPage: null
+                    })
                 } else {
-
+                    res.send({ Messgae: 'cannot find product' })
                 }
 
             })
@@ -92,7 +112,15 @@ module.exports = {
             const image2 = req.files['productImage2'][0].filename
             const image3 = req.files['productImage3'][0].filename
 
-            
+            const inputPath = path.join(__dirname, '..', `/public/uploads/${image1}`)
+            const ouputPath = path.join(__dirname, '..', `/public/croppedImages/${image1}`)
+            const cropOptions = {
+                left: 10,
+                top: 10,
+                width: 100,
+                height: 50
+            }
+            await cropImage.cropImage(inputPath,ouputPath,cropOptions)
 
             const newProduct = new productModel({
                 name: productName,
@@ -167,11 +195,11 @@ module.exports = {
 
 
 
-           
-                const image1 = req.files['productImage1'][0].filename
-                const image2 = req.files['productImage2'][0].filename
-                const image3 = req.files['productImage3'][0].filename
-                    
+
+            const image1 = req.files['productImage1'][0].filename
+            const image2 = req.files['productImage2'][0].filename
+            const image3 = req.files['productImage3'][0].filename
+
 
 
             await productModel.findOneAndUpdate({ _id: productId },
@@ -191,7 +219,7 @@ module.exports = {
                         discountAmount: Math.abs(discountAmount),
                         brand: brand,
                         tags: tags
-                        
+
 
                     }
                 })
@@ -352,7 +380,7 @@ module.exports = {
                 }
             } else {
                 if (brand && category) {
-                    const products = await productModel.find({ brand: brand, category: category ,active:true})
+                    const products = await productModel.find({ brand: brand, category: category, active: true })
                     console.log(products);
 
                     res.render('user/shop-product', {
@@ -414,9 +442,27 @@ module.exports = {
                     if (req.session.user) {
                         const user = await userModel.findById(req.session.user._id)
                         const cart = await cartModel.findOne({ userId: req.session.user._id })
-                        res.render('user/shop-product', { products, user, brands, cart, categories, wishlist: false, message: req.flash() })
+                        res.render('user/shop-product', {
+                            products,
+                            user,
+                            brands,
+                            cart,
+                            categories,
+                            wishlist: false,
+                            message: req.flash()
+                        })
                     } else {
-                        res.render('user/shop-product', { products, brands, categories, user: req.session.user, cart: false, wishlist: false, message: req.flash() })
+                        res.render('user/shop-product', {
+                            products,
+                            brands,
+                            categories,
+                            user: req.session.user,
+                            cart: false,
+                            wishlist: false,
+                            message: req.flash(),
+                            totalPages: false,
+                            currentPage: false,
+                        })
                     }
 
                 } else {

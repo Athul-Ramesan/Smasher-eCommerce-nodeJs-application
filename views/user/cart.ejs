@@ -88,7 +88,7 @@
                             <a href="#" class="btn btn-light border px-2 icon-hover-primary"><i
                                 class="fas fa-heart fa-lg px-1 text-secondary"></i></a>
                             <a href="/removeFromCart/<%=item.productId._id%>"
-                              class="btn btn-light border text-danger icon-hover-danger"> Remove</a>
+                              class="btn btn-light border text-danger icon-hover-danger remove-button"> Remove</a>
                           </div>
                         </div>
                       </div>
@@ -259,7 +259,28 @@
 
     <!-- JavaScript Section -->
     <script>
-      
+
+const removeButtons = document.querySelectorAll('.remove-button')
+                removeButtons.forEach((button) => {
+                    button.addEventListener('click', (event) => {
+                        event.preventDefault()
+
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Confirm'
+                        }).then((result) => {
+                            if(result.isConfirmed){
+                                window.location.href = button.href
+                            }
+                            
+                        })
+                    })
+                })
 
       document.addEventListener("DOMContentLoaded", function () {
   // Add an event listener to all quantity input elements
@@ -306,6 +327,9 @@
               }
               if ((data.stock - parseInt(quntityInput.value)) === 2) {
                 document.getElementById(`stock-message-${id}`).textContent = 'Only two items left in stock'
+                document.getElementById(`stock-message-${id}`).style.color = 'red'
+              }else if((data.stock - parseInt(quntityInput.value)) === 0){
+                document.getElementById(`stock-message-${id}`).textContent = 'No item left in stock'
                 document.getElementById(`stock-message-${id}`).style.color = 'red'
               } else {
                 document.getElementById(`stock-message-${id}`).textContent = ''

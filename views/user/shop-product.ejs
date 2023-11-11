@@ -316,8 +316,15 @@
                                         <h3 class="title"><a href="/productView/<%=product._id %>">
                                                 <%=product.name%>
                                             </a></h3>
-                                        <div class="price">₹<%=product.price - product.discountAmount %>
+                                        <div class="d-flex ">
+                                            <h4 class="price pe-2">₹<%=product.price%>
+                                            
+                                            </h4>
+                                            <% if(product.discountAmount>0) {%>
+                                                <span class="text-decoration-line-through text-muted" >₹<%=product.price + product.discountAmount %></span>
+                                                <% } %>
                                         </div>
+                                            
                                     </div>
                                 </div>
                             </div>
