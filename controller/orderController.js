@@ -91,9 +91,19 @@ module.exports = {
         try {
             const userId = req.session.user._id
             const user = await userModel.findOne({ email: req.session.user.email });
-            const cart = await cartModel.findOne({ userId: req.session.user._id });
+            const cart = await cartModel.findOne({ userId: req.session.user._id }).populate('items.productId')
             const addresses = await addressModel.findOne({ userId: userId })
 
+            if(cart.items){
+                cart.items.forEach(item=>{
+                    if(item.productId.stock ===0){
+                     req.flash('outOfStock','Cant make purchase with out of stock product')
+                     return res.redirect('/cart')
+                    }
+                 })
+            }
+            
+            
             if (cart) {
                 res.render('user/checkout', {
                     user,
@@ -103,6 +113,7 @@ module.exports = {
                     message: req.flash()
                 })
             } else {
+                req.flash('cartEmpty','Cant make purchase with out of stock product')
                 res.redirect('/cart')
             }
 
@@ -121,10 +132,21 @@ module.exports = {
             const userId = new mongoose.Types.ObjectId(req.session.user._id)
             const paymentMethod = req.body.paymentMethod;
             const cart = await cartModel.findOne({ userId: userId }).populate('items.productId')
+            console.log(cart);
             const totalAmount = cart.totalAmount;
             const address = await addressModel.findOne({ userId: userId });
             console.log(address);
             const shippingAddress = address.address.find((item) => item._id.equals(addressId))
+
+            cart.items.forEach(item=>{
+                if(item.productId.stock ===0){
+                 return res.json({
+                    success: false,
+                    url : '/cart',
+                    message: 'Cant make purchase with out of stock product'
+                });
+                }
+             })
 
             if (paymentMethod && addressId) {
 

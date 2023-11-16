@@ -6,7 +6,7 @@ const otpModel = require('../models/otpModel')
 const cartModel = require('../models/cartModel')
 const otpService = require('../services/otpService')
 const sendMail = require('../validators/nodeMailer');
-
+const {userDetailsValidation }= require('../validators/userDetailsValidation')
 const { default: mongoose } = require("mongoose");
 
 
@@ -382,22 +382,24 @@ module.exports = {
     editUserDetails: async (req, res) => {
         try {
             console.log(req.body);
-            const name = req.body.name
-            const mobile = req.body.mobile
-            console.log(mobile);
-            await userModel.findOneAndUpdate({ _id: req.session.user._id }, { name: name, mobile: mobile }).then(async () => {
+            let body = await userDetailsValidation.validateAsync(req.body, { abortEarly: false })
+            console.log(body,'bodyyyyyyyyyy');
+          
+            await userModel.findOneAndUpdate({ _id: req.session.user._id }, body)
+            .then(async () => {
                 user = await userModel.findOne({ _id: req.session.user._id })
                 const newName = user.name
                 const newMobile = user.mobile;
 
-                res.json({ success: true, newName, newMobile })
-            }).catch((err) => {
-                console.log(err);
+                res.status(201).json({ success: true, newName, newMobile, message: 'Updated Successfully' })
             })
 
         } catch (error) {
             console.log(console.log(error));
-            res.json({ error: error })
+            if (error.isJoi) {
+                const validationErrors = error.details.map((detail) => detail.message);
+                res.status(422).send({ errors: validationErrors });
+            } 
         }
 
     },

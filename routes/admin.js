@@ -8,6 +8,7 @@ const categoryController = require('../controller/categoryController')
 const brandController = require('../controller/brandController')
 const orderController = require('../controller/orderController')
 const offerController = require('../controller/offerController')
+const couponController = require('../controller/couponController')
 
 router.get('/login', adminController.getAdminLogin)
 router.post('/login', adminController.postAdminLogin)
@@ -75,6 +76,10 @@ router.post('/addProductOffer',offerController.addProductOffer)
 router.post('/addCategoryOffer',offerController.addCategoryOffer)
 router.get('/removeProductOffer/:id',offerController.removeOffer)
 router.get('/removeCategoryOffer/:id',offerController.removeOffer)
+
+
+router.get('/coupons',couponController.getAdminCoupons)
+router.post('/coupons',couponController.postAdminAddCoupon)
 
 router.get('/logout', adminController.getAdminLogout)
 module.exports = router

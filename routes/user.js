@@ -57,10 +57,11 @@ router.post('/editUserDetails',userController.editUserDetails)
 router.post('/changePassword',userController.postChangePassword)
 
 router.get('/address',auth.auth,addressController.getAddress)
-router.get('/addAddress',auth.auth,addressController.getAddAddress)
-router.post('/addAddress',addressController.postAddAddress)
+router.put('/address',auth.auth,addressController.postEditAddress)
+// router.get('/addAddress',auth.auth,addressController.getAddAddress)
+router.post('/addAddress',auth.auth,addressController.postAddAddress)
 
-router.get('/editAddress/:id',addressController.getEditAddress)
+// router.get('/editAddress/:id',addressController.getEditAddress)
 router.post('/editAddress/:id',addressController.postEditAddress)
 
 router.get('/deleteAddress/:id',addressController.getDeleteAddress)

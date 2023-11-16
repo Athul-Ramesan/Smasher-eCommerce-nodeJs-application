@@ -22,6 +22,8 @@ dbConnect()
 app.use(logger("dev"));
 // app.use(express.json());
 app.use(urlencoded({ extended: true }))
+app.use(express.json());
+
 app.use(express.static('public'))
 
 app.set('view engine', 'ejs');
@@ -44,6 +46,12 @@ app.use('/admin', adminRouter);
 
 app.use((req, res) => {
   res.status(404).render("user/404");
+});
+
+
+app.use((err, req, res, next) => {
+  console.error(err.message);
+  res.status(err.status || 500).send({ status: err.status || 500, message: err.message });
 });
 
 

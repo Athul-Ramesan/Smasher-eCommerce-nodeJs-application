@@ -1,7 +1,7 @@
 const userModel = require('../models/userModel')
 const cartModel = require('../models/cartModel')
 const productModel = require('../models/productModel');
-const addressModel = require('../models/addressModel')
+const stockService = require('../services/stockService')
 
 const cartService = require('../services/cartService')
 
@@ -9,42 +9,52 @@ module.exports = {
     getAddToCart: async (req, res) => {
         try {
             const productId = req.params.id;
-
-            console.log('inside getaddtocart');
-            const user = await userModel.findOne({ email: req.session.user.email });
-            console.log('user', user);
-            let userCart = await cartModel.findOne({ userId: user._id })
-            
-            if (!userCart) {
-
-                console.log('no user cart');
-                userCart = await cartModel.create({ userId: user._id, items: [{ productId: productId, quantity: 1 }] })
-                const cartCount = userCart.items.length
-                console.log(cartCount, 'cartCount');
-
-                res.json({ success: true, cartCount })
-
-            } else {
-                const existingCart = userCart.items.find(item => item.productId.equals(productId))
-
-                console.log('inside else');
-                if (existingCart) {
-
-                    console.log(' existingCart', existingCart);
-                    existingCart.quantity += 1
-                    console.log(userCart);
-
+            const stock = await stockService.checkProductStock(productId)
+  
+            console.log(stock,'stock');
+            if(stock>0){
+                const user = await userModel.findOne({ email: req.session.user.email });
+                console.log('user', user);
+                let userCart = await cartModel.findOne({ userId: user._id })
+    
+                if (!userCart) {
+    
+                    console.log('no user cart');
+                    userCart = await cartModel.create({
+                        userId: user._id,
+                        items: [{
+                            productId: productId,
+                            quantity: 1
+                        }]
+                    })
+                    const cartCount = userCart.items.length
+                    console.log(cartCount, 'cartCount');
+    
+                    res.json({ success: true, cartCount })
+    
                 } else {
-                    userCart.items.push({ productId: productId, quantity: 1 })
+                    const existingCart = userCart.items.find(item => item.productId.equals(productId))
+    
+                    console.log('inside else');
+                    if (existingCart) {
+    
+                        console.log(' existingCart', existingCart);
+                        existingCart.quantity += 1
+                        console.log(userCart);
+    
+                    } else {
+                        userCart.items.push({ productId: productId, quantity: 1 })
+                    }
+                    console.log('userCart', userCart);
+                    await cartModel.findOneAndUpdate({ userId: user._id }, userCart)
+                    const cartCount = userCart.items.length
+                    console.log(cartCount, 'cartCount');
+                    res.json({ success: true, cartCount })
                 }
-                console.log('userCart', userCart);
-                await cartModel.findOneAndUpdate({ userId: user._id }, userCart)
-                const cartCount = userCart.items.length
-                console.log(cartCount, 'cartCount');
-                res.json({ success: true, cartCount })
+            }else{
+                res.json({success: false, error: 'Sorry, product out of stock'})
             }
-
-
+            
         } catch (error) {
             console.log(error);
             res.status(500).json({ success: false, error: 'error adding to cart' })
@@ -63,7 +73,12 @@ module.exports = {
             const products = await productModel.find({})
             console.log(cart);
 
-            res.render('user/cart', { user, products, cart, wishlist: false })
+            res.render('user/cart', { user,
+                 products,
+                  cart,
+                   wishlist: false,
+                   message: req.flash()
+                 })
 
         } catch (error) {
             console.log(error);

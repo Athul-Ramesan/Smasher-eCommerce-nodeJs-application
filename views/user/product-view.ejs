@@ -78,7 +78,7 @@
                         <span class="text-danger ms-2">out-of stock</span>
                         <%}%>
                   </div>
-                  <% if(product.stock<10) {%>
+                  <% if( product.stock < 10 && product.stock >=1 ) {%>
                     <div class="alert alert-danger">
                       Only <%=product.stock %> Item left in Stock
                     </div>
@@ -134,7 +134,7 @@
                         >
                     </i> Add to cart
                   </a>
-                  <a href="#" class="btn btn-outline-warning text-dark  shadow-0"> Add to wishlist </a>
+                  <a href="#" class="btn btn-outline-warning text-dark  shadow-0"> Add to wishlist </a> 
                   <% }else{ %>
                     <a onclick="redirectToLoginPage()" class="btn btn-outline-warning text-dark  shadow-0"> Add to
                       wishlist </a>
@@ -150,7 +150,7 @@
       </section>
       <!-- content -->
 
-      <section class="bg-light  py-4" style="background: linear-gradient( #ece9bb,#1f5075);">
+      <section class="bg-light  py-4" style="background: linear-gradient( #eae9dd,#f4f4f4);">
         <div class="container">
           <div class="row gx-4">
             <div class="col-lg-8 mb-4">
@@ -351,11 +351,16 @@
           })
             .done(function (data) {
               console.log(data);
-              swal(name, 'is added to cart', 'success');
+              if(data.success){
+                swal(name, 'is added to cart', 'success');
               const cartCountElement = document.getElementById('cart-count');
               if (cartCountElement) {
                 cartCountElement.textContent = data.cartCount;
               }
+              }else{
+                swal(data.error);
+              }
+              
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
               console.error(errorThrown);

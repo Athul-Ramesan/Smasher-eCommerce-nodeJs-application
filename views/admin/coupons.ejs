@@ -1,0 +1,163 @@
+<%-include ('../layouts/header') %>
+    <%-include ('../partials/adminSidebar') %>
+
+        <div class="container-fluid">
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold cl1">Coupons</h6>
+                    <div>
+                        <a data-bs-toggle="modal" data-bs-target="#addCouponModal" role="button">
+                            <i class="fa fa-plus-circle cl1"></i><span class="pl-2">Add New
+                                Coupon</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- add coupon modal starts -->
+                <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="addCouponModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-center text-italic fw-bold" id=" addCouponModalLabel">Add
+                                    New
+                                    Addess</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form id="addCoupon">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-12 m-2">
+
+                                            <input type="text" id="coupon-name" name="couponName" class="form-control"
+                                                placeholder="Coupon Name" />
+                                        </div>
+                                        <div class="col-md-12 m-2">
+
+                                            <input type="text" id="coupon-code" name="couponCode" class="form-control"
+                                                placeholder="Coupon Code" />
+                                        </div>
+
+                                        <div class="col-md-12 m-2">
+
+                                            <input type="number" id="discount-percent" name="discountPercent"
+                                                class="form-control" placeholder="Discount Percentage" />
+                                        </div>
+                                        <div class="col-md-12 m-2">
+
+                                            <input type="number" id="maximum-use-count" name="maxUseCount"
+                                                class="form-control" placeholder="Use Count" />
+                                        </div>
+                                        <div class="col-md-12 m-2">
+
+                                            <input type="number" name="minimumOrderAmount" id="mininum-order-amount"
+                                                placeholder="Minimum Order Amount" class="form-control">
+                                        </div>
+                                        <div class="col-md-12 m-2">
+
+                                            <input type="number" id="maximum-discount-amount"
+                                                name="maximumDiscountAmount" class="form-control"
+                                                placeholder="Maximum discountable amount" />
+                                        </div>
+                                        <div class="col-md-12 m-2">
+
+                                            <input type="date" id="expiry-date" name="expiryDate" class="form-control"
+                                                placeholder="coupon expiry date" />
+                                        </div>
+                                        <div class="col-md-12 m-2 ">
+                                            <button type="submit" class="btn m-3 btn-outline-primary">Add
+                                                Coupon</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Add coupon modal ends -->
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Coupon Name</th>
+                                    <th>Coupon Code</th>
+                                    <th>Discount (%)</th>
+                                    <th>Use count</th>
+                                    <th>Orders above</th>
+                                    <th>Maximum Discount</th>
+                                    <th>Expiry Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td>
+
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td width="20%">
+
+                                    </td>
+                                    <td width="15%">
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- edit coupon modal starts -->
+
+
+            <!-- edit coupon modal ends -->
+
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $('#addCoupon').submit(function (event) {
+                    event.preventDefault();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/admin/coupons',
+                        data: $('#addCoupon').serialize(), // Serialize the form data
+                        success: function (response) {
+                            if (response.status === 422) {
+                                return response.json();
+                            }
+                            console.log(response);
+                        },
+                        error: function (error) {
+                            // Handle the server response (error)
+                            // ...
+                        }
+                    });
+                });
+            });
+        </script>
+
+        <%-include ('../layouts/adminFooter') %>

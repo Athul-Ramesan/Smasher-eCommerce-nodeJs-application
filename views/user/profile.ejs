@@ -62,7 +62,7 @@
                   <label for="name" class="m-2">
                     <h6>Name</h6>
                   </label>
-                  <input required disabled type="text" id='nameInput' value="<%=user.name%>" name="name">
+                  <input disabled type="text" id='nameInput' value="<%=user.name%>" name="name">
 
                 </div>
                 <div class="div">
@@ -205,7 +205,8 @@
                 <h5 class="text-center">Referal link :</h5>
               </div>
               <div class="copy-container">
-                <input type="text" value="http://localhost:3000/signup?referalUserId=<%=user._id%>" id="copyText" readonly />
+                <input type="text" value="http://localhost:3000/signup?referalUserId=<%=user._id%>" id="copyText"
+                  readonly />
                 <button onclick="copyTextToClipboard()">
                   <i class="fas fa-copy"></i> Copy
                 </button>
@@ -283,6 +284,7 @@
           saveChanges.style.display = 'block'
           // Change "Edit" link to "Cancel"
           editLink.textContent = "Cancel";
+
         } else {
           // Disable the inputs
           nameInput.setAttribute('disabled', 'true');
@@ -290,40 +292,83 @@
           saveChanges.style.display = 'none'
           // Change "Cancel" link back to "Edit"
           editLink.textContent = "Edit";
+          window.location.reload()
         }
       }
 
-      $('#editUserDetails').submit((e) => {
-        const s = $('#editUserDetails').serialize();
-        console.log(s);
+      document.getElementById('editUserDetails').addEventListener('submit', (e) => {
         e.preventDefault();
-        $.ajax({
-          url: '/editUserDetails',
+
+        const name = document.getElementById('nameInput').value;
+        const mobile = document.getElementById('mobileInput').value;
+
+        const requestOptions = {
           method: 'POST',
-          data: s,
-          success: (response) => {
-            if (response) {
-              console.log(response);
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: name,
+            mobile: mobile
+          })
+        }
+        fetch('/editUserDetails', requestOptions)
+          .then((response) => {
+            console.log(response);
+
+            if (response.status === 422) {
+              return response.json(); // Return the promise
+            } else if (response.status === 201) {
+              // Handle success
               const nameInput = document.getElementById('nameInput');
               const mobileInput = document.getElementById('mobileInput');
               const editLink = document.getElementById('editLink');
-              const userName = document.getElementById('user-name')
+              const userName = document.getElementById('user-name');
 
+              Toastify({
+                text: 'Updated Successfully',
+                duration: 3000,
+                position: "center",
+                className: "info",
+                style: {
+                  background: "success",
+                }
+              }).showToast();
 
-              swal('', 'User details updated successfully').then(() => {
-
-                nameInput.value = response.newName
-                mobileInput.value = response.newMobile
-                userName.textContent = response.newName
+              setTimeout(() => {
+                location.reload();
                 nameInput.setAttribute('disabled', 'true');
                 mobileInput.setAttribute('disabled', 'true');
                 editLink.textContent = "Edit";
-              })
-
+              }, 3000);
             }
-          }
-        })
+          })
+          .then((data) => {
+            // Handle the case where status was 422
+            if (data && data.errors) {
+              console.log(data);
+              data.errors.forEach((errorMessage) => {
+                Toastify({
+                  text: errorMessage,
+                  duration: 3000,
+                  position: "bottom-center",
+                  className: "info",
+                  style: {
+                    background: "red",
+                  }
+                }).showToast();
+              });
+            }
+          })
+          .catch((error) => {
+            console.log(error, "error");
+          });
+
+
+
       })
+
+
       document.addEventListener('DOMContentLoaded', () => {
         const currentPasswordInput = document.getElementById('currentPassword');
         const newPasswordInput = document.getElementById('newPassword')
@@ -376,7 +421,7 @@
           }
 
         }).showToast()
-      
+
       }
 
 

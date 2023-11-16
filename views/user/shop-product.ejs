@@ -359,12 +359,18 @@
                     contentType: 'application/json', // Set request content type
                 })
                     .done(function (data) {
-                        console.log(data.cartCount);
-                        swal(name, 'is added to cart', 'success');
+                        console.log(data);
+                        if(data.success){
+                            swal(name, 'is added to cart', 'success');
                         const cartCountElement = document.getElementById('cart-count');
                         if (cartCountElement) {
                             cartCountElement.textContent = data.cartCount;
                         }
+
+                        }else{
+                            swal(data.error);
+                        }
+                        
                     })
                     .fail(function (jqXHR, textStatus, errorThrown) {
                         console.error(errorThrown);

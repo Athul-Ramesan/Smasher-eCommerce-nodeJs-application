@@ -66,7 +66,7 @@
                                             <div class="row">
                                                 <div class="col-md-1">
                                                     <input class="m-3" type="radio" required name="address"
-                                                        value="<%=address._id%>" id="addressRadio-<%=index%>" >
+                                                        value="<%=address._id%>" id="addressRadio-<%=index%>">
                                                 </div>
                                                 <div class="col-md-10  g-2 shadow">
                                                     <div class="">
@@ -165,7 +165,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <script>
-            document.getElementById('addressRadio-0').checked= true;
+            document.getElementById('addressRadio-0').checked = true;
             $('#form-checkout').submit((e) => {
                 e.preventDefault();
 
@@ -175,24 +175,48 @@
                     method: 'POST',
                     data: $('#form-checkout').serialize(),
                     success: ((response) => {
-                        if(response.success){
+                        if (response.success) {
                             console.log(response)
-                        if (response.paymentMethod === 'cod') {
+                            if (response.paymentMethod === 'cod') {
 
-                            console.log(`/orderSuccess/${response.orderId}`);
-                            window.location.href = `/orderSuccess/${response.orderId}`
+                                console.log(`/orderSuccess/${response.orderId}`);
+                                window.location.href = `/orderSuccess/${response.orderId}`
+                            } else {
+                                handlePayNowClick(response)
+
+                                // } else {
+                                //     const message = document.getElementById('#errorMessage');
+                                //     message.innerText = response.message
+                            }
                         } else {
-                           handlePayNowClick(response)
-
-                            // } else {
-                            //     const message = document.getElementById('#errorMessage');
-                            //     message.innerText = response.message
-                        }
-                        }else{
-                            if(response.error){
+                            if (response.error) {
                                 //toastify here
                             }
-                            if(!response.success){
+                            if (!response.success) {
+                                if (res.url) {
+                                    Toastify({
+                                        text: response.message,
+                                        duration: 1500,
+                                        position: "center",
+                                        className: "info",
+                                        style: {
+                                            background: "red",
+                                        }
+                                    }).showToast();
+                                    Toastify({
+                                        text: 'Redirecting to Cart',
+                                        duration: 1500,
+                                        position: "center",
+                                        className: "info",
+                                        style: {
+                                            background: "red",
+                                        }
+                                    }).showToast();
+                                    setTimeout(() => {
+                                        window.location.href = response.url
+                                    }, 3000);
+                                    
+                                }
                                 Swal.fire({
                                     title: response.message,
                                     showClass: {
@@ -212,71 +236,71 @@
                                 });
                             }
                         }
-                        
+
                     })
 
                 })
             })
-                function handlePayNowClick(order){
-                    console.log(order);
-                            var options = {
-                                "key": "rzp_test_ZLOedi08NLKHof", // Enter the Key ID generated from the Dashboard
-                                "amount": order.createdOrder.amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-                                "currency": "INR",
-                                "name": "SMASHER",
-                                "description": "Test Transaction",
-                                "image": "/images/logo.png",
-                                "order_id": order.createdOrder.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-                                "handler": function (response) {
-                                    console.log(response, 'handler');
-                                    verifyPayment(response,order)
-                                 
-                                },
-                                "prefill": {
-                                    "name": "Gaurav Kumar",
-                                    "email": "gaurav.kumar@example.com",
-                                    "contact": "9000090000"
-                                },
-                                "notes": {
-                                    "address": "Razorpay Corporate Office"
-                                },
-                                "theme": {
-                                    "color": "#3399cc"
-                                }
-                            };
-                            var rzp1 = new Razorpay(options);
-                            rzp1.open();
-                            rzp1.on('payment.failed', function (response) {
-                                alert(response.error.code);
-                                alert(response.error.description);
-                                alert(response.error.source);
-                                alert(response.error.step);
-                                alert(response.error.reason);
-                                alert(response.error.metadata.order_id);
-                                alert(response.error.metadata.payment_id);
-                            });
+            function handlePayNowClick(order) {
+                console.log(order);
+                var options = {
+                    "key": "rzp_test_ZLOedi08NLKHof", // Enter the Key ID generated from the Dashboard
+                    "amount": order.createdOrder.amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                    "currency": "INR",
+                    "name": "SMASHER",
+                    "description": "Test Transaction",
+                    "image": "/images/logo.png",
+                    "order_id": order.createdOrder.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                    "handler": function (response) {
+                        console.log(response, 'handler');
+                        verifyPayment(response, order)
 
-                }
-                function verifyPayment(payment, order) {
-                    $.ajax({
-                        method: 'post',
-                        url: '/verifyPayment',
-                        data: {
-                            payment,
-                            order
-                        },
-                        success: (response) => {
-                            if (response.success) {
-                                window.location.href = `/orderSuccess/${response.orderId}`
-                            } else {
-                                console.log('response not get');
-                                location.href = '*'
-                            }
+                    },
+                    "prefill": {
+                        "name": "Gaurav Kumar",
+                        "email": "gaurav.kumar@example.com",
+                        "contact": "9000090000"
+                    },
+                    "notes": {
+                        "address": "Razorpay Corporate Office"
+                    },
+                    "theme": {
+                        "color": "#3399cc"
+                    }
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+                rzp1.on('payment.failed', function (response) {
+                    alert(response.error.code);
+                    alert(response.error.description);
+                    alert(response.error.source);
+                    alert(response.error.step);
+                    alert(response.error.reason);
+                    alert(response.error.metadata.order_id);
+                    alert(response.error.metadata.payment_id);
+                });
 
+            }
+            function verifyPayment(payment, order) {
+                $.ajax({
+                    method: 'post',
+                    url: '/verifyPayment',
+                    data: {
+                        payment,
+                        order
+                    },
+                    success: (response) => {
+                        if (response.success) {
+                            window.location.href = `/orderSuccess/${response.orderId}`
+                        } else {
+                            console.log('response not get');
+                            location.href = '*'
                         }
-                    })
-                }
-           
+
+                    }
+                })
+            }
+
 
 
         </script>

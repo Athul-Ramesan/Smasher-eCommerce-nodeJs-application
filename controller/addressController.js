@@ -3,7 +3,7 @@ const userModel = require('../models/userModel');
 const productModel = require('../models/productModel')
 const cartModel = require('../models/cartModel');
 const mongoose = require('mongoose');
-
+const {addAddress} = require('../validators/addressValidator')
 
 module.exports = {
     getAddress: async (req, res) => {
@@ -57,21 +57,24 @@ module.exports = {
     },
     postAddAddress: async (req, res) => {
         try {
-            console.log('hereee');
-            console.log(req.url);
+            console.log(req.body,'req.bodyyyyyyyy');
+            let body = await addAddress.validateAsync(req.body, { abortEarly: false })
+            
+            console.log(body,'bodyyyyyyyyyyyyyy');
+
             const userId = req.session.user._id;
-            const data = req.body;
-            data.userId = userId;
+            const data = { ...body, userId };
             // const {name ,mobile,houseName,locality,pincode,district,state} = req.body
-            console.log(userId);
+            
             const address = await addressModel.findOne({ userId: userId })
             
             if(req.url==='/addAddress'){
                 if (!address) {
-                
                     await addressModel.create({ userId: userId, address: [data] })
-                    req.flash('addressMessage', 'Address added successfully')
-                    res.redirect('/address')
+                    .then(result=>{
+                        res.status(201).send({result: result ,message: 'Address added successfully'})
+                    })
+                    
                 } else {
                     await addressModel.findOneAndUpdate(
                         { userId: userId },
@@ -79,10 +82,9 @@ module.exports = {
                             $push: { address: data }
                         }
                     ).then((result) => {
-                        console.log(result);
-    
-                        req.flash('addressMessage', 'Address added successfully')
-                        res.redirect('/address')
+                        console.log(result);    
+
+                        res.status(201).send({result: result, message: 'Address added successfully'})
     
                     })
                 }
@@ -109,40 +111,55 @@ module.exports = {
             }
  
         } catch (error) {
+
             console.log(error);
-            res.render('user/404')
+          
+            if (error.isJoi) {
+                const validationErrors = error.details.map((detail) => detail.message);
+                res.status(422).send({ errors: validationErrors });
+            } 
         }
 
     },
-    getEditAddress: async (req, res) => {
-        try {
+    // getEditAddress: async (req, res) => {
+    //     try {
 
-            const addressId = req.params.id;
-            const userId = req.session.user._id
-            const userAddress = await addressModel.findOne({ userId: userId })
-            const address = userAddress.address.find((item) => item._id.equals(addressId))
+            
 
-            const user = await userModel.findOne({ email: req.session.user.email });
+    //         const addressId = req.params.id;
+    //         const userId = req.session.user._id
+    //         const userAddress = await addressModel.findOne({ userId: userId })
+    //         const address = userAddress.address.find((item) => item._id.equals(addressId))
 
-            const cart = await cartModel.findOne({ userId: req.session.user._id })
+    //         const user = await userModel.findOne({ email: req.session.user.email });
 
-            res.render('user/editAddress', {
-                user,
-                cart,
-                wishlist: false,
-                address,
-                message: req.flash()
-            })
-        } catch (error) {
-            console.log(error);
-        }
-    },
+    //         const cart = await cartModel.findOne({ userId: req.session.user._id })
+
+    //         res.render('user/editAddress', {
+    //             user,
+    //             cart,
+    //             wishlist: false,
+    //             address,
+    //             message: req.flash()
+    //         })
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // },
     postEditAddress: async (req, res) => {
         try {
-            const addressId = req.params.id;
-            const data = req.body;
-            console.log(data);
+            
+            console.log(req.body,'req.bodyyyyyyyy');
+            let body = await addAddress.validateAsync(req.body, { abortEarly: false })
+            // console.log(body);
+            console.log(body,'bodyyyyyyyyyyyyyy');
 
+            // const userId = req.session.user._id;
+            const data = { ...body};
+
+            console.log(data,'data');
+
+            const addressId = new mongoose.Types.ObjectId(req.query.addressId);
             const userId = new mongoose.Types.ObjectId(req.session.user._id)
             await addressModel.findOneAndUpdate(
                 { userId: userId, 'address._id': addressId },
@@ -151,14 +168,16 @@ module.exports = {
                         { 'address.$': data }
                 },
             ).then((result) => {
-                console.log(result);
+                res.status(201).send({result: result, message: 'Address added successfully'})
             }).catch((err) => {
-                console.log(err);
+                console.log(err,'error inside then catch');
             })
-            req.flash('addressMessage', 'Address edited Successfully')
-            res.redirect('/address');
+            
         } catch (error) {
-            console.log(error);
+            if (error.isJoi) {
+                const validationErrors = error.details.map((detail) => detail.message);
+                res.status(422).send({ errors: validationErrors });
+            } 
         }
     },
     getDeleteAddress: async (req, res) => {
