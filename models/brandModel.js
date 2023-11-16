@@ -3,9 +3,7 @@ const brandSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-    },
-    image: {
-        type: String
+        unique: true
     }
 
 })

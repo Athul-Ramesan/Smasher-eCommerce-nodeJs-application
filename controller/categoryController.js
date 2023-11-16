@@ -31,7 +31,11 @@ module.exports = {
     },
     postAdminAddCategory: async (req, res) => {
         try {
-            console.log(req.body.category);
+            const name = req.body.trim()
+            if(!name){
+                req.flash('categoryMessage', "Please enter a valid name")
+                return res.redirect('/admin/categoriesAndBrands')
+            }
             const newCategory = new categoryModel({
                 name: req.body.category
             })
@@ -39,6 +43,10 @@ module.exports = {
             req.flash('categoryMessage', "New category added succesfully")
             res.redirect('/admin/categoriesAndBrands')
         } catch (error) {
+            if(error.code===11000){
+                req.flash('categoryMessage', "Cannot add same category")
+                res.redirect('/admin/categoriesAndBrands')
+            }
             console.log(error);
         }
 

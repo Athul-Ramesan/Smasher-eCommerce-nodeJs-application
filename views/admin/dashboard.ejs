@@ -8,7 +8,8 @@
       <div class="content-header">
         <h2 class="content-title">Dashboard</h2>
       </div>
-      <div class="modal" id="salesReportModal" tabindex="-1" role="dialog" aria-labelledby="salesReportModalLabel" aria-hidden="true">
+      <div class="modal" id="salesReportModal" tabindex="-1" role="dialog" aria-labelledby="salesReportModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -30,32 +31,33 @@
                 <div class="form-group">
                   <label>File Format:</label>
                   <div class="form-check">
-                      <input class="form-check-input" type="radio" name="fileFormat" id="pdf" value="pdf" checked>
-                      <label class="form-check-label" for="pdf">
-                          PDF
-                      </label>
+                    <input class="form-check-input" type="radio" name="fileFormat" id="pdf" value="pdf" checked>
+                    <label class="form-check-label" for="pdf">
+                      PDF
+                    </label>
                   </div>
                   <div class="form-check">
-                      <input class="form-check-input" type="radio" name="fileFormat" id="excel" value="excel">
-                      <label class="form-check-label" for="excel">
-                          Excel
-                      </label>
+                    <input class="form-check-input" type="radio" name="fileFormat" id="excel" value="excel">
+                    <label class="form-check-label" for="excel">
+                      Excel
+                    </label>
                   </div>
-              </div>
-              
-              
+                </div>
+
+
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Download</button>
-            
+
             </div>
-          </form>
+            </form>
           </div>
         </div>
       </div>
       <div class="text-end">
-          <button class="btn btn-outline-info me-2" data-bs-toggle="modal" data-bs-target="#salesReportModal">Sales Report</button>
+        <button class="btn btn-outline-info me-2" data-bs-toggle="modal" data-bs-target="#salesReportModal">Sales
+          Report</button>
       </div>
       <div class="container">
         <div class="row">
@@ -95,15 +97,17 @@
                 </span>
                 <div class="text">
                   <h6 class="mb-1">Total Products</h6>
-                  <span ><%=totalProductsCount %></span>
+                  <span>
+                    <%=totalProductsCount %>
+                  </span>
                 </div>
               </article>
             </div>
           </div>
         </div>
       </div>
-      
-    
+
+
       <!-- chart starts -->
       <div class="card container">
         <div class="row g-5">
@@ -134,51 +138,59 @@
           </div>
           <div class="table-responsive">
             <table class="table align-items-center ">
-              <% for(let i =0 ; i< 6 ; i ++){ %>
+              <% for(let i=0 ; i<bestSellingProducts.length ; i ++){ %>
 
-              <tbody>
-                
-                <tr>
-                  <td class="w-30">
-                    <div class="d-flex px-2 py-1 align-items-center">
-                      <div class="image-container">
-                        <img class="img-fluid" src="/uploads/<%= bestSellingProducts[i].productImage1 %>" alt="Country flag" width="100" height="50">
+                <tbody>
 
+                  <tr>
+                    <td class="w-30">
+                      <div class="d-flex px-2 py-1 align-items-center">
+                        <div class="image-container">
+                          <img class="img-fluid" src="/uploads/<%= bestSellingProducts[i]?.productImage1 %>"
+                            alt="product image" width="100" height="50">
+
+                        </div>
+                        <div class="ms-4">
+
+                          <h6 class="text-sm mb-0">
+                            <%= bestSellingProducts[i]?.name %>
+                          </h6>
+                        </div>
                       </div>
-                      <div class="ms-4">
-                        
-                        <h6 class="text-sm mb-0"><%= bestSellingProducts[i].name %></h6>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                   
+                    </td>
+                    <td>
 
-                  
-                    <div class="text-center">
-                      <p class="text-xs font-weight-bold mb-0">Quantity:</p>
-                      <h6 class="text-sm mb-0"><%= totalProducts[i] %></h6>
-                    </div>
-                    
-                  </td>
-                  <td>
-                    <div class="text-center">
-                      <p class="text-xs font-weight-bold mb-0">Price</p>
-                      <h6 class="text-sm mb-0"><%= bestSellingProducts[i].price  %></h6>
-                    </div>
-                  </td>
-                  <td class=" text-sm">
-                    <div class="text-center">
-                      <p class="text-xs font-weight-bold mb-0">Sale Amount:</p>
-                      <h6 class="text-sm mb-0">₹<%= bestSellingProducts[i].price * totalProducts[i] %></h6>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                 
-              </tbody>
-              <% }%>
-     
+
+
+                      <div class="text-center">
+                        <p class="text-xs font-weight-bold mb-0">Quantity:</p>
+                        <h6 class="text-sm mb-0">
+                          <%= totalProducts[i] %>
+                        </h6>
+                      </div>
+
+                    </td>
+                    <td>
+                      <div class="text-center">
+                        <p class="text-xs font-weight-bold mb-0">Price</p>
+                        <h6 class="text-sm mb-0">
+                          <%= bestSellingProducts[i]?.price %>
+                        </h6>
+                      </div>
+                    </td>
+                    <td class=" text-sm">
+                      <div class="text-center">
+                        <p class="text-xs font-weight-bold mb-0">Sale Amount:</p>
+                        <h6 class="text-sm mb-0">₹<%= bestSellingProducts[i]?.price * totalProducts[i] %>
+                        </h6>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+
+                </tbody>
+                <% }%>
+
             </table>
           </div>
         </div>
@@ -186,7 +198,7 @@
       </div>
     </section>
 
-
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -200,7 +212,7 @@
         async function updateSalesGraph(timePeriod) {
           console.log(timePeriod, 'timeee');
           const salesData = await fetchSalesData(timePeriod)
-          
+
           document.getElementById('totalSales').innerHTML = `₹ ${salesData.totalRevenue}`
           document.getElementById('totalOrders').innerHTML = salesData.totalSales  //total orders
           if (window.chart1) {
@@ -244,7 +256,7 @@
           gradientStroke1.addColorStop(1, 'rgba(94, 114, 228, 0.2)');
           gradientStroke1.addColorStop(0.2, 'rgba(94, 114, 228, 0.0)');
           gradientStroke1.addColorStop(0, 'rgba(94, 114, 228, 0)');
-          window.chart2= new Chart(ctx1, {
+          window.chart2 = new Chart(ctx1, {
             type: "line",
             data: {
               labels: salesData.timePeriods,
@@ -318,7 +330,7 @@
               },
             },
           });
-        
+
         }
         async function fetchSalesData(timePeriod) {
           console.log(timePeriod, 'imeeee');
@@ -359,8 +371,51 @@
         //   })
         // })
 
+        document.getElementById('salesReportForm').addEventListener('submit', (e) => {
+          console.log('inside future');
+          e.preventDefault()
+          const startDate = new Date(document.getElementById('startDate').value)
+          const endDate = new Date(document.getElementById('endDate').value)
+          const currentDate = new Date();
 
-        
+          console.log(startDate, endDate, currentDate, 'stsshflas');
+
+          if (startDate > currentDate || endDate > currentDate) {
+            console.log('inside if');
+            Toastify({
+
+              text: 'You cannot select a future date.',
+
+              duration: 3000,
+              position: "center",
+              className: "info",
+              style: {
+                background: "red",
+              }
+
+            }).showToast()
+
+          } else if (startDate > endDate) {
+            Toastify({
+
+              text: 'Start date should be less than end date',
+
+              duration: 3000,
+              position: "center",
+              className: "info",
+              style: {
+                background: "red",
+              }
+
+            }).showToast()
+          } else {
+            document.getElementById('salesReportForm').submit();
+          }
+        })
+
+
+
+
       })
     </script>
 

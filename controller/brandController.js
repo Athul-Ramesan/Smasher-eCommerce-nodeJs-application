@@ -3,15 +3,23 @@ const brandModel = require('../models/brandModel')
 module.exports = {
     postAdminAddBrand: async (req, res) => {
         try {
+            const name = req.body.brand.trim()
 
+            if(!name){
+                req.flash('bandMessage', "Please enter the brand")
+                return res.redirect('/admin/categoriesAndBrands')
+            }
             const newBrand = new brandModel({
-                name: req.body.brand
+                name: name
             })
             await newBrand.save();
             req.flash('bandMessage', "New brand added succesfully")
             res.redirect('/admin/categoriesAndBrands')
         } catch (error) {
-            console.log(error);
+            if(error.code===11000){
+                req.flash('bandMessage', "Cannot add same brand")
+                res.redirect('/admin/categoriesAndBrands')
+            }
         }
     },
     getAdminEditBrand: async (req, res) => {

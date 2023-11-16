@@ -50,6 +50,8 @@ module.exports = {
                 totalProducts.push(doc.totalProducts);
                 totalProductsCount += doc.totalProducts
             })
+
+            console.log(bestSellingProducts,'bsashdfl');
             res.render('admin/dashboard', {
                 message: req.flash(),
                 admin: true,
@@ -415,45 +417,75 @@ module.exports = {
         console.log(req.body);
         try {
             const { startDate, endDate, fileFormat} = req.body;
-            console.log(new Date(startDate),'new date');
-            const totalSales = await orderModel.aggregate([
-                {
-                    $match : {
-                        paymentStatus : 'Paid'
-                    }
-                },
-                {
-                    $group : { 
-                        _id : null,
-                        totalSales : {
-                            $sum : '$totalAmount'
-                        }
-                    }
-                }
-            ])
-            console.log(totalSales,'totalSales');
-            const sum = totalSales.length > 0 ? totalSales[0].totalSales : 0
 
-            await orderModel.find({
-                paymentStatus: "Paid",
-                orderedDate : {
-                    $gte : new Date(startDate),
-                    $lte : new Date(endDate)
-                }
-            }).then(async(result)=>{
-                if(fileFormat ==='pdf'){
-                    const filePath= await services.pdfSalesReport(result,startDate,endDate,sum)
-                    console.log(filePath);
-                   res.download(filePath,'sales-report.pdf')
-                }else{
-                    const filePath= await services.excelSalesReport(result,startDate,endDate,sum)
-                    console.log(filePath);
-                    res.download(filePath)
-                }
-               
-            }).catch(err=>{
-                console.log(err);
-            })
+            console.log(startDate,endDate,'askjdfhlkjhsdfo');
+
+            console.log(new Date(startDate),'new date');
+            // const totalSales = await orderModel.aggregate([
+            //     {
+            //       $match: {
+            //         paymentStatus: 'Paid',
+            //         orderedDate: {
+            //           $gte: new Date(startDate),
+            //           $lte: new Date(endDate),
+            //         },
+            //       },
+            //     },
+            //     {
+            //       $group: {
+            //         _id: '$orderId', // Group by orderId or another unique identifier
+            //         totalSales: {
+            //           $sum: '$totalAmount',
+            //         },
+            //       },
+            //     },
+            //     {
+            //       $group: {
+            //         _id: null, // Group all results into a single group
+            //         grandTotalSales: {
+            //           $sum: '$totalSales',
+            //         },
+            //       },
+            //     },
+            //   ]);
+              
+            //   console.log(totalSales);
+              
+              
+              
+            
+            
+          
+            // const sum = totalSales.length > 0 ? totalSales[0].totalSales : 0
+
+            if(fileFormat === 'pdf'){
+                await orderModel.find({
+                    paymentStatus: "Paid",
+                    orderedDate : {
+                        $gte : new Date(startDate),
+                        $lte : new Date(endDate)
+                    }
+                }).then(async(result)=>{
+    
+                    const sum = result.reduce((sum,order)=> sum+order.totalAmount,0)
+    
+                    if(fileFormat ==='pdf'){
+                        const filePath= await services.pdfSalesReport(result,startDate,endDate,sum)
+                        console.log(filePath);
+                       res.download(filePath,'sales-report.pdf')
+                    }else{
+                        const filePath= await services.excelSalesReport(result,startDate,endDate,sum)
+                        console.log(filePath);
+                        res.download(filePath)
+                    }
+                   
+                }).catch(err=>{
+                    console.log(err);
+                })
+            }else{
+                // for excel download
+            }
+            
         } catch (error) {
             console.log(error);
         }
