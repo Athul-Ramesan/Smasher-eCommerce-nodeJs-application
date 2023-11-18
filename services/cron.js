@@ -19,28 +19,31 @@ const checkOffer = async () => {
             for (let offer of expiredOffer) {
                 console.log(offer, 'offer');
                 const categoryId = offer.categoryId;
-                const discountAmount = offer.discountAmount;
+                
 
+                try {
                     await productModel.updateMany(
-                        { category: new mongoose.Types.ObjectId(categoryId) },
-                         {
-                            $set: {discountAmount: 0},
-                            $inc: {price : discountAmount}
-                        } 
+                        {
+                            category: new mongoose.Types.ObjectId(categoryId)
+                        },
+                        {
+                            $set: { isDiscountApplied: false }
+                        }
                     )
-                    .then(result => {
-                        console.log(result, ' result discount amount');
-                    })
+                } catch (error) {
+                    console.log(error);
+                } 
+                
             }
         }
         await offerModel.deleteMany(
             {
                 expiryDate: { $gte: currentDate }
             }
-        ).then(result=>{
-            console.log(result,'delete');
-        }).catch(err=>{
-            console.error('deleting doc',err)
+        ).then(result => {
+            console.log(result, 'delete');
+        }).catch(err => {
+            console.error('deleting doc', err)
         })
     } catch (error) {
         console.log(error);

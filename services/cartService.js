@@ -6,58 +6,66 @@ const userModel = require('../models/userModel');
 
 
 module.exports = {
-  
-    calculateCartTotal : async(userId)=>{
+
+    calculateCartTotal: async (userId) => {
         try {
             const cart = await cartModel.findOne({ userId: userId })
-        const cartSummary = await cartModel.aggregate([
-            {
-                $match: {
-                    userId: new mongoose.Types.ObjectId(userId)
-                }
-            },
-            {
-                $unwind: '$items'
-            },
-            {
-                $lookup: {
-                    from: 'products',
-                    localField: 'items.productId',
-                    foreignField: '_id',
-                    as: 'product'
-                }
-            },
-            {
-                $unwind: '$product'
-            },
-            {
-                $set: {
-                    'items.subtotal': { $multiply: ['$items.quantity', '$product.price'] }
-                }
-            },
-            {
-                $group: {
-                    _id: '$userId',
-                    totalAmount: { $sum: '$items.subtotal' }
-                }
-            }
-        ]);
 
-        console.log(cartSummary,'cartSummary');
-        let totalAmount
-        if(cartSummary.length >0){
-             totalAmount = cartSummary[0].totalAmount
-        }else{
-            totalAmount =0;
-        }
-        
-        cart.totalAmount = totalAmount
-        
-        await cart.save()
-        return totalAmount
+            await cartModel.aggregate([
+                {
+                    $match: {
+                        userId: new mongoose.Types.ObjectId(userId)
+                    }
+                },
+                {
+                    $unwind: '$items'
+                },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'items.productId',
+                        foreignField: '_id',
+                        as: 'product'
+                    }
+                },
+                {
+                    $unwind: '$product'
+                },
+                {
+                    $set: {
+                        'items.productSubtotal': { $multiply: ['$items.quantity', '$product.price'] },
+                        'items.discountSubtotal': { $cond: [{ $eq: ['$product.isDiscountApplied', true] }, { $multiply: ['$items.quantity', '$product.discountAmount'] }, 0] }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$userId',
+                        totalAmount: { $sum: '$items.productSubtotal' },
+                        totalDiscount: { $sum: '$items.discountSubtotal' }
+                    }
+                }
+            ]).then(cartSummary => {
+                console.log(cartSummary, 'this is result');
+                if (cartSummary.length > 0) {
+                    totalAmount = cartSummary[0].totalAmount
+                    totalDiscount = cartSummary[0].totalDiscount
+                } else {
+                    totalAmount = 0;
+                    totalDiscount = 0;
+                }
+                cart.totalAmount = totalAmount
+                cart.totalDiscount = totalDiscount
+                
+            }).catch(err => {
+                console.log(err);
+            })
+
+
+            await cart.save()
+            return { totalAmount, totalDiscount }
         } catch (error) {
             console.log(error);
         }
-        
+
     }
 }

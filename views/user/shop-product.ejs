@@ -281,7 +281,7 @@
                     <% products.forEach((product)=>{ %>
                         <% if(product.active){ %>
                             <div class="col-md-3 col-sm-6">
-                                <div class="product-grid m-3 ">
+                                <div class="product-grid m-3 position-relative">
                                     <div class="product-image" >
                                         <a href="/productView/<%=product._id %>" class="image">
                                             <img class="pic-1" src="/uploads/<%=product.productImage1 %>">
@@ -316,14 +316,22 @@
                                         <h3 class="title"><a href="/productView/<%=product._id %>">
                                                 <%=product.name%>
                                             </a></h3>
+                                            <% if(product.isDiscountApplied) {%>
                                         <div class="d-flex ">
-                                            <h4 class="price pe-2">₹<%=product.price%>
                                             
-                                            </h4>
-                                            <% if(product.discountAmount>0) {%>
-                                                <span class="text-decoration-line-through text-muted" >₹<%=product.price + product.discountAmount %></span>
-                                                <% } %>
+                                            <span class="price pe-2"  >₹<%=Math.floor(product.price - product.discountAmount)%></span>
+                                                <span class="badge bg-danger ml-3 position-absolute top-2 end-0 me-1 text-light" ><%=product.currentDiscountPercentage %>% OFF</span>
+                                                <span class="text-decoration-line-through text-muted" >₹<%=product.price%> </span>
+                                                
+                                                
                                         </div>
+                                        <% }else{ %>
+                                            <div class="d-flex ">
+                                            
+                                                <span class="price pe-2"  >₹<%=product.price%></span>
+                                                    
+                                            </div>
+                                        <%} %>
                                             
                                     </div>
                                 </div>

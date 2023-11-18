@@ -3,6 +3,9 @@ const moment = require('moment')
 const productModel = require('../models/productModel')
 const categoryModel = require('../models/categoryModel')
 const { default: mongoose } = require("mongoose")
+const productService = require('../services/productService')
+
+
 
 module.exports = {
 
@@ -12,10 +15,10 @@ module.exports = {
             const products = await productModel.find({})
             const categories = await categoryModel.find({})
             const productOffers = await offerModel.find({ type: 'product' })
-            .populate('productId')
+                .populate('productId')
 
-            console.log(productOffers,'productOffers');
-           
+            // console.log(productOffers,'productOffers');
+
             const formatedProductOffers = productOffers.map(doc => ({
 
                 ...doc.toObject(),
@@ -25,7 +28,7 @@ module.exports = {
             // console.log(formatedProductOffers, 'formatedProductOffers');
 
             const categoryOffers = await offerModel.find({ type: 'category' })
-            .populate('categoryId')
+                .populate('categoryId')
             const formatedCategoryOffers = categoryOffers.map(doc => ({
 
                 ...doc.toObject(),
@@ -67,71 +70,116 @@ module.exports = {
         }
     },
     addCategoryOffer: async (req, res) => {
-     
-        try {
-            const { categoryId, discountAmount, expiryDate } = req.body;
 
+        try {
+            const { categoryId, discountPercentage, expiryDate } = req.body;
+
+            const discountMultiplier = discountPercentage / 100
+
+            console.log(discountMultiplier,'mathhhggggggggggggggggggggggggggggggggggggdddddddddd');
             await offerModel.create({
                 categoryId: new mongoose.Types.ObjectId(categoryId),
                 type: 'category',
-                discountAmount: discountAmount,
+                discountPercentage: discountPercentage,
                 expiryDate: expiryDate
-            }).then(async(result) => {
+            }).then(async (result) => {
                 console.log(result);
 
-                await productModel.updateMany( 
-                {
-                    category: new mongoose.Types.ObjectId(categoryId)
-                },
-                {
-                    $set: {discountAmount: discountAmount},
-                    $inc: {price : -discountAmount}
-                }
-                ).then(result=>{
-                    console.log(result, 'product model');
-                })
+                await productModel.updateMany(
+                    {
+                        category: new mongoose.Types.ObjectId(categoryId)
+                    },
+                    [
+                        {
+                            $set: {
+                                currentDiscountPercentage: discountPercentage,
+                                discountAmount: {
+                                    $multiply: ['$price', discountMultiplier]
+                                },
+                                isDiscountApplied: true
+                            }
+                        }
+                    ]
+                )
+                    .then(result => {
+                        console.log(result, 'product model');
+                    }).catch(error => {
+                        console.log(error);
+                        // return res.json({ success: false, message: 'failed to add coupon' })
+
+                    })
 
                 res.json({ success: true, offerData: result, message: "Offer added successfully" })
             }).catch(err => {
                 console.log(err);
-                
-                if(err.code=='11000'){
-                    res.json({success: false, message: 'Offer on this category is already added'})
-                }else{
-                    res.json({ success: false, message: 'failed to add coupon' })
+
+                if (err.code == '11000') {
+                    res.json({ success: false, message: 'Offer on this category is already added' })
+                } else {
+                    console.log(err);
+                    return res.json({ success: false, message: 'failed to add coupon' })
                 }
             })
         } catch (error) {
             console.log(error);
-    
+
         }
 
     },
     removeOffer: async (req, res) => {
         console.log(req.params, 'params');
         const offerId = req.params.id;
+
+        // try {
+        //     console.log(req.params, 'params');
+        //     console.log(req.url);
+        //     if (req.url === `/removeProductOffer/${offerId}`){
+        //         console.log('hoiii');
+        //         await offerModel.findOneAndDelete({ _id: offerId })
+        //             .then(result => {
+        //                 console.log('inside product offer');
+        //                 console.log(result);
+        //                 res.redirect('/admin/offers')
+        //             })
+        //     }
+             
+        // } catch (error) {
+        //     console.log(error);
+        // }
         try {
-            console.log(req.params, 'params');
-            console.log(req.url);
-            if (req.url === `/admin/removeProductOffer/${offerId}`)
-                console.log('hoiii');
+
+            if (req.url === `/removeCategoryOffer/${offerId}`) {
+
+             
+                const offer = await offerModel.findOne({ _id: offerId })
+                console.log(offer,'offerrrrrrr');
+                const categoryId = offer.categoryId
+
                 await offerModel.findOneAndDelete({ _id: offerId })
-                    .then(result => {
-                        console.log('hiiii');
+                    .then(async (result) => {
+                        
                         console.log(result);
-                        res.redirect('/admin/offers')
-                    })
-            if (req.url === `/admin/removeCategoryOffer/${offerId}`) {
-                await offerModel.findOneAndDelete({ _id: offerId })
-                    .then(result => {
-                        console.log('hiiii');
-                        console.log(result);
-                        res.redirect('/admin/offers')
+                        await productModel.updateMany(
+                            {
+                                category: new mongoose.Types.ObjectId(categoryId)
+                            },
+                            {
+                                $set: { isDiscountApplied: false }
+                            }
+                        ).then(result => {
+                            console.log(result);
+                            res.redirect('/admin/offers')
+                        }).catch(err => {
+                            console.log(err);
+                        })
+
                     })
             }
+
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
+
     }
 
 }

@@ -3,7 +3,15 @@
 
         <div class="container shadow card mt-5 mb-5">
             <h3 class="m-3">Add Product</h3>
-            <form action="/admin/addProduct" method="post" enctype="multipart/form-data" class="bg-white">
+            <% if(message.addProduct){%>
+                <div class="alert alert-danger">
+                    <span>
+                        <%= message?.addProduct %>
+                    </span>
+                </div>
+                <%} %>
+            <form action="/admin/addProduct" method="post" enctype="multipart/form-data" class="bg-white"
+                id="addProductForm">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group ms-2">
@@ -17,21 +25,21 @@
                             <!-- Image input for Image 1 -->
                             <div class="form-group text-center">
                                 <label for="image1">Image 1:</label>
-                                <input type="file" name="productImage1" class="form-control-file" id="image1"
+                                <input type="file" name="productImage1" required class="form-control-file" id="image1"
                                     accept=".jpeg, .jpg, .png" data-index="1" onchange="previewImage(this)" />
                                 <span id="image1Error" class="text-danger"></span>
                             </div>
                             <!-- Image input for Image 2 -->
                             <div class="form-group text-center">
                                 <label for="image2">Image 2:</label>
-                                <input type="file" name="productImage2" class="form-control-file" id="image2"
+                                <input type="file" name="productImage2" required class="form-control-file" id="image2"
                                     accept=".jpeg, .jpg, .png" data-index="2" onchange="previewImage(this)" />
                                 <span id="image2Error" class="text-danger"></span>
                             </div>
                             <!-- Image input for Image 3 -->
                             <div class="form-group text-center">
                                 <label for="image3">Image 3:</label>
-                                <input type="file" name="productImage3" class="form-control-file" id="image3"
+                                <input type="file" name="productImage3" required class="form-control-file" id="image3"
                                     accept=".jpeg, .jpg, .png" data-index="3" onchange="previewImage(this)" />
                                 <span id="image3Error" class="text-danger"></span>
                             </div>
@@ -150,11 +158,11 @@
                                     placeholder="Enter base price" required />
                             </div>
                             <br>
-                            <div class="form-group ">
+                            <!-- <div class="form-group ">
                                 <label for="discountAmount">Discount Amount:</label>
                                 <input type="number" min="0" name="discountAmount" class="form-control bg-light"
                                     id="discountAmount" placeholder="Enter discount amount" required />
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -216,6 +224,7 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary ms-3">Add Product</button>
+                            
                         </div>
                     </div>
                 </div>
@@ -224,8 +233,10 @@
         </div>
 
 
-
-
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+      <script>
+  
+</script>
 
 
 

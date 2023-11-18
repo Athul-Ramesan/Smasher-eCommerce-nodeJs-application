@@ -33,7 +33,7 @@ const procuctSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  specificatios: {
+  specifications: {
     type: String,
     required: false
   },
@@ -94,6 +94,13 @@ const procuctSchema = new mongoose.Schema({
   status: {
     type: String,
     default: 'In stock'
+  },
+  currentDiscountPercentage: {
+    type: Number
+  },
+  isDiscountApplied: {
+    type: Boolean,
+    default: false
   }
 })
 

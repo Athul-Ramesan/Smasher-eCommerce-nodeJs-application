@@ -6,9 +6,9 @@ const otpModel = require('../models/otpModel')
 const cartModel = require('../models/cartModel')
 const otpService = require('../services/otpService')
 const sendMail = require('../validators/nodeMailer');
-const {userDetailsValidation }= require('../validators/userDetailsValidation')
+const { userDetailsValidation } = require('../validators/userDetailsValidation')
 const { default: mongoose } = require("mongoose");
-
+const bannerModel = require('../models/bannerModel')
 
 
 
@@ -29,15 +29,27 @@ module.exports = {
     },
     home: async (req, res) => {
         const products = await productModel.find({});
-
+        const banner = await bannerModel.findOne({ status: 'Enabled' })
+        console.log(banner,'banner');
         if (req.session && req.session.user) {
 
             const id = req.session.user._id
             const cart = await cartModel.findOne({ userId: id })
             console.log(cart, 'cart');
-            res.render('user/home', { user: req.session.user, products, cart, wishlist: false, message: req.flash() });
+            res.render('user/home', {
+                user: req.session.user,
+                products,
+                cart,
+                wishlist: false,
+                banner,
+                message: req.flash()
+            });
         } else {
-            res.render('user/home', { user: false, products })
+            res.render('user/home', { 
+                user: false,
+                 products ,
+                 banner
+                })
         }
 
 
@@ -93,7 +105,7 @@ module.exports = {
     getSignup: (req, res) => {
         try {
             console.log(req.query);
-           
+
             if (req.session.user) {
                 res.redirect('/home')
             } else {
@@ -305,12 +317,16 @@ module.exports = {
 
                 const newUser = await userModel.findOne({ email: user.email })
                 req.session.user = newUser
-                
-                if(req.session.referalUserId){
+
+                if (req.session.referalUserId) {
+                    
                     await userModel.updateOne(
-                        {_id: req.session.user.referalUserId},
-                        {$inc : {walletAmount: 50}}
-                        )
+                        { _id: req.session.referalUserId },
+                        { $inc: { walletAmount: 50 } } 
+                        
+                    ).then(result=>{
+                        console.log(result);
+                    })
                 }
 
                 res.redirect('/home')
@@ -383,23 +399,23 @@ module.exports = {
         try {
             console.log(req.body);
             let body = await userDetailsValidation.validateAsync(req.body, { abortEarly: false })
-            console.log(body,'bodyyyyyyyyyy');
-          
-            await userModel.findOneAndUpdate({ _id: req.session.user._id }, body)
-            .then(async () => {
-                user = await userModel.findOne({ _id: req.session.user._id })
-                const newName = user.name
-                const newMobile = user.mobile;
+            console.log(body, 'bodyyyyyyyyyy');
 
-                res.status(201).json({ success: true, newName, newMobile, message: 'Updated Successfully' })
-            })
+            await userModel.findOneAndUpdate({ _id: req.session.user._id }, body)
+                .then(async () => {
+                    user = await userModel.findOne({ _id: req.session.user._id })
+                    const newName = user.name
+                    const newMobile = user.mobile;
+
+                    res.status(201).json({ success: true, newName, newMobile, message: 'Updated Successfully' })
+                })
 
         } catch (error) {
             console.log(console.log(error));
             if (error.isJoi) {
                 const validationErrors = error.details.map((detail) => detail.message);
                 res.status(422).send({ errors: validationErrors });
-            } 
+            }
         }
 
     },

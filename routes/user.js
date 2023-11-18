@@ -49,7 +49,7 @@ router.get('/cart',auth.auth,auth.verifyUser,cartController.getCart)
 
 router.post('/addToCart/:id',cartController.getAddToCart)
 router.post('/updateCartQuantity',cartController.postUpdateCartQuantity)
-router.get('/removeFromCart/:id',cartController.getRemoveFromCart)
+router.get('/removeFromCart/:id',auth.auth,auth.verifyUser,cartController.getRemoveFromCart)
 
 router.get('/profile',auth.auth, userController.getProfile)
 router.post('/editUserDetails',userController.editUserDetails)

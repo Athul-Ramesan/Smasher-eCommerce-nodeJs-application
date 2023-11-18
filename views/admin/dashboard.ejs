@@ -36,12 +36,12 @@
                       PDF
                     </label>
                   </div>
-                  <div class="form-check">
+                  <!-- <div class="form-check">
                     <input class="form-check-input" type="radio" name="fileFormat" id="excel" value="excel">
                     <label class="form-check-label" for="excel">
                       Excel
-                    </label>
-                  </div>
+                    </label>  
+                  </div> -->
                 </div>
 
 
@@ -138,58 +138,59 @@
           </div>
           <div class="table-responsive">
             <table class="table align-items-center ">
-              <% for(let i=0 ; i<bestSellingProducts.length ; i ++){ %>
+              <% let n=(bestSellingProducts.length> 5) ? 5 : bestSellingProducts.length %>
+                <% for(let i=0 ; i<n ; i++){ %>
 
-                <tbody>
+                  <tbody>
 
-                  <tr>
-                    <td class="w-30">
-                      <div class="d-flex px-2 py-1 align-items-center">
-                        <div class="image-container">
-                          <img class="img-fluid" src="/uploads/<%= bestSellingProducts[i]?.productImage1 %>"
-                            alt="product image" width="100" height="50">
+                    <tr>
+                      <td class="w-30">
+                        <div class="d-flex px-2 py-1 align-items-center">
+                          <div class="image-container">
+                            <img class="img-fluid" src="/uploads/<%= bestSellingProducts[i]?.productImage1 %>"
+                              alt="product image" width="100" height="50">
 
+                          </div>
+                          <div class="ms-4">
+
+                            <h6 class="text-sm mb-0">
+                              <%= bestSellingProducts[i]?.name %>
+                            </h6>
+                          </div>
                         </div>
-                        <div class="ms-4">
+                      </td>
+                      <td>
 
+
+
+                        <div class="text-center">
+                          <p class="text-xs font-weight-bold mb-0">Quantity:</p>
                           <h6 class="text-sm mb-0">
-                            <%= bestSellingProducts[i]?.name %>
+                            <%= totalProducts[i] %>
                           </h6>
                         </div>
-                      </div>
-                    </td>
-                    <td>
 
+                      </td>
+                      <td>
+                        <div class="text-center">
+                          <p class="text-xs font-weight-bold mb-0">Price</p>
+                          <h6 class="text-sm mb-0">
+                            <%= bestSellingProducts[i]?.price %>
+                          </h6>
+                        </div>
+                      </td>
+                      <td class=" text-sm">
+                        <div class="text-center">
+                          <p class="text-xs font-weight-bold mb-0">Sale Amount:</p>
+                          <h6 class="text-sm mb-0">₹<%= bestSellingProducts[i]?.price * totalProducts[i] %>
+                          </h6>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
 
-
-                      <div class="text-center">
-                        <p class="text-xs font-weight-bold mb-0">Quantity:</p>
-                        <h6 class="text-sm mb-0">
-                          <%= totalProducts[i] %>
-                        </h6>
-                      </div>
-
-                    </td>
-                    <td>
-                      <div class="text-center">
-                        <p class="text-xs font-weight-bold mb-0">Price</p>
-                        <h6 class="text-sm mb-0">
-                          <%= bestSellingProducts[i]?.price %>
-                        </h6>
-                      </div>
-                    </td>
-                    <td class=" text-sm">
-                      <div class="text-center">
-                        <p class="text-xs font-weight-bold mb-0">Sale Amount:</p>
-                        <h6 class="text-sm mb-0">₹<%= bestSellingProducts[i]?.price * totalProducts[i] %>
-                        </h6>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-
-                </tbody>
-                <% }%>
+                  </tbody>
+                  <% }%>
 
             </table>
           </div>
@@ -377,10 +378,11 @@
           const startDate = new Date(document.getElementById('startDate').value)
           const endDate = new Date(document.getElementById('endDate').value)
           const currentDate = new Date();
-
+          const nextDay = new Date();
+          
           console.log(startDate, endDate, currentDate, 'stsshflas');
 
-          if (startDate > currentDate || endDate > currentDate) {
+          if (startDate > currentDate || endDate > nextDay.setDate(currentDate.getDate() + 1)) {
             console.log('inside if');
             Toastify({
 

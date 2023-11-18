@@ -183,7 +183,7 @@
                                 window.location.href = `/orderSuccess/${response.orderId}`
                             } else {
                                 handlePayNowClick(response)
-
+                                console.log(response,'resssssssssssssssssssssssssssssss');
                                 // } else {
                                 //     const message = document.getElementById('#errorMessage');
                                 //     message.innerText = response.message
@@ -195,17 +195,8 @@
                             if (!response.success) {
                                 if (res.url) {
                                     Toastify({
-                                        text: response.message,
-                                        duration: 1500,
-                                        position: "center",
-                                        className: "info",
-                                        style: {
-                                            background: "red",
-                                        }
-                                    }).showToast();
-                                    Toastify({
-                                        text: 'Redirecting to Cart',
-                                        duration: 1500,
+                                        text: response.message+'Redirecting to Cart',
+                                        duration: 3000,
                                         position: "center",
                                         className: "info",
                                         style: {
@@ -242,10 +233,11 @@
                 })
             })
             function handlePayNowClick(order) {
+                const amount = order.createdOrder.amount *100
                 console.log(order);
                 var options = {
                     "key": "rzp_test_ZLOedi08NLKHof", // Enter the Key ID generated from the Dashboard
-                    "amount": order.createdOrder.amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                    "amount": amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
                     "currency": "INR",
                     "name": "SMASHER",
                     "description": "Test Transaction",
@@ -265,7 +257,7 @@
                         "address": "Razorpay Corporate Office"
                     },
                     "theme": {
-                        "color": "#3399cc"
+                        "color": "#000000c"
                     }
                 };
                 var rzp1 = new Razorpay(options);

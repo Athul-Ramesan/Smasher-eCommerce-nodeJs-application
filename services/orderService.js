@@ -20,7 +20,7 @@ module.exports = {
             console.log('generatedOrderId',generatedOrderId);
 
                 const cart = await cartModel.findOne({ userId: userId }).populate('items.productId')
-                const totalAmount = cart.totalAmount;
+                const totalAmount = cart.totalAmount-cart.totalDiscount;
                 const address = await addressModel.findOne({ userId: userId });
                 console.log(address);
                 const shippingAddress = address.address.find((item) => item._id.equals(addressId))
@@ -63,7 +63,7 @@ module.exports = {
         return new Promise ((resolve,reject)=>{
             var razorpay = new Razorpay({ key_id: process.env.PAYMENT_KEY_ID, key_secret: process.env.PAYMENT_KEY_SECRET })
 
-        
+        console.log(totalAmount,'total amntttttttttttttttttttttttttttttttttttttttttttttt');
             const razorpayOrder = razorpay.orders.create({
                 amount: totalAmount,
                 currency: "INR",
@@ -89,12 +89,26 @@ console.log(razorpayOrder);
     
                 balanceStock = product.stock - quantity;
                 if (balanceStock <= 0) {
-                    product.stock = balanceStock;
-                    product.status = 'Out of stock';
-                    await product.save()
+                    await productModel.findOneAndUpdate(
+                        {_id: productId },
+                        {
+                            $set : {
+                                stock: 0,
+                                status: 'Out of stock'
+                            }
+                        }
+                        )
+
                 } else {
-                    product.stock = balanceStock;
-                    await product.save()
+                    await productModel.findOneAndUpdate(
+                        {_id: productId },
+                        {
+                            $set : {
+                                stock: balanceStock,
+                                status: 'In stock'
+                            }
+                        }
+                        )
                 }
                 
             }

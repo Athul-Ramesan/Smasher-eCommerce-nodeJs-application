@@ -49,10 +49,10 @@ app.use((req, res) => {
 });
 
 
-app.use((err, req, res, next) => {
-  console.error(err.message);
-  res.status(err.status || 500).send({ status: err.status || 500, message: err.message });
-});
+// app.use((err, req, res, next) => {
+//   console.error(err.message);
+//   res.status(err.status || 500).send({ status: err.status || 500, message: err.message });
+// });
 
 
 app.listen(process.env.PORT, () => {

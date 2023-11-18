@@ -9,7 +9,7 @@ const brandController = require('../controller/brandController')
 const orderController = require('../controller/orderController')
 const offerController = require('../controller/offerController')
 const couponController = require('../controller/couponController')
-
+const bannerController  = require('../controller/bannerController')
 router.get('/login', adminController.getAdminLogin)
 router.post('/login', adminController.postAdminLogin)
 
@@ -81,6 +81,17 @@ router.get('/removeCategoryOffer/:id',offerController.removeOffer)
 router.get('/coupons',couponController.getAdminCoupons)
 router.post('/coupons',couponController.postAdminAddCoupon)
 router.put('/coupons',couponController.editAdminCoupon)
+
+router.get('/banner',bannerController.getAdminBanner)
+router.get('/addBanner',bannerController.getAdminAddBanner)
+router.post('/addBanner',upload.fields([
+    { name: 'image', maxCount: 1 },
+{ name: 'carouselImage1', maxCount: 1 },
+{ name: 'carouselImage2', maxCount: 1 },
+{ name: 'carouselImage3', maxCount: 1 }
+]),bannerController.postAdminAddBanner)
+router.get('/activate-banner/:id',bannerController.activateBanner)
+router.get('/delete-banner/:id',bannerController.deleteBanner)
 
 router.get('/logout', adminController.getAdminLogout)
 module.exports = router

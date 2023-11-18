@@ -85,8 +85,8 @@
             </div>
             <!--modal data-->
 
-            <div class="modal fade tickerTimes" id="changePasswordModal" tabindex="-1"
-              aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+            <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+              aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -155,7 +155,7 @@
                   <div class="col-md-5 m-2">
                     <div class="card border rounded shadow bg-light">
                       <div class="card-top d-flex justify-content-center">
-                        <img width="150px" class="img-fluid" src="/images/address.jpg" alt="Address Image">
+                        <img width="125px" class="img-fluid" src="/images/address.jpg" alt="Address Image">
                       </div>
                       <div class="card-body rounded bg-dark">
                         <a href="/address" style="text-decoration: none;">
@@ -167,7 +167,7 @@
                   <div class="col-md-5 m-2">
                     <div class="card border rounded shadow bg-light">
                       <div class="card-top d-flex justify-content-center">
-                        <img width="200px" class="img-fluid" src="/images/wish.jpg" alt="Orders Image">
+                        <img width="200px" class="img-fluid" src="/images/wish.png" alt="Orders Image">
                       </div>
                       <div class="card-body rounded bg-dark">
                         <a href="/orders" style="text-decoration: none;">
@@ -179,7 +179,7 @@
                   <div class="col-md-5 m-2">
                     <div class="card border rounded shadow bg-light">
                       <div class="card-top d-flex justify-content-center">
-                        <img width="200px class=" img-fluid" src="/images/reviews.jpg" alt="Address Image">
+                        <img width="200px" class=" img-fluid" src="/images/reviews.jpg" alt="Address Image">
                       </div>
                       <div class="card-body rounded bg-dark">
                         <a href="/orders" style="text-decoration: none;">
@@ -247,8 +247,31 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
+      function validatePassword(password) {
+        console.log(password);
+        if (!password) {
+          
+          $('#flashMessage').text('Empty input').show()
+          return false
+        }
+
+          if (password.length<= 8) {
+            $('#flashMessage').text('Password must has 8 characters').show()
+            return false
+          }
+      
+        return true
+
+      }
       $('#passwordChangeForm').submit((e) => {
         e.preventDefault();
+
+        newPasswordInput = $('#newPassword').val
+        confirmPasswordInput = $('#confirmPassword').val
+
+        if (!validatePassword(newPasswordInput) || !validatePassword(confirmPasswordInput)) {
+          return;
+        }
         $.ajax({
           url: '/changePassword',
           method: 'POST',

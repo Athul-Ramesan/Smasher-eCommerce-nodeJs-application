@@ -7,6 +7,7 @@ const moment = require('moment')
 const userModel = require('../models/userModel')
 const cropImage = require('../services/imageCrop')
 const path = require('path')
+const offerModel = require('../models/offerModel')
 module.exports = {
     getProductData: async (req, res) => {
         try {
@@ -47,7 +48,8 @@ module.exports = {
                 products: formatedProducts,
                 totalPages,
                 currentPage,
-                title: "Admin-products"
+                title: "Admin-products",
+                message: req.flash()
             })
         } catch (error) {
             console.log(error);
@@ -85,7 +87,11 @@ module.exports = {
             const categories = await categoryModel.find({})
             const brands = await brandModel.find({})
 
-            res.render('admin/add-product', { categories, brands })
+            res.render('admin/add-product', {
+                categories,
+                brands,
+                message: req.flash()
+            })
         } catch (error) {
             console.log(error);
         }
@@ -93,13 +99,13 @@ module.exports = {
 
     postAdminAddProduct: async (req, res) => {
         try {
-            const {
+            let {
                 productName,
                 description,
                 details,
                 specification,
                 price,
-                discountAmount,
+
                 stock,
                 category,
                 subcategory,
@@ -107,6 +113,29 @@ module.exports = {
                 tags
             } = req.body
 
+            productName = productName.trim()
+            description = description.trim()
+            details = details.trim()
+            specification = specification.trim()
+
+
+            if (!productName) {
+                req.flash('addProduct', 'Product Name cannot be empty.');
+                return res.redirect('/admin/addProduct');
+            }
+
+            if (!description) {
+                req.flash('addProduct', 'Description cannot be empty.');
+                return res.redirect('/admin/addProduct');
+            }
+            if (!details) {
+                req.flash('addProduct', 'details cannot be empty.');
+                return res.redirect('/admin/addProduct');
+            }
+            // if (!specification) {
+            //     req.flash('addProduct', 'specification cannot be empty.');
+            //     return res.redirect('/admin/addProduct');
+            // }
 
             const image1 = req.files['productImage1'][0].filename
             const image2 = req.files['productImage2'][0].filename
@@ -120,7 +149,7 @@ module.exports = {
                 width: 100,
                 height: 50
             }
-            await cropImage.cropImage(inputPath,ouputPath,cropOptions)
+            await cropImage.cropImage(inputPath, ouputPath, cropOptions)
 
             const newProduct = new productModel({
                 name: productName,
@@ -130,15 +159,28 @@ module.exports = {
                 description: description,
                 details: details,
                 category: category,
-                specificatios: specification,
+                specifications: specification,
                 subcategory: subcategory,
                 stock: Math.abs(stock),
                 price: Math.abs(price),
-                discountAmount: Math.abs(discountAmount),
+
                 brand: brand,
-                tags: tags,
-                createdAt: new Date()
+                tags: tags
             });
+
+            const categoryOffer = await offerModel.findOne({ categoryId: category })
+            console.log(categoryOffer, 'categoryoffer');
+            if (categoryOffer) {
+
+                const currentDiscountPercentage = categoryOffer.discountPercentage
+
+                const discountAmount = parseInt(price * currentDiscountPercentage / 100);
+                newProduct.currentDiscountPercentage = currentDiscountPercentage
+                newProduct.discountAmount = discountAmount
+
+                newProduct.isDiscountApplied = true
+            }
+
             await newProduct.save()
                 .then(savedProduct => {
                     console.log('Product saved:', savedProduct);
@@ -148,12 +190,10 @@ module.exports = {
 
             res.redirect('/admin/products')
 
-
-
-
-
         } catch (error) {
             console.log(error);
+            req.flash('addProduct', 'something went wrong adding product')
+            res.redirect('/admin/addProduct')
         }
 
     },
@@ -170,22 +210,29 @@ module.exports = {
 
             const categories = await categoryModel.find({});
             const brands = await brandModel.find({})
-            res.render('admin/edit-product', { product, brands, categories })
+            res.render('admin/edit-product', {
+                product,
+                brands,
+                categories,
+                message: req.flash()
+            })
         } catch (error) {
             console.log(error);
+
         }
     },
 
     postAdminEditProduct: async (req, res) => {
-        try {
-            const productId = req.params.id
-            const {
+
+        const productId = req.params.id
+
+        if (productId) {
+            let {
                 productName,
                 description,
                 details,
                 specification,
                 price,
-                discountAmount,
                 stock,
                 category,
                 subcategory,
@@ -193,46 +240,100 @@ module.exports = {
                 tags
             } = req.body
 
+            productName = productName.trim()
+            description = description.trim()
+            details = details.trim()
+            specification = specification.trim()
+
+            console.log(specification, 'specii');
+
+            if (!productName) {
+                req.flash('addProduct', 'Product Name cannot be empty.');
+                return res.redirect(`/admin/editProduct/${productId}`);
+            }
+
+            if (!description) {
+                req.flash('editProduct', 'Description cannot be empty.');
+                return res.redirect(`/admin/editProduct/${productId}`);
+            }
+            if (!details) {
+                req.flash('editProduct', 'details cannot be empty.');
+                return res.redirect(`/admin/editProduct/${productId}`);
+            }
+            // if (!specification) {
+            //     req.flash('editProduct', 'specification cannot be empty.');
+            //     return res.redirect(`/admin/editProduct/${productId}`);
+            // }
+            if (price < 0) {
+                req.flash('editProduct', 'Price cannot be -ve.');
+                return res.redirect(`/admin/editProduct/${productId}`);
+            }
+
+            if (stock < 0) {
+                req.flash('editProduct', 'stock cannot be -ve.');
+                return res.redirect(`/admin/editProduct/${productId}`);
+            }
+
+            const product = {
+                name: productName,
+                description: description,
+                details: details,
+                category: category,
+                specifications: specification,
+                subcategory: subcategory,
+                stock: Math.abs(stock),
+                price: Math.abs(price),
+
+                brand: brand,
+                tags: tags
+            }
+
+            try {
+                const categoryOffer = await offerModel.findOne({ categoryId: category })
+                console.log(categoryOffer, 'categoryoffer');
+                if (categoryOffer) {
+
+                    const currentDiscountPercentage = categoryOffer.discountPercentage
+
+                    const discountAmount = parseInt(price * currentDiscountPercentage / 100);
+                    product.currentDiscountPercentage = currentDiscountPercentage
+                    product.discountAmount = discountAmount
+
+                    product.isDiscountApplied = true
+                }
+
+            } catch (error) {
+                console.log(error);
+            }
+
+            if (req.files['productImage1']) {
+                product.productImage1 = req.files['productImage1'][0].filename;
+            }
+
+            if (req.files['productImage2']) {
+                product.productImage2 = req.files['productImage2'][0].filename;
+            }
+
+            if (req.files['productImage3']) {
+                product.productImage3 = req.files['productImage3'][0].filename;
+            }
 
 
 
-            const image1 = req.files['productImage1'][0].filename
-            const image2 = req.files['productImage2'][0].filename
-            const image3 = req.files['productImage3'][0].filename
+            try {
 
+                await productModel.findOneAndUpdate({ _id: productId },
+                    {
+                        $set: product
+                    })
 
-
-            await productModel.findOneAndUpdate({ _id: productId },
-                {
-                    $set: {
-                        name: productName,
-                        productImage1: image1,
-                        productImage2: image2,
-                        productImage3: image3,
-                        description: description,
-                        details: details,
-                        category: category,
-                        specificatios: specification,
-                        subcategory: subcategory,
-                        stock: Math.abs(stock),
-                        price: Math.abs(price),
-                        discountAmount: Math.abs(discountAmount),
-                        brand: brand,
-                        tags: tags
-
-
-                    }
-                })
-
-
-
-            res.redirect('/admin/products')
-
-
-        } catch (error) {
-            console.log(error);
+                res.redirect('/admin/products')
+            } catch (error) {
+                console.error(error);
+                req.flash('editProduct', 'something went wrong adding product')
+                res.redirect('/admin/editProducts')
+            }
         }
-
 
     },
 
@@ -258,16 +359,21 @@ module.exports = {
     },
     getProductView: async (req, res) => {
         const productId = req.params.id;
+
         try {
             const user = await userModel.findOne({ email: req.session.user.email });
             const cart = await cartModel.findOne({ userId: req.session.user._id });
             const product = await productModel.findOne({ _id: productId }).populate('brand')
 
-            console.log(product);
+            console.log(product, 'product');
+            console.log(cart, 'cart');
+            console.log(user, 'user');
             res.render('user/product-view', { user, product, cart, wishlist: false })
         } catch (error) {
-            console.log(error);
+           console.log(error);
         }
+
+
     },
     getShopProduct: async (req, res) => {
         const itemsPerPage = 5;

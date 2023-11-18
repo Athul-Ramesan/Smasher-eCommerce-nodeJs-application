@@ -63,7 +63,7 @@ module.exports = {
             if (id && status) {
 
                 if (status === "Delivered") {
-                    await orderModel.updateOne({ _id: id }, { $set: { status: status, paymentStatus: 'Paid',deliveredDate: new Date() } })
+                    await orderModel.updateOne({ _id: id }, { $set: { status: status, paymentStatus: 'Paid', deliveredDate: new Date() } })
 
                     res.json({ success: true, paymentStatus: 'Paid' })
                 } else {
@@ -78,10 +78,10 @@ module.exports = {
             console.log(error);
         }
     },
-    getAdminOrderReturnRequest : async(req,res)=>{
-    
+    getAdminOrderReturnRequest: async (req, res) => {
+
         try {
-            const orders = await orderModel.find({ status: 'Return requested'}).populate('items.productId')
+            const orders = await orderModel.find({ status: 'Return requested' }).populate('items.productId')
             res.render('admin/return-request', { orders, dates: null })
         } catch (error) {
             console.log(error);
@@ -94,16 +94,19 @@ module.exports = {
             const cart = await cartModel.findOne({ userId: req.session.user._id }).populate('items.productId')
             const addresses = await addressModel.findOne({ userId: userId })
 
-            if(cart.items){
-                cart.items.forEach(item=>{
-                    if(item.productId.stock ===0){
-                     req.flash('outOfStock','Cant make purchase with out of stock product')
-                     return res.redirect('/cart')
+            if (cart.items) {
+                cart.items.forEach(item => {
+                    if (item.productId.stock === 0 || item.productId.stock < item.quantity) {
+                        req.flash('outOfStock', 'Cant make purchase with out of stock product')
+                        return res.redirect('/cart')
                     }
-                 })
+                })
             }
-            
-            
+            if (cart.items === 0 || !cart) {
+                return res.redirect('/cart')
+            }
+
+
             if (cart) {
                 res.render('user/checkout', {
                     user,
@@ -113,7 +116,7 @@ module.exports = {
                     message: req.flash()
                 })
             } else {
-                req.flash('cartEmpty','Cant make purchase with out of stock product')
+                req.flash('cartEmpty', 'Cant make purchase with out of stock product')
                 res.redirect('/cart')
             }
 
@@ -133,26 +136,30 @@ module.exports = {
             const paymentMethod = req.body.paymentMethod;
             const cart = await cartModel.findOne({ userId: userId }).populate('items.productId')
             console.log(cart);
-            const totalAmount = cart.totalAmount;
+            const totalAmount = cart.totalAmount - cart.totalDiscount;
             const address = await addressModel.findOne({ userId: userId });
             console.log(address);
             const shippingAddress = address.address.find((item) => item._id.equals(addressId))
 
-            cart.items.forEach(item=>{
-                if(item.productId.stock ===0){
-                 return res.json({
-                    success: false,
-                    url : '/cart',
-                    message: 'Cant make purchase with out of stock product'
-                });
+            cart.items.forEach(item => {
+                if (item.productId.stock === 0 || item.productId.stock < item.quantity) {
+
+                    res.send({
+                        success: false,
+                        url: '/cart',
+                        message: 'Cant make purchase with out of stock product'
+                    });
+                    return
                 }
-             })
+            })
 
             if (paymentMethod && addressId) {
+
 
                 const { order, generatedOrderId } = await orderService.generateOrder(userId, addressId)
 
                 if (paymentMethod === 'cod') {
+
                     await orderModel.findOneAndUpdate(
                         {
                             orderId: generatedOrderId
@@ -219,6 +226,7 @@ module.exports = {
                     const orderId = result._id;
                     orderService.stockUpdate(orderId);
                     await cartModel.findOneAndDelete({ userId: userId })
+
                     res.json({ success: true, orderId });
                 }).catch(error => {
                     console.log(error);
@@ -292,7 +300,7 @@ module.exports = {
     getOrders: async (req, res) => {
         try {
             const orders = await orderModel.find({}).populate('items.productId')
-            console.log(orders);
+          
             const user = await userModel.findOne({ email: req.session.user.email });
             const cart = await cartModel.findOne({ userId: req.session.user._id });
 
@@ -336,23 +344,45 @@ module.exports = {
                 .then(async (result) => {
                     if (result) {
                         const order = result
-   
+                        if (result.paymentMethod === 'online') {
+                            await userModel.updateOne(
+                                { _id: req.session.user._id },
+                                { $inc: { walletAmount: order.totalAmount } }
+                            ).then(result => {
+                                console.log(result);
+                            })
+                        }
                         for (const item of order.items) {
                             const productId = item.productId;
                             const quantity = item.quantity;
 
                             const product = await productModel.findOne({ _id: productId })
 
-                            
+                          
+
                             newStock = product.stock + quantity;
                             if (newStock > 0) {
-                                product.stock = newStock;
-                                product.status = 'In stock';
-                                await product.save()
+                                await productModel.findOneAndUpdate(
+                                    { _id: productId },
+                                    {
+                                        $set: {
+                                            stock: newStock,
+                                            status: 'In stock'
+                                        }
+                                    }
+                                )
+
                             } else {
-                                product.stock = newStock;
-                                await product.save()
+                                await productModel.findOneAndUpdate(
+                                    { _id: productId },
+                                    {
+                                        $set: {
+                                            stock: newStock
+                                        }
+                                    }
+                                )
                             }
+                           
                         }
                     }
 
@@ -364,37 +394,37 @@ module.exports = {
         }
 
     },
-    getReturnOrder :async (req,res)=>{
+    getReturnOrder: async (req, res) => {
         const orderId = req.params.id;
         console.log(req.url);
         try {
-            if(req.url === `/cancelReturn/${orderId}`){
+            if (req.url === `/cancelReturn/${orderId}`) {
                 await orderModel.findOneAndUpdate({ _id: orderId }, { status: 'Delivered' })
-                
-                res.redirect('/orders')
-            }else if(req.url === `/acceptReturnRequest/${orderId}`){
-                await orderModel.findOneAndUpdate({ _id: orderId }, { status: 'Return Accepted' })
-                .then(async(result)=>{
-                    console.log(result,'retern accept');
-                    const order = await orderModel.findOne({ _id: orderId})
-                    console.log(order);
-                   await userModel.updateOne(
-                    {_id:req.session.user._id},
-                    {$inc : {walletAmount: order.totalAmount}}
-                    ).then(result=>{
-                        console.log(result,'wallet');
-                    })
 
-                })
+                res.redirect('/orders')
+            } else if (req.url === `/acceptReturnRequest/${orderId}`) {
+                await orderModel.findOneAndUpdate({ _id: orderId }, { status: 'Return Accepted' })
+                    .then(async (result) => {
+                        console.log(result, 'retern accept');
+                        const order = await orderModel.findOne({ _id: orderId })
+                        console.log(order);
+                        await userModel.updateOne(
+                            { _id: req.session.user._id },
+                            { $inc: { walletAmount: order.totalAmount } }
+                        ).then(result => {
+                            console.log(result, 'wallet');
+                        })
+
+                    })
                 res.redirect('/admin/orderReturnRequest')
-            }else if(req.url===`/rejectReturnRequest/${orderId}`){
+            } else if (req.url === `/rejectReturnRequest/${orderId}`) {
                 await orderModel.findOneAndUpdate({ _id: orderId }, { status: 'Delivered(Return rejected)' })
                 res.redirect('/admin/orderReturnRequest')
-            }else{
+            } else {
                 await orderModel.findOneAndUpdate({ _id: orderId }, { status: 'Return requested' })
                 res.redirect('/orders')
             }
-            
+
         } catch (error) {
             console.log(error);
         }

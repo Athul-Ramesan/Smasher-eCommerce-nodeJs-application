@@ -31,7 +31,8 @@ module.exports = {
     },
     postAdminAddCategory: async (req, res) => {
         try {
-            const name = req.body.trim()
+            console.log(req.body,'aasdfasfa');
+            const name = req.body.category.trim()
             if(!name){
                 req.flash('categoryMessage', "Please enter a valid name")
                 return res.redirect('/admin/categoriesAndBrands')

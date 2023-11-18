@@ -2,6 +2,8 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 
+
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const directory = 'public/uploads'
@@ -15,17 +17,19 @@ const storage = multer.diskStorage({
     }
 })
 const filter = (req, file, cb) => {
-    if (file.mimetype == 'image/png' || file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg') {
+    const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+
+    if (allowedMimeTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(null, false);
-        return cb(new Error('Only .jpg .png and .jpeg format allowed'))
+        cb(new Error('Only .jpg, .png, and .jpeg formats are allowed'), false);
     }
-}
+};
 
 
 const upload = multer({
-    storage: storage
+    storage: storage,
+    fileFilter: filter
 })
 
 module.exports = upload;

@@ -14,7 +14,7 @@ const offerSchema = new mongoose.Schema({
     type: {
         type: String
     },
-    discountAmount: {
+    discountPercentage: {
         type: Number
     },
     expiryDate: {

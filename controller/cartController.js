@@ -10,15 +10,15 @@ module.exports = {
         try {
             const productId = req.params.id;
             const stock = await stockService.checkProductStock(productId)
-  
-            console.log(stock,'stock');
-            if(stock>0){
+
+            console.log(stock, 'stock');
+            if (stock > 0) {
                 const user = await userModel.findOne({ email: req.session.user.email });
                 console.log('user', user);
                 let userCart = await cartModel.findOne({ userId: user._id })
-    
+
                 if (!userCart) {
-    
+
                     console.log('no user cart');
                     userCart = await cartModel.create({
                         userId: user._id,
@@ -29,19 +29,19 @@ module.exports = {
                     })
                     const cartCount = userCart.items.length
                     console.log(cartCount, 'cartCount');
-    
+
                     res.json({ success: true, cartCount })
-    
+
                 } else {
                     const existingCart = userCart.items.find(item => item.productId.equals(productId))
-    
+
                     console.log('inside else');
                     if (existingCart) {
-    
+
                         console.log(' existingCart', existingCart);
                         existingCart.quantity += 1
                         console.log(userCart);
-    
+
                     } else {
                         userCart.items.push({ productId: productId, quantity: 1 })
                     }
@@ -49,12 +49,13 @@ module.exports = {
                     await cartModel.findOneAndUpdate({ userId: user._id }, userCart)
                     const cartCount = userCart.items.length
                     console.log(cartCount, 'cartCount');
+                    
                     res.json({ success: true, cartCount })
                 }
-            }else{
-                res.json({success: false, error: 'Sorry, product out of stock'})
+            } else {
+                res.json({ success: false, error: 'Sorry, product out of stock' })
             }
-            
+
         } catch (error) {
             console.log(error);
             res.status(500).json({ success: false, error: 'error adding to cart' })
@@ -72,17 +73,25 @@ module.exports = {
 
             const products = await productModel.find({})
             console.log(cart);
-
-            res.render('user/cart', { user,
-                 products,
-                  cart,
-                   wishlist: false,
-                   message: req.flash()
-                 })
+            // if(cart.items){
+            //     cart.items.forEach(item=>{
+            //         if(item.productId.stock ===0 || item.productId.stock <item.quantity){
+            //          req.flash('outOfStock','Cant make purchase with out of stock product')
+            //          return res.redirect('/cart')
+            //         }
+            //      })
+            // }
+            res.render('user/cart', {
+                user,
+                products,
+                cart,
+                wishlist: false,
+                message: req.flash()
+            })
 
         } catch (error) {
             console.log(error);
-            res.render('user/404')
+
         }
     },
 
@@ -108,7 +117,7 @@ module.exports = {
             itemToUpdate.quantity = newQuantity;
             await cart.save()
 
-            const totalAmount = await cartService.calculateCartTotal(req.session.user._id)
+            const {totalAmount,totalDiscount} = await cartService.calculateCartTotal(req.session.user._id)
 
 
             const product = await productModel.findById(productId)
@@ -118,7 +127,8 @@ module.exports = {
                 success: true,
                 newQuantity,
                 totalAmount,
-                stock
+                stock,
+                totalDiscount
             })
         } catch (error) {
             throw error;
@@ -127,6 +137,7 @@ module.exports = {
     getRemoveFromCart: async (req, res) => {
         const productId = req.params.id;
         try {
+
             await cartModel.findOneAndUpdate(
                 { userId: req.session.user._id },
                 {

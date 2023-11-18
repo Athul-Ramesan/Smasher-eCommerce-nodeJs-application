@@ -3,6 +3,13 @@
 
 <div class="container-fluid">
     <h1 class="mt-5">Edit Product</h1>
+    <% if(message.editProduct){%>
+        <div class="alert alert-danger">
+            <span> 
+                <%= message?.editProduct %>
+            </span>
+        </div>
+        <%} %>
     <form action="/admin/editProduct/<%=product._id%>" method="post" enctype="multipart/form-data" class="bg-white">
         <div class="row" style="background: linear-gradient(to top, rgb(231, 210, 210),white);">
             <div class="col-md-6">
@@ -127,7 +134,7 @@
                                 placeholder="Enter product details" value="" required><%=product.details %></textarea>
                             <label for="productSpecification">Product Specification:</label>
                             <textarea class="form-control bg-light" name="specification" id="productSpecification"
-                                placeholder="Enter product specification" value="" required><%=product.
+                                placeholder="Enter product specification" value="" ><%=product.
                                 specificatios %></textarea>
                         </div>
                         <br>
@@ -144,12 +151,12 @@
                                     placeholder="Enter base price" value="<%=product.price %>" required />
                             </div>
                             <br>
-                            <div class="form-group ">
+                            <!-- <div class="form-group ">
                                 <label for="discountAmount">Discount Amount:</label>
                                 <input type="number" name="discountAmount" class="form-control bg-light"
                                     id="discountAmount" placeholder="Enter discount amount"
                                     value="<%=product.discountAmount %>" required />
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -217,6 +224,7 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-dark  " style="margin-left: 30%; margin-top: 10%; width: 40%;">Save changes</button>
+                            
                         </div>
                     </div>
                 </div>
