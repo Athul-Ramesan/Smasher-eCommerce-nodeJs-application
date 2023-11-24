@@ -27,7 +27,11 @@ const checkOffer = async () => {
                             category: new mongoose.Types.ObjectId(categoryId)
                         },
                         {
-                            $set: { isDiscountApplied: false }
+                            $set: {
+                                 isDiscountApplied: false,
+                                discountAmount:0,
+                                currentDiscountPercentage:0
+                                }
                         }
                     )
                 } catch (error) {
@@ -38,7 +42,7 @@ const checkOffer = async () => {
         }
         await offerModel.deleteMany(
             {
-                expiryDate: { $gte: currentDate }
+                expiryDate: { $lte: currentDate }
             }
         ).then(result => {
             console.log(result, 'delete');

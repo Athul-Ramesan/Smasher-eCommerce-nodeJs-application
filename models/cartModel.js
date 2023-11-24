@@ -22,8 +22,18 @@
         },
         totalDiscount : {
             type : Number
+        },
+        couponId:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'coupon'
+        },
+        isCouponApplied:{
+            type:Boolean,
+            default: false
+        },
+        couponDiscountAmount:{
+            type: Number
         }
-        
     })
 
     const cart = mongoose.model(CART,cartSchema);

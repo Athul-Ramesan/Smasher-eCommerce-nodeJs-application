@@ -5,8 +5,10 @@
 
 
     <section class="content-main">
-      <div class="content-header">
-        <h2 class="content-title">Dashboard</h2>
+      <div class="content-header d-flex justify-content-between">
+        <h4 class="content-title ms-3 mt-3 text-decoration-underline" ;">DASHBOARD</h4>
+        <button class="btn btn-outline-info me-3 mt-3 mb-2 " data-bs-toggle="modal" data-bs-target="#salesReportModal"><i class="fa fa-download"></i>Sales
+          Report</button>
       </div>
       <div class="modal" id="salesReportModal" tabindex="-1" role="dialog" aria-labelledby="salesReportModalLabel"
         aria-hidden="true">
@@ -56,8 +58,7 @@
         </div>
       </div>
       <div class="text-end">
-        <button class="btn btn-outline-info me-2" data-bs-toggle="modal" data-bs-target="#salesReportModal">Sales
-          Report</button>
+        
       </div>
       <div class="container">
         <div class="row">
@@ -96,7 +97,7 @@
                   <i class="fas fa-chart-bar"></i> <!-- Replace with your desired Font Awesome icon -->
                 </span>
                 <div class="text">
-                  <h6 class="mb-1">Total Products</h6>
+                  <h6 class="mb-1">Total Products Sold</h6>
                   <span>
                     <%=totalProductsCount %>
                   </span>
@@ -214,7 +215,7 @@
           console.log(timePeriod, 'timeee');
           const salesData = await fetchSalesData(timePeriod)
 
-          document.getElementById('totalSales').innerHTML = `₹ ${salesData.totalRevenue}`
+          document.getElementById('totalSales').innerHTML = `₹ ${parseInt(salesData.totalRevenue)}`
           document.getElementById('totalOrders').innerHTML = salesData.totalSales  //total orders
           if (window.chart1) {
             window.chart1.destroy()
@@ -373,14 +374,13 @@
         // })
 
         document.getElementById('salesReportForm').addEventListener('submit', (e) => {
-          console.log('inside future');
+  
           e.preventDefault()
           const startDate = new Date(document.getElementById('startDate').value)
           const endDate = new Date(document.getElementById('endDate').value)
           const currentDate = new Date();
           const nextDay = new Date();
           
-          console.log(startDate, endDate, currentDate, 'stsshflas');
 
           if (startDate > currentDate || endDate > nextDay.setDate(currentDate.getDate() + 1)) {
             console.log('inside if');

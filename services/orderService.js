@@ -63,7 +63,7 @@ module.exports = {
         return new Promise ((resolve,reject)=>{
             var razorpay = new Razorpay({ key_id: process.env.PAYMENT_KEY_ID, key_secret: process.env.PAYMENT_KEY_SECRET })
 
-        console.log(totalAmount,'total amntttttttttttttttttttttttttttttttttttttttttttttt');
+
             const razorpayOrder = razorpay.orders.create({
                 amount: totalAmount,
                 currency: "INR",
@@ -73,7 +73,7 @@ module.exports = {
                     key2: "value2"
                 }
             })
-console.log(razorpayOrder);
+            console.log(razorpayOrder);
             resolve(razorpayOrder)
         })
         

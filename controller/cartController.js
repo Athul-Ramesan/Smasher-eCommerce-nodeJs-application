@@ -72,7 +72,7 @@ module.exports = {
             const cart = await cartModel.findOne({ userId: user._id }).populate('items.productId')
 
             const products = await productModel.find({})
-            console.log(cart);
+            // console.log(cart);
             // if(cart.items){
             //     cart.items.forEach(item=>{
             //         if(item.productId.stock ===0 || item.productId.stock <item.quantity){
@@ -158,5 +158,33 @@ module.exports = {
         }
 
 
-    }
+    },
+    applyCoupon:async(req,res)=>{
+        const body = req.body
+      const userId = req.session.user._id;
+        console.log(body,'body');
+      cartService.applyCoupon(body.coupon,userId)
+      .then(async(result)=>{
+
+        console.log(result,'result inside then before response');
+        res.json({...result,success:true})
+      }).catch((err)=>{
+        console.log(err.message,'err inside catch before response');
+        res.json(err.message)
+      })
+    },
+    removeCoupon: async (req, res) => {
+        try {
+          const userId = req.session.user._id;
+          await cartService.removeCoupon(userId)
+          .then(result=>{
+            res.json({...result,success:true})
+          })
+           
+        } catch (error) {
+          console.error(error.message,'error in catch');
+          res.json(error.message)
+          
+        }
+      }
 }

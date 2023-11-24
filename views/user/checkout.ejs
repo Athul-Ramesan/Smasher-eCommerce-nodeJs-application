@@ -23,7 +23,7 @@
         </style>
 
         <div class="py-3 py-md-4 checkout">
-            <div class="container">
+            <div class="container-fluid" >
                 <h4>Checkout</h4>
                 <hr>
                 <form id="form-checkout">
@@ -121,7 +121,7 @@
 
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" >
                             <div class="shadow bg-white p-3">
                                 <h4 class="text-dark">
                                     Select Payment Method
@@ -130,17 +130,27 @@
 
 
                                 <div class="">
-                                    <label class="m-5" for=""><input type="radio" name="paymentMethod" value="cod">
+                                    <label class="" for=""><input type="radio" name="paymentMethod" value="cod">
                                         Cash On Delivery(COD)</label>
-                                    <img width="150px" src="/images/cod1.png" alt="">
+                                    <img width="50px" src="/images/cod1.png" alt="">
                                 </div>
                                 <hr>
                                 <div class="d-flex">
-                                    <label class="m-5" for=""><input type="radio" name="paymentMethod" value="online">
+                                    <label class="" for=""><input type="radio" name="paymentMethod" value="online">
                                         Razorpay</label>
-                                    <div class="ms-5 ps-3 ">
-                                        <img class="ps-3" width="150px" src="/images/raz.png" alt="">
+                                    <div class=" ">
+                                        <img class="ps-3" width="50px" src="/images/raz.png" alt="">
                                     </div>
+
+                                </div>
+                                <hr>
+                                <div class="d-flex">
+                                    <label class=" pe-3" for=""><input type="radio" name="paymentMethod" value="wallet">
+                                        Wallet</label>
+                                    <div class="">
+                                        <img class="ms-2" width="50px" src="/images/wallet.png" alt="">
+                                    </div>
+                                    <span class="ms-5">Wallet Balance : ₹ <%=user.walletAmount%>/-</span>
 
                                 </div>
 
@@ -164,6 +174,7 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script> 
         <script>
             document.getElementById('addressRadio-0').checked = true;
             $('#form-checkout').submit((e) => {
@@ -181,9 +192,12 @@
 
                                 console.log(`/orderSuccess/${response.orderId}`);
                                 window.location.href = `/orderSuccess/${response.orderId}`
+                            }else if(response.paymentMethod==='wallet'){
+                                console.log(`/orderSuccess/${response.orderId}`);
+                                window.location.href = `/orderSuccess/${response.orderId}`
                             } else {
                                 handlePayNowClick(response)
-                                console.log(response,'resssssssssssssssssssssssssssssss');
+                     
                                 // } else {
                                 //     const message = document.getElementById('#errorMessage');
                                 //     message.innerText = response.message
@@ -193,38 +207,35 @@
                                 //toastify here
                             }
                             if (!response.success) {
-                                if (res.url) {
+                                console.log('inside no response');
+                                if (response.url) {
                                     Toastify({
-                                        text: response.message+'Redirecting to Cart',
-                                        duration: 3000,
+                                        text: response.message,
+                                        duration: 1450,
                                         position: "center",
                                         className: "info",
                                         style: {
                                             background: "red",
                                         }
                                     }).showToast();
+
+                                    setTimeout(() => {
+                                        Toastify({
+                                        text: 'Redirecting to Cart',
+                                        duration: 1500,
+                                        position: "center",
+                                        className: "info",
+                                        style: {
+                                            background: "green",
+                                        }
+                                    }).showToast();
+                                    }, 1500);
                                     setTimeout(() => {
                                         window.location.href = response.url
                                     }, 3000);
                                     
                                 }
-                                Swal.fire({
-                                    title: response.message,
-                                    showClass: {
-                                        popup: `
-                                        animate__animated
-                                        animate__fadeInUp
-                                        animate__faster
-                                        `
-                                    },
-                                    hideClass: {
-                                        popup: `
-                                        animate__animated
-                                        animate__fadeOutDown
-                                        animate__faster
-                                        `
-                                    }
-                                });
+                               
                             }
                         }
 
@@ -233,7 +244,7 @@
                 })
             })
             function handlePayNowClick(order) {
-                const amount = order.createdOrder.amount *100
+                const amount = order.createdOrder.amount*100
                 console.log(order);
                 var options = {
                     "key": "rzp_test_ZLOedi08NLKHof", // Enter the Key ID generated from the Dashboard

@@ -50,6 +50,8 @@ router.get('/cart',auth.auth,auth.verifyUser,cartController.getCart)
 router.post('/addToCart/:id',cartController.getAddToCart)
 router.post('/updateCartQuantity',cartController.postUpdateCartQuantity)
 router.get('/removeFromCart/:id',auth.auth,auth.verifyUser,cartController.getRemoveFromCart)
+router.post('/applyCoupon',auth.auth,auth.verifyUser,cartController.applyCoupon)
+router.delete('/applyCoupon',auth.auth,auth.verifyUser,cartController.removeCoupon)
 
 router.get('/profile',auth.auth, userController.getProfile)
 router.post('/editUserDetails',userController.editUserDetails)

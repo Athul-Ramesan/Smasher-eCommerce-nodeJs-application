@@ -76,7 +76,7 @@ module.exports = {
 
             const discountMultiplier = discountPercentage / 100
 
-            console.log(discountMultiplier,'mathhhggggggggggggggggggggggggggggggggggggdddddddddd');
+           
             await offerModel.create({
                 categoryId: new mongoose.Types.ObjectId(categoryId),
                 type: 'category',
@@ -164,7 +164,11 @@ module.exports = {
                                 category: new mongoose.Types.ObjectId(categoryId)
                             },
                             {
-                                $set: { isDiscountApplied: false }
+                                $set: { 
+                                    isDiscountApplied: false ,
+                                    discountAmount: 0,
+                                    currentDiscountPercentage:0
+                                }
                             }
                         ).then(result => {
                             console.log(result);

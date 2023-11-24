@@ -98,11 +98,13 @@ module.exports = {
                 cart.items.forEach(item => {
                     if (item.productId.stock === 0 || item.productId.stock < item.quantity) {
                         req.flash('outOfStock', 'Cant make purchase with out of stock product')
+                        console.log('inside cart item outof stock');
                         return res.redirect('/cart')
                     }
                 })
             }
             if (cart.items === 0 || !cart) {
+                console.log('inside cart items kaali');
                 return res.redirect('/cart')
             }
 
@@ -138,20 +140,24 @@ module.exports = {
             console.log(cart);
             const totalAmount = cart.totalAmount - cart.totalDiscount;
             const address = await addressModel.findOne({ userId: userId });
-            console.log(address);
+            let isStockEmpty=false ;
             const shippingAddress = address.address.find((item) => item._id.equals(addressId))
 
             cart.items.forEach(item => {
                 if (item.productId.stock === 0 || item.productId.stock < item.quantity) {
-
-                    res.send({
-                        success: false,
-                        url: '/cart',
-                        message: 'Cant make purchase with out of stock product'
-                    });
-                    return
+                    isStockEmpty =true
+       
+                  
                 }
+                
             })
+            if(isStockEmpty===true){
+                return  res.json({
+                    success: false,
+                    url: '/cart',
+                    message: 'Cant make purchase with out of stock product'
+                });
+            }
 
             if (paymentMethod && addressId) {
 
@@ -177,11 +183,41 @@ module.exports = {
                         res.json({ success: true, paymentMethod: 'cod', orderId })
                     }).catch(err => console.log(err))
                 } else if (paymentMethod === 'online') {
-                    await orderService.razorpay(generatedOrderId, totalAmount)
+                    await orderService.razorpay(generatedOrderId, totalAmount*100)
                         .then((createdOrder) => {
-
+                            
                             res.json({ success: true, createdOrder, paymentMethod: 'online' })
+                        }).catch((err)=>{
+                           console.error(err)
+                           res.json({ success: false, message:'Failed to make payment', paymentMethod: 'online' })
                         })
+                }else if(paymentMethod === 'wallet'){
+         
+                    await orderModel.findOneAndUpdate(
+                        {
+                            orderId: generatedOrderId
+                        },
+                        {
+                            paymentMethod: paymentMethod
+                        }
+                    ).then(async (result) => {
+
+                        await cartModel.findOneAndDelete({ userId: userId })
+                        const orderId = result._id
+                        console.log(orderId, 'orderIdddd');
+                        console.log(result, 'result');
+                        
+                            await userModel.findOneAndUpdate(
+                                { _id: userId },
+                                { $inc: { walletAmount: -totalAmount } }
+                            ).then(()=>{
+                                orderService.stockUpdate(orderId)
+                                res.json({ success: true, paymentMethod: 'wallet', orderId })
+                            })
+                        
+                    }).catch((err) =>  { 
+                        res.json({ success: false, paymentMethod: 'wallet', message: 'Error in making payment' }) 
+                    } ) 
                 }
 
 
@@ -215,7 +251,7 @@ module.exports = {
             console.log(hmac);
             if (hmac === req.body.payment.razorpay_signature) {
 
-                console.log('inside hmac');
+         
                 const generatedOrderId = req.body.order.createdOrder.receipt
 
                 await orderModel.findOneAndUpdate({ orderId: generatedOrderId }, {
@@ -225,6 +261,7 @@ module.exports = {
                     console.log(result, 'result');
                     const orderId = result._id;
                     orderService.stockUpdate(orderId);
+                    console.log('before deleting');
                     await cartModel.findOneAndDelete({ userId: userId })
 
                     res.json({ success: true, orderId });
@@ -455,7 +492,6 @@ module.exports = {
         const orderId = req.params.id;
         console.log(req.params);
         try {
-
 
             const filePath = path.join(__dirname, '..', `/public/pdf/${orderId}.pdf`)
             console.log(filePath);

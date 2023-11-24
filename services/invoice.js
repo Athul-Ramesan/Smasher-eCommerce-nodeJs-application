@@ -6,7 +6,8 @@ const moment = require('moment')
 module.exports = {
 
     createInvoice: async (order)=>{
-        console.log(order.items,'order');
+        
+
         const data = {
             "customize": {
                 //  "template": fs.readFileSync('template.html', 'base64') // Must be base64 encoded html 
@@ -55,7 +56,7 @@ module.exports = {
                 "quantity": item.quantity,
                 "description": item.productId.name,
                 "tax-rate" : 0,
-                "price": parseFloat(item.productId.price)
+                "price": parseInt(item.productId.price-item.productId.discountAmount)
 
             })),
             // The message you would like to display on the bottom of your invoice

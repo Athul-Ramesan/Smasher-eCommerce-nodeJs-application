@@ -50,7 +50,7 @@ module.exports = {
                 totalProducts.push(doc.totalProducts);
                 totalProductsCount += doc.totalProducts
             })
-
+            
             console.log(bestSellingProducts,'bsashdfl');
             res.render('admin/dashboard', {
                 message: req.flash(),

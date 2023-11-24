@@ -303,6 +303,7 @@
         <script>
 
             document.addEventListener('DOMContentLoaded', () => {
+                
 
                 // async function getProductData (){
                 //     document.getElementById('productOfferModalLabel').addEventListener('click', async (e) => {
@@ -349,7 +350,7 @@
 
                         Toastify({
 
-                            text: 'Please enter a valid positive integer for the Discount Percentage.',
+                            text: 'Please enter a valid Discount Percentage.',
 
                             duration: 3000,
                             position: "center",
@@ -441,23 +442,23 @@
 
                         return;
                     }
-                    if (!validateDate(dateInput)) {
-                        Toastify({
+                    // if (!validateDate(dateInput)) {
+                    //     Toastify({
 
-                            text: 'Please select a future date.',
+                    //         text: 'Please select a future date.',
 
-                            duration: 3000,
-                            position: "center",
-                            className: "info",
-                            style: {
-                                background: "red",
-                            }
+                    //         duration: 3000,
+                    //         position: "center",
+                    //         className: "info",
+                    //         style: {
+                    //             background: "red",
+                    //         }
 
-                        }).showToast()
+                    //     }).showToast()
 
 
-                        return;
-                    }
+                    //     return;
+                    // }
                     const data = $('#addCategoryOffer').serialize();
                     $.ajax({
                         url: '/admin/addCategoryOffer',

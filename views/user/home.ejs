@@ -2,6 +2,20 @@
     <%- include ('../partials/userHeader') %>
 
         <style>
+            .tennis {
+                background-image: url('/images/tennisbg.jpg');
+            }
+
+            .badminton {
+                background-image: url('/images/badmintonbg.jpg');
+            }
+
+            .squash {
+                background-image: url('/images/squashBg.jpg');
+            }
+
+
+
             .image-wrapper {
                 width: 100%;
                 /* Make the image wrapper fill the width of the container */
@@ -20,7 +34,7 @@
                 /* Maintain aspect ratio and cover the image wrapper */
             }
 
-     
+
             .product-grid {
                 background-color: #fff;
                 font-family: 'Work Sans', sans-serif;
@@ -177,10 +191,13 @@
                     margin: 0 0 30px;
                 }
             }
+
+            /* card slider */
       
 
+            /* card slider ends */
         </style>
-        
+
         <div class="">
             <div class="image-wrapper">
                 <img src="/uploads/<%=banner.image%>" alt="banner image">
@@ -190,7 +207,188 @@
         <div>
 
         </div>
-        <div class="container">
+        <div class="tennis mt-3">
+
+            <div class="big-container container">
+                <h5 class="bg-black p-2 text-white text-center fw-bold" style="width: fit-content; height:fit-content;">
+                    TENNIS STORE</h3>
+                    <div class="sub-category-list row justify-content-end">
+
+                        <ul class="d-flex gap-4 col-md-8">
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/tennis-racket-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    TENNIS RACKETS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/tennis-ball-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    TENNIS BALLS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/tennis-string-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    TENNIS STRINGS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/tennis-kitbag-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    TENNIS KIT-BAGS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="viewAll-link d-flex justify-content-center">
+                            <a href="" class="fw-bold text-white  m-2">View More</a>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <div class="badminton mt-3">
+
+            <div class="big-container container">
+                <h5 class="bg-black p-2 text-white text-center fw-bold" style="width: fit-content; height:fit-content;">
+                    BADMINON STORE</h3>
+                    <div class="sub-category-list row">
+
+                        <ul class="d-flex gap-4 col-md-8">
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/badminton-racket-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    BADMINTON RACKET 
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/badminton-ball-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    BADMINTON BALLS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/badminton-string-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    BADMINTON STRINGS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/badminton-kitbag-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    BADMINTON KIT BAGS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <div class="viewAll-link d-flex justify-content-center">
+                            <a href="" class="fw-bold text-white  m-2">View More</a>
+                        </div>
+
+                    </div>
+
+            </div>
+        </div>
+        <div class="squash mt-3">
+
+            <div class="big-container container">
+                <h5 class="bg-black p-2 text-white  text-center fw-bold"
+                    style="width: fit-content; height:fit-content;">SQUASH STORE</h3>
+                    <div class="sub-category-list row justify-content-end">
+
+                        <ul class="d-flex gap-4 col-md-8">
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/squashCat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    SQUASH RACKETS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/squash-ball-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    SQUASH BALLS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/squash-string-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center  bg-dark text-white">
+                                    SQUASH STRINGS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                            <li class="card rounded-0">
+                                <div class="image card-body">
+                                    <img width="170" class="img-fluid" src="/images/squash-kitbag-cat.jpg" alt="">
+                                </div>
+                                <div class="title text-center bg-dark text-white">
+                                    SQUASH KIT BAGS
+                                </div>
+                                <div class="btn">
+                                    <a href="" class="btn btn-outline-danger">Shop Now >></a>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="viewAll-link d-flex justify-content-center">
+                            <a href="" class="fw-bold text-white m-2">View More</a>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <!-- <div class="container">
             <div class="row">
                 
                 <% if(products) { %>
@@ -242,8 +440,8 @@
 
                                     <%} %>
             </div>
-        </div>
+        </div> -->
 
-
+      
         <%- include ('../partials/userFooter') %>
             <%- include ('../layouts/footer') %>

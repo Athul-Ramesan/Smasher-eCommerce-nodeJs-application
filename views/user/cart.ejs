@@ -58,15 +58,15 @@
                                 onclick=" increaseQuantity('<%=item.productId._id%>',-1,'<%=item.productId.price%>')" >
                                       <i class="fas fa-minus"></i>
                                   </button>
-                                  <input type="text" id="quantity_<%= item.productId._id%>"
+                                  <input data-stock="<%=item.productId.stock %>" type="text" id="quantity_<%= item.productId._id%>"
                                     class="form-control text-center border border-secondary quantity "
                                     data-product-id="<%= item.productId._id%>" value="<%=item.quantity %>"
-                                    placeholder="1" data-min-value="1" min="1"
-                                    aria-label="Example text with button addon" aria-describedby="button-addon1"
-                                    value="1" />
+                                    placeholder="1" aria-label="Example text with button addon"
+                                    aria-describedby="button-addon1" value="1" />
 
 
-                                  <button class="btn btn-white border border-secondary px-3" type="button"
+                                  <button 
+                                    class="btn btn-white border border-secondary px-3" type="button"
                                     id="increment-quantity-<%=item.productId._id%>"
                                     onclick="increaseQuantity('<%=item.productId._id%>',1,'<%=item.productId.price%>')">
                                     <i class="fas fa-plus"></i>
@@ -96,18 +96,17 @@
                                         >
                                         <i class="fas fa-minus"></i>
                                     </button>
-                                    <input type="text" id="quantity_<%= item.productId._id%>"
+                                    <input type="text"
+                                      id="quantity_<%= item.productId._id%> stock-<%item.productId.stock%>"
                                       class="form-control text-center border border-secondary quantity "
                                       data-product-id="<%= item.productId._id%>" value="<%=item.quantity %>"
-                                      placeholder="1" data-min-value="1" min="1"
-                                      aria-label="Example text with button addon" aria-describedby="button-addon1"
-                                      value="1" />
+                                      placeholder="1" data-min-value="1" aria-label="Example text with button addon"
+                                      aria-describedby="button-addon1" value="1" data-stock="1" />
 
 
-                                    <button class="btn btn-white border border-secondary px-3" type="button"
-                                      id="increment-quantity-<%=item.productId._id%>"
-                                      onclick="increaseQuantity('<%=item.productId._id%>',1,
-                                      '<%= item.productId.price%>')" data-product-id="<%= item.productId._id%>" data-stock="<%= item.productId.stock %>" >
+                                    <button disabled class="btn btn-white border border-secondary px-3" type="button"
+                                      id="increment-quantity-<%=item.productId._id%>" onclick="increaseQuantity('<%=item.productId._id%>',1,
+                                      '<%= item.productId.price%>')" data-product-id="<%= item.productId._id%>">
                                       <i class="fas fa-plus"></i>
                                     </button>
                                     <div>
@@ -115,20 +114,21 @@
                                     </div>
                                   </div>
                                   <%if(item.productId.isDiscountApplied){%>
-                                  <text class="h6 " id="product-total-<%=item.productId._id%>">
-                                    Total ₹ <%=item.quantity * (item.productId.price - item.productId.discountAmount)%>/-
-                                  </text> <br />
-                                  <small class="text-muted text-nowrap">
-                                    <%=item.productId.price - item.productId.discountAmount%> per item
-                                  </small>
-                                  <%}else{ %>
                                     <text class="h6 " id="product-total-<%=item.productId._id%>">
-                                      Total ₹ <%=item.quantity * item.productId.price %>/-
+                                      Total ₹ <%=item.quantity * (item.productId.price -
+                                        item.productId.discountAmount)%>/-
                                     </text> <br />
                                     <small class="text-muted text-nowrap">
-                                      <%=item.productId.price%>/ per item
+                                      <%=item.productId.price - item.productId.discountAmount%> per item
                                     </small>
-                                    <%} %>
+                                    <%}else{ %>
+                                      <text class="h6 " id="product-total-<%=item.productId._id%>">
+                                        Total ₹ <%=item.quantity * item.productId.price %>/-
+                                      </text> <br />
+                                      <small class="text-muted text-nowrap">
+                                        <%=item.productId.price%>/ per item
+                                      </small>
+                                      <%} %>
                                 </div>
                               </div>
 
@@ -175,13 +175,18 @@
           <div class="col-lg-3">
             <div class="card mb-3 border shadow-0">
               <div class="card-body">
-                <form>
+                <form id="applyCoupon-form">
                   <div class="form-group">
                     <label class="form-label">Have coupon?</label>
                     <div class="input-group">
-                      <input type="text" class="form-control border" name="" placeholder="Coupon code" />
-                      <button onclick="applyCoupon()" class="btn btn-light border">Apply</button>
+                      <input id="coupon" type="text" class="form-control border" name="" placeholder="Coupon code"/>
+                      <button type="submit" class="btn btn-light border">Apply</button>
                     </div>
+                    <div id="coupon-error"  class="alert alert-danger " role="alert" hidden>
+                    </div>
+                 
+                      <button data-couponId="<%=cart?.couponId%>" id="removeCoupon" class="text-danger d-none border-0 bg-transparent " > remove coupon </button>
+                    
                   </div>
                 </form>
               </div>
@@ -195,8 +200,8 @@
                 </div>
                 <div class="d-flex justify-content-between">
                   <p class="mb-2">Discount:</p>
-                  <p class="mb-2" id="total-discount">₹<%=cart?.totalDiscount %>.00</p>
-              
+                  <p class="mb-2" id="total-discount">₹<%=parseInt(cart?.totalDiscount) %>.00</p>
+
                 </div>
                 <!-- <div class="d-flex justify-content-between">
                     <p class="mb-2">TAX:</p>
@@ -205,7 +210,7 @@
                 <hr />
                 <div class="d-flex justify-content-between">
                   <p class="mb-2 fw-bold">Total price:</p>
-                  <p class="mb-2" id="grand-total"> ₹<%=cart?.totalAmount- cart?.totalDiscount %>.00</p>
+                  <p class="mb-2" id="grand-total"> ₹<%=parseInt(cart?.totalAmount- cart?.totalDiscount) %>.00</p>
 
                 </div>
 
@@ -363,13 +368,14 @@
           if (parseInt(input.value) === 1) {
             decrementButton.disabled = true;
           }
-
-          const stockQuantity = parseInt(input.getAttribute('data-stock'));
-        if (stockQuantity <= input.value) {
+          console.log(input, 'input');
+         const stockQuantity=parseInt(`${input.getAttribute('data-stock')}`);
+          // console.log(stockQuantity,'stockQauantity');
+          if (stockQuantity <= parseInt(input.value)) {
             incrementButton.disabled = true;
-        }
+          }
         });
-        
+
       });
 
       function increaseQuantity(id, netChange, price) {
@@ -395,8 +401,8 @@
               const productTotalAmount = data.newQuantity * price
               productTotal.textContent = 'Total ₹ ' + productTotalAmount
               totalAmount.textContent = `  ₹${data.totalAmount}.00`
-              totalDiscount.textContent = `  ₹${data.totalDiscount}.00`
-              grandTotal.textContent = `   ₹${data.totalAmount-data.totalDiscount}.00`
+              totalDiscount.textContent = `  ₹${parseInt(data.totalDiscount)}.00`
+              grandTotal.textContent = `   ₹${parseInt(data.totalAmount - data.totalDiscount)}.00`
 
               if (parseInt(quntityInput.value) < 2) {
 
@@ -421,7 +427,7 @@
 
                 document.getElementById(`increment-quantity-${id}`).removeAttribute("disabled")
               }
-              
+
             }
           })
 
@@ -431,76 +437,106 @@
 
       }
 
-      // function applyCoupon() {
-      //   const coupon = document.getElementById('coupon').value;
-      //   if (!coupon) {
-      //     Toastify({
-      //       text: 'Coupon code should not be empty',
-      //       duration: 1500,
-      //       position: "center",
-      //       className: "info",
-      //       style: {
-      //         background: "red",
-      //       }
-      //     }).showToast();
+      document.getElementById('applyCoupon-form').addEventListener('submit',(e)=>{
+        e.preventDefault()
+        const coupon = document.getElementById('coupon').value;
+        console.log('its coupon',coupon);
+        if (!coupon) {
+          Toastify({
+            text: 'Coupon code should not be empty',
+            duration: 1500,
+            position: "center",
+            className: "info",
+            style: {
+              background: "red",
+            }
+          }).showToast();
 
-      //   }
-      //   else {
-      //     const requestOptions = {
-      //       method: "POST",
-      //       headers: { "Content-Type": "application/json" },
-      //       body: JSON.stringify({
-      //         coupon: coupon
-      //       }),
-      //     };
+        }
+        else {
+          const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              coupon: coupon
+            }),
+          };
 
-      //     fetch("/applyCoupon", requestOptions)
-      //       .then((response) => {
-      //         if (response.status === 200) {
-      //           console.log(response.status, 'Success')
-      //           location.reload();
-      //         }
-      //         else {
-      //           response.json().then(error => {
-      //             showError('couponError', error.message);
-      //           })
-      //         }
-      //       })
-      //       .then((data) => {
-      //         console.log(data, "Data");
-      //       })
-      //       .catch((error) => {
-      //         console.log(error, "error");
-      //       });
-      //   }
-      // }
+          fetch("/applyCoupon", requestOptions)
+          .then(result=> result.json())
+            .then((response) => {
+              console.log(response, 'Success')
+              if (response.success) {
+                
+                
+                const couponErrorMessage = document.getElementById('coupon-error')
+                const removeCoupon = document.getElementById('removeCoupon')
 
-      // function removeCoupon() {
-      //   const couponId = "<%= cart?.coupon?._id%>"
+                couponErrorMessage.classList.remove('alert-danger')
+                couponErrorMessage.classList.add('alert-success') 
+                removeCoupon.classList.remove('d-none')
+                couponErrorMessage.innerHTML = 'Coupon Added Successfully'
+                couponErrorMessage.hidden =false
+                
+                removeCoupon.hidden= false
+              }
+              else {
+                console.log(response,'response');
+                
+                const couponErrorMessage = document.getElementById('coupon-error')
+                couponErrorMessage.classList.remove('alert-success')
+                couponErrorMessage.classList.add('alert-danger')
+                couponErrorMessage.innerHTML = response
+                couponErrorMessage.hidden =false
+              }
+            })
+            .catch((error) => {
+              console.log(error, "error");
+            });
+        }
 
-      //   const requestOptions = {
-      //     method: "DELETE",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify({
-      //       couponId: couponId
-      //     }),
-      //   }
+      })
 
-      //   fetch('/removeCoupon', requestOptions).then(response => {
-      //     if (response.ok) {
-      //       location.reload();
-      //     } else {
-      //       response.json().then(error => {
-      //         showError('couponError', error.message);
-      //       })
-      //     }
-      //   }).then((data) => {
-      //     console.log(data, "Data");
-      //   })
-      //     .catch((error) => {
-      //       console.log(error, "error");
-      //     });
-      // }
+
+
+
+
+
+      document.getElementById('removeCoupon').addEventListener('click',(e)=>{
+        e.preventDefault();
+        const couponId =document.getElementById('removeCoupon').getAttribute('data-couponId')
+        console.log(couponId,'couponId');
+        
+
+        const requestOptions = {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            couponId: couponId
+          }),
+        }
+
+        fetch('/applyCoupon', requestOptions)
+        .then(response => {
+          if (response) {
+            console.log(response,'resoibnsed');
+            location.reload();
+          } else {
+            response.json().then(error => {
+              
+            })
+          }
+        }).then((data) => {
+          console.log(data, "Data");
+        })
+          .catch((error) => {
+            console.log(error, "error");
+          });
+      })
+      
+  
+
+      
 
 
     </script>

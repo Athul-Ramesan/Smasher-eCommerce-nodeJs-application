@@ -39,7 +39,8 @@
                                         <%= item.productId.name %>
                                     </span>
                                     <span class="mt-3">Quantity :<%= item.quantity %></span>
-                                    <span class="mt-1">Price : ₹<%= item.productId.price %></span>
+                                    
+                                    <span class="mt-1">Price : ₹<%= item.productId.price -item.productId.discountAmount %></span>
                                 </div>
                                 <div class="m-2"
                                     style="width: 2px; background-color: rgb(163, 163, 163); height: 100%;">

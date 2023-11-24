@@ -11,7 +11,7 @@ const couponSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    discountPercent: {
+    discountAmount: {
       type: Number,
       required: true,
     },
@@ -19,7 +19,7 @@ const couponSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    maximumDiscountAmount: {
+    maximumDiscountableAmount: {
       type: Number,
       required : true
     },
